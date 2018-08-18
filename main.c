@@ -1,16 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "jpeg.h"
-#include "bw.h"
-#include "gauss.h"
-#include "layer.h"
-#include "unsharp.h"
-#include "contrast.h"
-#include "brightness.h"
-#include "gamma.h"
-#include "invert.h"
-#include "temperature.h"
+#include "filters.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -33,7 +24,8 @@ int main(int argc, char *argv[])
      //brightness(layer, -80, zone);
      //gamma_correction(layer, 2.0f, zone);
      //invert(layer, zone);
-     temperature(layer, 20, zone);
+     //temperature(layer, 20, zone);
+     tint(layer, 20, zone);
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }
