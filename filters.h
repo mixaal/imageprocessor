@@ -13,5 +13,6 @@
 #include "invert.h"
 #include "temperature.h"
 #include "tint.h"
+#include "exposure.h"
 
 #endif /* __IM_FILTERS_H__ */

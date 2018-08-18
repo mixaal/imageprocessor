@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
      //gamma_correction(layer, 2.0f, zone);
      //invert(layer, zone);
      //temperature(layer, 20, zone);
-     tint(layer, 20, zone);
+     //tint(layer, 20, zone);
+     exposure(layer, -1.5f, zone);
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }
