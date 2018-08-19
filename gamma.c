@@ -7,7 +7,7 @@
 void gamma_correction(layer_t layer, float gamma, rect_t zone) {
   float gammaCorrection = 1.0f / gamma;
 
-  JSAMPLE *image = layer.image;
+  color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
   int color_components = layer.color_components;
@@ -21,21 +21,21 @@ void gamma_correction(layer_t layer, float gamma, rect_t zone) {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
        float r, g, b;
-       r = (float)image[idx]/255.0f;
-       g = (float)image[idx+1]/255.0f;
-       b = (float)image[idx+2]/255.0f;
-       float nr = 255.0f * pow(r, gammaCorrection);
-       float ng = 255.0f * pow(g, gammaCorrection);
-       float nb = 255.0f * pow(b, gammaCorrection);
-       if (nr > 255.0f) nr = 255.0f;
-       if (ng > 255.0f) ng = 255.0f;
-       if (nb > 255.0f) nb = 255.0f;
+       r = (float)image[idx]/COLOR_MAX;
+       g = (float)image[idx+1]/COLOR_MAX;
+       b = (float)image[idx+2]/COLOR_MAX;
+       float nr = COLOR_MAX * pow(r, gammaCorrection);
+       float ng = COLOR_MAX * pow(g, gammaCorrection);
+       float nb = COLOR_MAX * pow(b, gammaCorrection);
+       if (nr > COLOR_MAX) nr = COLOR_MAX;
+       if (ng > COLOR_MAX) ng = COLOR_MAX;
+       if (nb > COLOR_MAX) nb = COLOR_MAX;
        if (nr < 0.0f) nr = 0.0f;
        if (ng < 0.0f) ng = 0.0f;
        if (nb < 0.0f) nb = 0.0f;
-       image[idx] = (JSAMPLE) nr;
-       image[idx+1] = (JSAMPLE) ng;
-       image[idx+2] = (JSAMPLE) nb;
+       image[idx] = (color_t) nr;
+       image[idx+1] = (color_t) ng;
+       image[idx+2] = (color_t) nb;
     }
   }
 }

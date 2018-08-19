@@ -3,7 +3,8 @@ RM=rm -f
 CFLAGS=-Wall -Werror -O2 -ggdb
 
 
-OBJECTS=jpeg.o main.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o temperature.o tint.o exposure.o
+OBJECTS=jpeg.o main.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
+        temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o
 PROG=improc
 
 LIBS=-ljpeg -lm

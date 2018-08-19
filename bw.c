@@ -2,7 +2,7 @@
 
 
 void bw(image_t layer, rect_t zone) {
-   JSAMPLE *image = layer.image;
+   color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;
    int color_components = layer.color_components;
@@ -15,7 +15,7 @@ void bw(image_t layer, rect_t zone) {
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
-       JSAMPLE r, g, b;
+       color_t r, g, b;
        r = image[idx];
        g = image[idx+1];
        b = image[idx+2];

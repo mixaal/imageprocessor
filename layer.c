@@ -5,8 +5,8 @@
 #include "common_types.h"
 
 image_t layer_new(image_t source) {
-   JSAMPLE *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(JSAMPLE));
-   memset(image_copy, 0, source.width*source.height*source.color_components*sizeof(JSAMPLE));
+   color_t *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(color_t));
+   memset(image_copy, 0, source.width*source.height*source.color_components*sizeof(color_t));
    image_t image = source;
    image.image = image_copy;
    return image;
@@ -28,9 +28,9 @@ void layer_multiply(image_t dest, image_t source, double amount) {
        if (dest.image[idx] < 0) dest.image[idx] = 0; 
        if (dest.image[idx+1] < 0) dest.image[idx+1] = 0; 
        if (dest.image[idx+2] < 0) dest.image[idx+2] = 0; 
-       if (dest.image[idx] > 255) dest.image[idx] = 255; 
-       if (dest.image[idx+1] > 255) dest.image[idx+1] = 255; 
-       if (dest.image[idx+2] > 255) dest.image[idx+2] = 255; 
+       if (dest.image[idx] > COLOR_MAX) dest.image[idx] = COLOR_MAX; 
+       if (dest.image[idx+1] > COLOR_MAX) dest.image[idx+1] = COLOR_MAX; 
+       if (dest.image[idx+2] > COLOR_MAX) dest.image[idx+2] = COLOR_MAX; 
      }
    }
 }
@@ -58,9 +58,9 @@ void layer_add(image_t dest, image_t from, image_t what) {
          dest.image[idx+1] = g;
          dest.image[idx+2] = b;
 
-         if (r>255) dest.image[idx] = 255;
-         if (g>255) dest.image[idx+1] = 255;
-         if (b>255) dest.image[idx+2] = 255;
+         if (r>COLOR_MAX) dest.image[idx] = COLOR_MAX;
+         if (g>COLOR_MAX) dest.image[idx+1] = COLOR_MAX;
+         if (b>COLOR_MAX) dest.image[idx+2] = COLOR_MAX;
      }
    }
 
@@ -103,8 +103,8 @@ void layer_substract(image_t dest, image_t from, image_t what) {
 }
 
 image_t layer_copy(image_t source) {
-   JSAMPLE *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(JSAMPLE));
-   bcopy(source.image, image_copy, source.width*source.height*source.color_components*sizeof(JSAMPLE));
+   color_t *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(color_t));
+   bcopy(source.image, image_copy, source.width*source.height*source.color_components*sizeof(color_t));
    image_t image = source;
    image.image = image_copy;
    return image;

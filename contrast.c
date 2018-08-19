@@ -5,10 +5,10 @@
  * Adjust contrast, c in [-128, 128]
  */
 void contrast(layer_t layer, float c, rect_t zone) {
-  float F = (259 * (c + 255)) / (255 * ( 259 - c ));
+  float F = (259 * (c + COLOR_MAX)) / (COLOR_MAX * ( 259 - c ));
 
   printf("F=%f\n", F);
-  JSAMPLE *image = layer.image;
+  color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
   int color_components = layer.color_components;
@@ -22,21 +22,21 @@ void contrast(layer_t layer, float c, rect_t zone) {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
        float r, g, b;
-       r = (float)image[idx] - 128.0f;
-       g = (float)image[idx+1] - 128.0f;
-       b = (float)image[idx+2] - 128.0f;
-       float nr = F * r  + 128;
-       float ng = F * g  + 128;
-       float nb = F * b  + 128;
-       if (nr > 255.0f) nr = 255.0f;
-       if (ng > 255.0f) ng = 255.0f;
-       if (nb > 255.0f) nb = 255.0f;
+       r = (float)image[idx] - COLOR_MID;
+       g = (float)image[idx+1] - COLOR_MID;
+       b = (float)image[idx+2] - COLOR_MID;
+       float nr = F * r  + COLOR_MID;
+       float ng = F * g  + COLOR_MID;
+       float nb = F * b  + COLOR_MID;
+       if (nr > COLOR_MAX) nr = COLOR_MAX;
+       if (ng > COLOR_MAX) ng = COLOR_MAX;
+       if (nb > COLOR_MAX) nb = COLOR_MAX;
        if (nr < 0.0f) nr = 0.0f;
        if (ng < 0.0f) ng = 0.0f;
        if (nb < 0.0f) nb = 0.0f;
-       image[idx] = (JSAMPLE) nr;
-       image[idx+1] = (JSAMPLE) ng;
-       image[idx+2] = (JSAMPLE) nb;
+       image[idx] = (color_t) nr;
+       image[idx+1] = (color_t) ng;
+       image[idx+2] = (color_t) nb;
     }
   }
 }

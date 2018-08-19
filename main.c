@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
      //invert(layer, zone);
      //temperature(layer, 20, zone);
      //tint(layer, 20, zone);
-     exposure(layer, -1.5f, zone);
+     //exposure(layer, 1.1f, zone);
+     kelvin_temperature(layer,13000.0f, 1.0f, zone);
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }

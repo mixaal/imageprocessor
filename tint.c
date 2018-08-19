@@ -5,7 +5,7 @@
  * Adjust temperature, temp in [-128, 128]
  */
 void tint(layer_t layer, float temp, rect_t zone) {
-  JSAMPLE *image = layer.image;
+  color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
   int color_components = layer.color_components;
@@ -20,9 +20,9 @@ void tint(layer_t layer, float temp, rect_t zone) {
        int idx = y*width*color_components + x*color_components;
        float ng;
        ng = (float)image[idx+1] + temp;
-       if (ng > 255.0f) ng = 255.0f;
+       if (ng > COLOR_MAX) ng = COLOR_MAX;
        if (ng < 0.0f) ng = 0.0f;
-       image[idx+1] = (JSAMPLE) ng;
+       image[idx+1] = (color_t) ng;
     }
   }
 }

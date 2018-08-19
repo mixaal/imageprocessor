@@ -5,6 +5,6 @@
 #include "layer.h"
 
 image_t read_JPEG_file (char * filename);
-void write_JPEG_file (char * filename, JSAMPLE *image, int image_width, int image_height, int quality);
+void write_JPEG_file (char * filename, color_t *image, int image_width, int image_height, int quality);
 
 #endif /* __IM_PROC_JPEG_H__ */

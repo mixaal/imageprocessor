@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <jpeglib.h>
 
+#include "common_types.h"
+
 typedef struct {
   int minx, miny, maxx, maxy;
 } rect_t;
 
 typedef struct {
   int rc;
-  JSAMPLE *image;
+  color_t *image;
   int width;
   int height;
   int stride;

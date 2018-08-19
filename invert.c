@@ -6,7 +6,7 @@
  */
 void invert(layer_t layer, rect_t zone) {
 
-  JSAMPLE *image = layer.image;
+  color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
   int color_components = layer.color_components;
@@ -19,9 +19,9 @@ void invert(layer_t layer, rect_t zone) {
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
-       image[idx] = 255 - image[idx];
-       image[idx+1] = 255 - image[idx+1];
-       image[idx+2] = 255 - image[idx+2];
+       image[idx] = COLOR_MAX - image[idx];
+       image[idx+1] = COLOR_MAX - image[idx+1];
+       image[idx+2] = COLOR_MAX - image[idx+2];
     }
   }
 }

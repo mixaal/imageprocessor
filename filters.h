@@ -14,5 +14,6 @@
 #include "temperature.h"
 #include "tint.h"
 #include "exposure.h"
+#include "kelvin_temp.h"
 
 #endif /* __IM_FILTERS_H__ */

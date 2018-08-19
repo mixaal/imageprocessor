@@ -14,8 +14,8 @@ static void my_error_exit(j_common_ptr x) {
 }
 
 
-static void put_scanline_someplace(JSAMPLE *image, JSAMPROW buffer, int row_stride, int row_no) {
- //  JSAMPLE r, g, b;
+static void put_scanline_someplace(color_t *image, JSAMPROW buffer, int row_stride, int row_no) {
+ //  color_t r, g, b;
    //fprintf(stderr, "row_no=%d pixel=[%d %d %d] row_stride=%d\n", row_no, buffer[0], buffer[1], buffer[2], row_stride);
    for(int i=0; i<row_stride; i++) {
      image[row_no*row_stride + i] = buffer[i];
@@ -100,7 +100,7 @@ image_t read_JPEG_file (char * filename)
    * if we asked for color quantization.
    * In this example, we need to make an output work buffer of the right size.
    */ 
-  /* JSAMPLEs per row in output buffer */
+  /* color_ts per row in output buffer */
   row_stride = cinfo.output_width * cinfo.output_components;
   /* Make a one-row-high sample array that will go away when done with image */
   buffer = (*cinfo.mem->alloc_sarray)
@@ -113,7 +113,7 @@ image_t read_JPEG_file (char * filename)
    * loop counter, so that we don't have to keep track ourselves.
    */
   int row_no = 0;
-  JSAMPLE *image;
+  color_t *image;
   image = xmalloc(sizeof(*image) * 3 * cinfo.output_height * cinfo.output_width);
   while (cinfo.output_scanline < cinfo.output_height) {
     /* jpeg_read_scanlines expects an array of pointers to scanlines.
@@ -161,7 +161,7 @@ image_t read_JPEG_file (char * filename)
 }
 
 
-void write_JPEG_file (char * filename, JSAMPLE *image, int image_width, int image_height, int quality)
+void write_JPEG_file (char * filename, color_t *image, int image_width, int image_height, int quality)
 {
   /* This struct contains the JPEG compression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -181,7 +181,7 @@ void write_JPEG_file (char * filename, JSAMPLE *image, int image_width, int imag
   struct jpeg_error_mgr jerr;
   /* More stuff */
   FILE * outfile;    /* target file */
-  JSAMPROW row_pointer[1];  /* pointer to JSAMPLE row[s] */
+  JSAMPROW row_pointer[1];  /* pointer to color_t row[s] */
   int row_stride;    /* physical row width in image buffer */
 
   /* Step 1: allocate and initialize JPEG compression object */
@@ -243,7 +243,7 @@ void write_JPEG_file (char * filename, JSAMPLE *image, int image_width, int imag
    * To keep things simple, we pass one scanline per call; you can pass
    * more if you wish, though.
    */
-  row_stride = image_width * 3;  /* JSAMPLEs per row in image_buffer */
+  row_stride = image_width * 3;  /* color_ts per row in image_buffer */
 
   while (cinfo.next_scanline < cinfo.image_height) {
     /* jpeg_write_scanlines expects an array of pointers to scanlines.

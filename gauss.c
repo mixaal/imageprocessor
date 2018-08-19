@@ -34,7 +34,7 @@ static void create_gauss(double **GKernel, int N, double sigma)
 }
 
 void gauss(image_t layer, int radius, double sigma, rect_t zone) {
-   JSAMPLE *image = layer.image;
+   color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;
    int color_components = layer.color_components;
@@ -49,7 +49,7 @@ void gauss(image_t layer, int radius, double sigma, rect_t zone) {
     * Create a copy of the source image.
     */
    image_t layer_cp = layer_copy(layer);
-   JSAMPLE *image_copy = layer_cp.image;
+   color_t *image_copy = layer_cp.image;
 
    create_gauss(kernel, radius, sigma);
 
@@ -62,7 +62,7 @@ void gauss(image_t layer, int radius, double sigma, rect_t zone) {
      for (int x=zone.minx; x<zone.maxx; x++) {
      int idx = color_components * (y*width + x);
         double sr, sg, sb;
-        JSAMPLE r, g, b;
+        color_t r, g, b;
         //printf("x=%d y=%d\n", x, y);
         sr = sg = sb = 0;
         for (int ky = -N2; ky <= N2; ky++)
@@ -85,9 +85,9 @@ void gauss(image_t layer, int radius, double sigma, rect_t zone) {
        //sr /= radius*radius;
        //sg /= radius*radius;
        //sb /= radius*radius;
-       image[idx] = (JSAMPLE) sr;
-       image[idx+1] = (JSAMPLE) sg;
-       image[idx+2] = (JSAMPLE) sb;
+       image[idx] = (color_t) sr;
+       image[idx+1] = (color_t) sg;
+       image[idx+2] = (color_t) sb;
      }
    }
 

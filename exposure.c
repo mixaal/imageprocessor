@@ -9,7 +9,7 @@
  */
 void exposure(layer_t layer, float e, rect_t zone) {
 
-  JSAMPLE *image = layer.image;
+  color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
   int color_components = layer.color_components;
@@ -26,15 +26,15 @@ void exposure(layer_t layer, float e, rect_t zone) {
        nr = (float)image[idx] * pow(2, e);
        ng = (float)image[idx+1] * pow(2, e);
        nb = (float)image[idx+2] * pow(2, e);
-       if (nr > 255.0f) nr = 255.0f;
-       if (ng > 255.0f) ng = 255.0f;
-       if (nb > 255.0f) nb = 255.0f;
+       if (nr > COLOR_MAX) nr = COLOR_MAX;
+       if (ng > COLOR_MAX) ng = COLOR_MAX;
+       if (nb > COLOR_MAX) nb = COLOR_MAX;
        if (nr < 0.0f) nr = 0.0f;
        if (ng < 0.0f) ng = 0.0f;
        if (nb < 0.0f) nb = 0.0f;
-       image[idx] = (JSAMPLE) nr;
-       image[idx+1] = (JSAMPLE) ng;
-       image[idx+2] = (JSAMPLE) nb;
+       image[idx] = (color_t) nr;
+       image[idx+1] = (color_t) ng;
+       image[idx+2] = (color_t) nb;
     }
   }
 }
