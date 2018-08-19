@@ -1,12 +1,12 @@
-#include "contrast.h" 
+#include "common.h"
+#include "color_conversion.h"
+#include "saturation.h"
 
-
-/**
- * Adjust contrast, c in [-128, 128]
- */
-void contrast(layer_t layer, float c, rect_t zone) {
-  float F = (259 * (c + COLOR_MAX)) / (COLOR_MAX * ( 259 - c ));
-
+/** 
+ * Adjust saturation. [-1; 1]
+ * 
+ */ 
+void saturation(layer_t layer, float amount, rect_t zone) {
   color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
@@ -21,12 +21,20 @@ void contrast(layer_t layer, float c, rect_t zone) {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
        float r, g, b;
-       r = (float)image[idx] - COLOR_MID;
-       g = (float)image[idx+1] - COLOR_MID;
-       b = (float)image[idx+2] - COLOR_MID;
-       float nr = F * r  + COLOR_MID;
-       float ng = F * g  + COLOR_MID;
-       float nb = F * b  + COLOR_MID;
+       r = (float)image[idx] / COLOR_MAX;
+       g = (float)image[idx+1] / COLOR_MAX;
+       b = (float)image[idx+2] / COLOR_MAX;
+
+       vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
+       HSL.y += amount;
+       HSL.y = saturatef(HSL.y);
+       
+
+       vec3 newRGB = HSLtoRGB(HSL);
+       
+       float nr = COLOR_MAX * newRGB.x;
+       float ng = COLOR_MAX * newRGB.y;
+       float nb = COLOR_MAX * newRGB.z;
        if (nr > COLOR_MAX) nr = COLOR_MAX;
        if (ng > COLOR_MAX) ng = COLOR_MAX;
        if (nb > COLOR_MAX) nb = COLOR_MAX;
@@ -38,4 +46,6 @@ void contrast(layer_t layer, float c, rect_t zone) {
        image[idx+2] = (color_t) nb;
     }
   }
+
 }
+

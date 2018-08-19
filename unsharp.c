@@ -14,4 +14,8 @@ void unsharp(image_t layer, int radius, float amount, rect_t zone) {
    layer_substract(orig_minus_blur, orig_copy, blur);
    layer_multiply(orig_minus_blur, orig_minus_blur, amount);
    layer_add(layer, layer, orig_minus_blur);
+
+   layer_free(blur);
+   layer_free(orig_copy);
+   layer_free(orig_minus_blur);
 }

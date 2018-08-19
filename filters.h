@@ -15,5 +15,7 @@
 #include "tint.h"
 #include "exposure.h"
 #include "kelvin_temp.h"
+#include "color_balance.h"
+#include "saturation.h"
 
 #endif /* __IM_FILTERS_H__ */
