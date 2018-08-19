@@ -15,6 +15,11 @@
 #include "color_conversion.h"
 #include <math.h>
 
+float to_gray(vec3 color) 
+{
+  return 0.3f * color.x + 0.59f * color.y + 0.11f * color.z;
+}
+
 float luminance(vec3 color)
 {
   float fmin = minf(color.x, color.y, color.z);

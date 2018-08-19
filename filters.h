@@ -17,5 +17,6 @@
 #include "kelvin_temp.h"
 #include "color_balance.h"
 #include "saturation.h"
+#include "vibrance.h"
 
 #endif /* __IM_FILTERS_H__ */

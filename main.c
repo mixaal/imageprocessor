@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
      //exposure(layer, 1.1f, zone);
      // kelvin_temperature(layer,13000.0f, 1.0f, zone);
      //color_balance(layer, 50.0f, 150.0f, 50.0f, 50.0f, 50.0f, 50.0f, zone);
-     saturation(layer, 1.0f, zone);
+     //saturation(layer, 1.0f, zone);
+     vibrance(layer, 0.5f, zone);
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }
