@@ -1,3 +1,13 @@
+// ported by Renaud Bédard (@renaudbedard) from original code from Tanner Helland
+// http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+
+// color space functions translated from HLSL versions on Chilli Ant (by Ian Taylor)
+// http://www.chilliant.com/rgb2hsv.html
+
+// licensed and released under Creative Commons 3.0 Attribution
+// https://creativecommons.org/licenses/by/3.0/
+
+
 #include <math.h>
 #include "kelvin_temp.h"
 #include "color_conversion.h"
