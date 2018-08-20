@@ -14,5 +14,6 @@ float minf(float a, float b, float c);
 float maxf(float a, float b, float c);
 vec3 vec3_init(float x, float y, float z);
 vec3 vec3_mix(vec3 a, vec3 b, float k);
+float clamp(float, float, float);
 
 #endif /* __IM_COMMON_H__ */

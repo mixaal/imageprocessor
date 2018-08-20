@@ -3,5 +3,5 @@
 
 #include "layer.h"
 
-void color_balance(layer_t layer, float reds, float yellows, float greens, float cyans, float blues, float magentas, rect_t zone);
+void adjust_color_saturation(layer_t layer, float reds, float yellows, float greens, float cyans, float blues, float magentas, rect_t zone);
 #endif /* __IM_COLOR_BALANCE_H__ */

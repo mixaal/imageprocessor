@@ -2,10 +2,6 @@
 #include "color_conversion.h"
 #include "color_balance.h"
 
-#define ADJUST_COLOR_MIN -200
-#define ADJUST_COLOR_MAX 300
-#define TGT_BASE_MIN -2.5f
-#define TGT_BASE_MAX 2.5f
 static float hue_red(void);
 static float hue_yellow(void);
 static float hue_green(void);
@@ -13,19 +9,28 @@ static float hue_blue(void);
 static float hue_cyan(void);
 static float hue_magenta(void);
 
-static float remap(float);
+static const float one_twelth = 1.0f / 12;
+
+static _Bool inside(float color, float hue)
+{
+   float left = hue - one_twelth;
+   float right = hue + one_twelth;
+   if (left < 0.0f) left += 1.0f;
+   if (right > 1.0f) right -= 1.0f;
+
+   return (color >= left && color < right);
+}
+
 /** 
- * Adjust color balance. Range for wights [-200, 300]
- * 
- * Adapted from : https://dsp.stackexchange.com/questions/688/whats-the-algorithm-behind-photoshops-black-and-white-adjustment-layer
+ * Adjust color saturation. Range for color saturation: [0, 1]
  */ 
-void color_balance(layer_t layer, float reds, float yellows, float greens, float cyans, float blues, float magentas, rect_t zone) {
-  reds = remap(reds);
-  yellows = remap(yellows);
-  greens = remap(greens);
-  cyans = remap(cyans);
-  blues = remap(blues);
-  magentas = remap(magentas);
+void adjust_color_saturation(layer_t layer, float reds, float yellows, float greens, float cyans, float blues, float magentas, rect_t zone) {
+  reds = clamp(reds, -1 , 1);
+  yellows = clamp(yellows, -1, 1);
+  greens = clamp(greens, -1, 1);
+  cyans = clamp(cyans, -1, 1);
+  blues = clamp(blues, -1, 1);
+  magentas = clamp(magentas, -1, 1);
 
   printf("reds=%f\nyellows=%f\n,greens=%f\ncyans=%f\nblues=%f\nmagentas=%f\n", reds, yellows, greens, cyans, blues, magentas);
   printf("redsH=%f\nyellowsH=%f\n,greensH=%f\ncyansH=%f\nbluesH=%f\nmagentasH=%f\n", hue_red(), hue_yellow(), hue_green(), hue_cyan(), hue_blue(), hue_magenta());
@@ -49,21 +54,28 @@ void color_balance(layer_t layer, float reds, float yellows, float greens, float
        b = (float)image[idx+2] / COLOR_MAX;
 
        vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
-       float currHue = 1.0f * HSL.x;
 
-       float Coef = 0.0f;
-       //printf("Hue=%f CurrHue=%f\n", HSL.x, currHue);
-       Coef += reds * (currHue - hue_red());
-       Coef += yellows * (currHue - hue_yellow());
-       Coef += greens * (currHue - hue_green());
-       Coef += cyans * (currHue - hue_cyan());
-       Coef += blues * (currHue - hue_blue());
-       Coef += magentas * (currHue - hue_magenta());
+       if (inside(HSL.x, hue_red())) {
+         HSL.y += reds;
+       }
        
+       if (inside(HSL.x, hue_yellow())) {
+         HSL.y += yellows;
+       }
+       if (inside(HSL.x, hue_green())) {
+         HSL.y += greens;
+       }
+       if (inside(HSL.x, hue_cyan())) {
+         HSL.y += cyans;
+       }
+       if (inside(HSL.x, hue_blue())) {
+         HSL.y += blues;
+       }
+       if (inside(HSL.x, hue_magenta())) {
+         HSL.y += magentas;
+       }
 
-       HSL.x -= Coef;
-       
-
+       HSL.y = saturatef(HSL.y);
        vec3 newRGB = HSLtoRGB(HSL);
        
        float nr = COLOR_MAX * newRGB.x;
@@ -83,21 +95,8 @@ void color_balance(layer_t layer, float reds, float yellows, float greens, float
 
 }
 
-static float remap(float color)
-{
-   float base_interval = ADJUST_COLOR_MAX - ADJUST_COLOR_MIN;
-
-   if (color < ADJUST_COLOR_MIN) color = ADJUST_COLOR_MIN;
-   if (color > ADJUST_COLOR_MAX) color = ADJUST_COLOR_MAX;
-
-   float k = (color - ADJUST_COLOR_MIN) / base_interval;
-
-   return mix(TGT_BASE_MIN, TGT_BASE_MAX, k);
-}
-
 static float hue_red(void) {
    vec3 v = RGBtoHSL(vec3_init(1.0f, 0.0f, 0.0f));
-   printf("v.y=%f\n", v.y);
    return v.x;
 }
 

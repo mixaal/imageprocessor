@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
      //tint(layer, 20, zone);
      //exposure(layer, 1.1f, zone);
      // kelvin_temperature(layer,13000.0f, 1.0f, zone);
-     //color_balance(layer, 50.0f, 150.0f, 50.0f, 50.0f, 50.0f, 50.0f, zone);
+     adjust_color_saturation(layer, 0.0f, -0.5f, 0.0f, 0.0f, 0.9f, 0.0f, zone);
      //saturation(layer, 1.0f, zone);
      //vibrance(layer, 0.5f, zone);
-     colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
+     //colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }

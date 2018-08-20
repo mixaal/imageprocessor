@@ -1,5 +1,12 @@
 #include "common.h"
 
+float clamp(float x, float minr, float maxr)
+{
+  if (x >= maxr ) return maxr;
+  if (x <= minr ) return minr;
+  return x;
+}
+
 vec3 blend2(vec3 left, vec3 right, float pos)
 {
   vec3 v;
