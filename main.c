@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "filters.h"
+#include "brush.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
      //saturation(layer, 1.0f, zone);
      //vibrance(layer, 0.5f, zone);
      //colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
+     brush_touch(layer, IMAGE, 100, 1.0f, 100, 100, vec3_init(1.0f, 1.0f, 1.0f));
+     brush_touch(layer, IMAGE, 500, 1.0f, 500, 500, vec3_init(1.0f, 1.0f, 0.0f));
      write_JPEG_file("output.jpg", layer.image, layer.width, layer.height, 90);
      layer_free(layer);
   }

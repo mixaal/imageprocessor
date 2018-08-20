@@ -12,6 +12,8 @@ typedef struct {
 
 typedef enum { NORMAL, LINEAR_COLOR } blend_mode_t;
 
+typedef enum { IMAGE, MASK } draw_mode_t;
+
 typedef struct {
   int rc;
   color_t *image;

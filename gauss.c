@@ -4,7 +4,7 @@
 #include "layer.h"
 
 
-static void create_gauss(double **GKernel, int N, double sigma)
+void create_gauss(double **GKernel, int N, double sigma, _Bool normalize)
 {
     int N2 = N/2;
     // intialising standard deviation to 1.0
@@ -26,7 +26,7 @@ static void create_gauss(double **GKernel, int N, double sigma)
             sum += GKernel[x + N2][y + N2];
         }
     }
- 
+    if (!normalize) return;
     // normalising the Kernel
     for (int i = 0; i < N; ++i)
         for (int j = 0; j < N; ++j)
@@ -51,7 +51,7 @@ void gauss(image_t layer, int radius, double sigma, rect_t zone) {
    image_t layer_cp = layer_copy(layer);
    color_t *image_copy = layer_cp.image;
 
-   create_gauss(kernel, radius, sigma);
+   create_gauss(kernel, radius, sigma, True);
 
   if (zone.minx<0) zone.minx=0;
   if (zone.miny<0) zone.miny=0;

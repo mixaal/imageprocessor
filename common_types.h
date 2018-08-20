@@ -4,6 +4,9 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
+#define False 0
+#define True 1
+
 typedef unsigned char color_t;
 typedef struct { float x, y, z; }  vec3;
 typedef struct { float x, y, z, w; } vec4;
