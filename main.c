@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
      //tint(layer, 20, zone);
      //exposure(layer, 1.1f, zone);
      // kelvin_temperature(layer,13000.0f, 1.0f, zone);
-     adjust_color_saturation(layer, 0.3f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, zone);
+     //adjust_color_saturation(layer, 0.3f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, zone);
      //saturation(layer, 1.0f, zone);
      //vibrance(layer, 0.5f, zone);
      //colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
      layer_t layers[] = { layer, brush_layer };
      brush_layer.opacity = 0.5f;
      layer_t output = layer_merge_down(2, layers);
-     write_JPEG_file("output.jpg", output.image, layer.width, layer.height, 90);
+     write_JPEG_file("output.jpg", output, 90);
      layer_free(layer);
   }
   return EXIT_SUCCESS;

@@ -4,6 +4,11 @@
 #include "xmalloc.h"
 #include "common.h"
 
+void layer_info(layer_t layer)
+{
+  fprintf(stderr, "layer.width=%d\nlayer.height=%d\nlayer.color_components=%d\nlayer.mask=%p\nlayer.image=%p\nlayer.opacity=%f\nlayer.blend_mode=%d\nlayer.zone=[%d %d %d %d]\n", layer.width, layer.height, layer.color_components, layer.mask, layer.image, layer.opacity, layer.blend_mode, layer.zone.minx, layer.zone.miny, layer.zone.maxx, layer.zone.maxy);
+}
+
 image_t layer_new(image_t source) {
    color_t *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(color_t));
    memset(image_copy, 0, source.width*source.height*source.color_components*sizeof(color_t));
@@ -178,9 +183,17 @@ void add_layer_mask_color(layer_t layer, vec3 color)
 }
 
 image_t layer_copy(image_t source) {
-   color_t *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(color_t));
-   bcopy(source.image, image_copy, source.width*source.height*source.color_components*sizeof(color_t));
    image_t image = source;
+   size_t nbytes = source.width * source.height * source.color_components * sizeof(color_t);
+   color_t *image_copy = xmalloc(nbytes);
+   bcopy(source.image, image_copy, nbytes);
+   if (source.mask!=NULL) {
+     color_t *mask_copy = xmalloc(nbytes);
+     bcopy(source.mask, mask_copy, nbytes);
+     image.mask = mask_copy;
+   } else {
+     image.mask = NULL;
+   }
    image.image = image_copy;
    return image;
 }

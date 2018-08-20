@@ -164,7 +164,7 @@ image_t read_JPEG_file (char * filename)
 }
 
 
-void write_JPEG_file (char * filename, color_t *image, int image_width, int image_height, int quality)
+void write_JPEG_file (char * filename, layer_t layer, int quality)
 {
   /* This struct contains the JPEG compression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -217,6 +217,8 @@ void write_JPEG_file (char * filename, color_t *image, int image_width, int imag
   /* First we supply a description of the input image.
    * Four fields of the cinfo struct must be filled in:
    */
+  int image_width = layer.zone.maxx - layer.zone.minx;
+  int image_height = layer.zone.maxy - layer.zone.miny;
   cinfo.image_width = image_width;  /* image width and height, in pixels */
   cinfo.image_height = image_height;
   cinfo.input_components = 3;    /* # of color components per pixel */
@@ -247,7 +249,7 @@ void write_JPEG_file (char * filename, color_t *image, int image_width, int imag
    * more if you wish, though.
    */
   row_stride = image_width * 3;  /* color_ts per row in image_buffer */
-
+  color_t *image = layer.image;
   while (cinfo.next_scanline < cinfo.image_height) {
     /* jpeg_write_scanlines expects an array of pointers to scanlines.
      * Here the array is only one element long, but you could pass

@@ -39,6 +39,7 @@ image_t layer_copy(image_t source);
 void layer_free(image_t layer);
 void layer_add(image_t dest, image_t from, image_t what);
 layer_t layer_merge_down(int N, layer_t *layers);
+void layer_info(layer_t layer);
 layer_t layer_merge_two(layer_t layer1, layer_t layer2);
 
 #endif /* __IM_LAYER_H__ */
