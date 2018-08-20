@@ -12,11 +12,17 @@ image_t layer_new(image_t source) {
    return image;
 }
 
-layer_t layer_new_dim(int width, int height, int color_components) {
-   color_t *raster = xmalloc(width*height*color_components*sizeof(color_t));
-   memset(raster, 0, width*height*color_components*sizeof(color_t));
+layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white) {
+   size_t nbytes = width * height * color_components * sizeof(color_t);
+   color_t *raster = xmalloc(nbytes);
+   memset(raster, 0, nbytes);
    layer_t layer;
-   layer.mask = NULL;
+   if (mask) {
+     layer.mask = xmalloc(nbytes);
+     memset(layer.mask, (white)  ? 0xff:0x00, nbytes);
+   } else {
+     layer.mask = NULL;
+   }
    layer.image = raster;
    layer.width = width;
    layer.height = height;
@@ -188,13 +194,14 @@ void layer_free(image_t layer) {
   }
 }
 
-void layer_merge_down(int N, layer_t *layers) {
-  if (N<=1) return;
+layer_t layer_merge_down(int N, layer_t *layers) {
+  if (N==1) return layers[0];
   layer_t output = layers[0];
   for(int i=1; i<N; i++)  {
     layer_t current_layer = layers[i];
     output = layer_merge_two(current_layer, output);
   }
+  return output;
 }
 
 layer_t layer_merge_two(layer_t layer1, layer_t layer2) {
@@ -204,7 +211,7 @@ layer_t layer_merge_two(layer_t layer1, layer_t layer2) {
    float opacity2 = saturatef(layer2.opacity);
    r1_coef = g1_coef = b1_coef = opacity1;
    r2_coef = g2_coef = b2_coef = opacity2;
-   layer_t output = layer_new_dim(layer1.width, layer1.height, layer1.color_components);
+   layer_t output = layer_new_dim(layer1.width, layer1.height, layer1.color_components, False, False);
    output.blend_mode = NORMAL;
    output.opacity = 1.0f;
    
@@ -212,18 +219,18 @@ layer_t layer_merge_two(layer_t layer1, layer_t layer2) {
      for (int y=0; y<layer1.height; y++) {
        int idx = (y*layer1.width+x) * layer1.color_components;
        if (layer1.mask!=NULL) {
-         r1_coef = (float)layer1.mask[idx] / COLOR_MAX;
-         g1_coef = (float)layer1.mask[idx+1] / COLOR_MAX;
-         b1_coef = (float)layer1.mask[idx+2] / COLOR_MAX;
+         r1_coef = opacity1 * (float)layer1.mask[idx] / COLOR_MAX;
+         g1_coef = opacity1 * (float)layer1.mask[idx+1] / COLOR_MAX;
+         b1_coef = opacity1 * (float)layer1.mask[idx+2] / COLOR_MAX;
        }
        if (layer2.mask!=NULL) {
          r2_coef = opacity2 * (float)layer2.mask[idx] / COLOR_MAX;
          g2_coef = opacity2 * (float)layer2.mask[idx+1] / COLOR_MAX;
          b2_coef = opacity2 * (float)layer2.mask[idx+2] / COLOR_MAX;
        }
-       float nr = opacity1 * r1_coef * layer1.image[idx] + (1 - opacity1 ) * opacity2 * r2_coef * layer2.image[idx];
-       float ng = opacity1 * g1_coef * layer1.image[idx+1] + (1 - opacity1 ) * opacity2 * g2_coef * layer2.image[idx+1];
-       float nb = opacity1 * b1_coef * layer1.image[idx+2] + (1 - opacity1 ) * opacity2 * b2_coef * layer2.image[idx+2];
+       float nr = r1_coef * layer1.image[idx] + r2_coef * layer2.image[idx];
+       float ng = g1_coef * layer1.image[idx+1] + g2_coef * layer2.image[idx+1];
+       float nb = b1_coef * layer1.image[idx+2] + b2_coef * layer2.image[idx+2];
 
        if (nr > COLOR_MAX) nr = COLOR_MAX;
        if (ng > COLOR_MAX) ng = COLOR_MAX;

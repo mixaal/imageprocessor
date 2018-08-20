@@ -29,7 +29,7 @@ typedef struct {
 
 typedef image_t layer_t;
 
-layer_t layer_new_dim(int with, int height, int color_components);
+layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white);
 void add_layer_mask(layer_t layer, layer_t mask);
 void add_layer_mask_color(layer_t layer, vec3 color);
 image_t layer_new(image_t source);
@@ -38,7 +38,7 @@ void layer_multiply(image_t dest, image_t source, double amount);
 image_t layer_copy(image_t source);
 void layer_free(image_t layer);
 void layer_add(image_t dest, image_t from, image_t what);
-void layer_merge_down(int N, layer_t *layers);
+layer_t layer_merge_down(int N, layer_t *layers);
 layer_t layer_merge_two(layer_t layer1, layer_t layer2);
 
 #endif /* __IM_LAYER_H__ */

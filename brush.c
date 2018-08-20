@@ -1,6 +1,7 @@
 #include "gauss.h"
 #include "layer.h"
 #include <stdio.h>
+#include <string.h>
 
 
 void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opacity, int x, int y, vec3 color) {
@@ -10,6 +11,11 @@ void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opa
      image = layer.image;
      break;
    case MASK:
+     if (layer.mask==NULL) {
+       size_t nbytes = layer.width*layer.height*layer.color_components*sizeof(color_t);
+       layer.mask = xmalloc(nbytes);
+       memset(layer.mask, 0, nbytes);
+     }
      image = layer.mask;
      break;
    default:
