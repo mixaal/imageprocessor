@@ -4,6 +4,8 @@
 
 #include "common_types.h"
 
+vec3 blend3(vec3 left, vec3 main, vec3 right, float pos);
+vec3 blend2(vec3 left, vec3 right, float pos);
 float mix(float a, float b, float k);
 float saturatef(float c);
 double saturate(double c);

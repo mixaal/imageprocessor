@@ -1,5 +1,26 @@
 #include "common.h"
 
+vec3 blend2(vec3 left, vec3 right, float pos)
+{
+  vec3 v;
+  //pos = saturatef(pos);
+  v.x = left.x * (1-pos) + right.x * pos; 
+  v.y = left.y * (1-pos) + right.y * pos; 
+  v.z = left.z * (1-pos) + right.z * pos; 
+  return v;
+}
+
+vec3 blend3(vec3 left, vec3 main, vec3 right, float pos)
+{
+  if (pos < 0) {
+    return blend2(left, main, pos + 1);
+  } else if (pos > 0) {
+    return blend2(main, right, pos);
+  } else {
+    return main;
+  }
+}
+
 
 vec3 vec3_mix(vec3 a, vec3 b, float k)
 {

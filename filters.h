@@ -18,5 +18,6 @@
 #include "color_balance.h"
 #include "saturation.h"
 #include "vibrance.h"
+#include "colorize.h"
 
 #endif /* __IM_FILTERS_H__ */
