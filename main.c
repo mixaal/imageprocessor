@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
      image_t layer = read_JPEG_file(argv[i]);
      printf("w=%d h=%d stride=%d\n", layer.width, layer.height, layer.stride);
      if (!layer.rc) continue;
-     rect_t zone = {0, 0, 1500, 1000};
+     rect_t zone = {0, 0, layer.width/2, layer.height};
      printf("BW\n");
     // bw(layer, zone);
      printf("Gauss\n");
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
      //tint(layer, 20, zone);
      //exposure(layer, 1.1f, zone);
      // kelvin_temperature(layer,13000.0f, 1.0f, zone);
-     adjust_color_saturation(layer, 0.0f, -0.5f, 0.0f, 0.0f, 0.9f, 0.0f, zone);
+     adjust_color_saturation(layer, 0.3f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, zone);
      //saturation(layer, 1.0f, zone);
      //vibrance(layer, 0.5f, zone);
      //colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
