@@ -3,6 +3,8 @@
 #include "color_conversion.h"
 #include "colorize.h"
 
+// Adapted from: https://stackoverflow.com/questions/4404507/algorithm-for-hue-saturation-adjustment-layer-from-photoshop
+
 static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float lightness) ;
 
 /**
