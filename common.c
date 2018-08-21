@@ -49,6 +49,39 @@ vec3 vec3_init(float x, float y, float z)
   return v;
 }
 
+vec3 vec3_add(vec3 v, vec3 c)
+{
+  vec3 o = {
+    v.x + c.x,
+    v.y + c.y,
+    v.z + c.z
+  };
+  return o;
+}
+
+vec3 vec3_add3(vec3 u, vec3 v, vec3 w)
+{
+  vec3 o = {
+    v.x + u.x + w.x,
+    v.y + u.y + w.y,
+    v.z + u.z + w.z
+  };
+  return o;
+}
+
+
+
+vec3 vec3_sub(vec3 v, vec3 c)
+{
+  vec3 o = {
+    v.x - c.x,
+    v.y - c.y,
+    v.z - c.z
+  };
+  return o;
+}
+
+
 double saturate(double c)
 {
   if (c<0.0) return 0.0;

@@ -4,6 +4,9 @@
 
 #include "common_types.h"
 
+vec3 vec3_add3(vec3 u, vec3 v, vec3 w);
+vec3 vec3_add(vec3 v, vec3 c);
+vec3 vec3_sub(vec3 v, vec3 c);
 vec3 blend3(vec3 left, vec3 main, vec3 right, float pos);
 vec3 blend2(vec3 left, vec3 right, float pos);
 float mix(float a, float b, float k);

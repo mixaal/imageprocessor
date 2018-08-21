@@ -1,6 +1,7 @@
 #include "common.h"
 #include "color_conversion.h"
 #include "color_balance.h"
+#include "colorize.h"
 
 static float hue_red(void);
 static float hue_yellow(void);
@@ -19,6 +20,53 @@ static _Bool inside(float color, float hue)
    if (right > 1.0f) right -= 1.0f;
 
    return (color >= left && color < right);
+}
+
+// Colorize into balance cyan-red, magenta-green, yellow-blue, -1,1
+void adjust_color_balance(
+  layer_t layer, 
+  float cyan_red_coef,
+  float magenta_green_coef,
+  float yellow_blue_coef,
+  float saturation,
+  float lightness,
+  levels_t level,
+  rect_t zone) {
+  cyan_red_coef = clamp(cyan_red_coef, -1 , 1);
+  magenta_green_coef = clamp(magenta_green_coef, -1, 1);
+  yellow_blue_coef = clamp(yellow_blue_coef, -1, 1);
+
+  fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef, magenta_green_coef, yellow_blue_coef);
+  // 0 .. 1 range
+  cyan_red_coef *= 0.5f;
+  cyan_red_coef += 0.5f;
+
+  magenta_green_coef *= 0.5f;
+  magenta_green_coef += 0.5f;
+
+  yellow_blue_coef *= 0.5f;
+  yellow_blue_coef += 0.5f;
+
+  fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef, magenta_green_coef, yellow_blue_coef);
+
+  vec3 base = vec3_init(0.5f, 0.5f, 0.5f);
+  vec3 cyan_red_vector =  vec3_sub( vec3_init(cyan_red_coef, 1- cyan_red_coef, 1- cyan_red_coef), base ) ;
+  vec3 magenta_green_vector = vec3_sub( vec3_init(1-magenta_green_coef, magenta_green_coef, 1-magenta_green_coef), base);
+  vec3 yellow_blue_vector =  vec3_sub( vec3_init(1-yellow_blue_coef, 1-yellow_blue_coef, yellow_blue_coef), base);
+
+  fprintf(stderr, "cyan_red_vector=[%f %f %f]\n", cyan_red_vector.x, cyan_red_vector.y, cyan_red_vector.z);
+  fprintf(stderr, "magenta_green_coef=[%f %f %f]\n", magenta_green_vector.x, magenta_green_vector.y, magenta_green_vector.z);
+  fprintf(stderr, "yellow_blue_coef=[%f %f %f]\n", yellow_blue_vector.x, yellow_blue_vector.y, yellow_blue_vector.z);
+
+  
+  vec3 final_color = vec3_add3( cyan_red_vector, magenta_green_vector, yellow_blue_vector );
+
+  final_color.x = COLOR_MAX * saturatef(final_color.x);
+  final_color.y = COLOR_MAX * saturatef(final_color.y);
+  final_color.z = COLOR_MAX * saturatef(final_color.z);
+
+  fprintf(stderr, "final_color=[%f %f %f]\n", final_color.x, final_color.y, final_color.z);
+  colorize( layer, final_color, saturation, lightness, zone );
 }
 
 /** 

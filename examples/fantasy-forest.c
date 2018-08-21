@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
   layer_info(sequoia_trees);
   flipX(sequoia_trees);
   crop(&sequoia_trees, crop_zone);
+  adjust_color_balance(sequoia_trees, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, ALL_LEVELS, sequoia_trees.zone);
   layer_info(sequoia_trees);
 
   write_JPEG_file("output.jpg", sequoia_trees, 90);

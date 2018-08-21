@@ -2,6 +2,23 @@
 #define __IM_COLOR_BALANCE_H__ 1
 
 #include "layer.h"
+#include "common.h"
+
+typedef enum { SHADOWS, MIDTONES, HIGHLIGHTS, ALL_LEVELS } levels_t;
+
+#define SHADOWS 0.25
+#define MIDTONES 0.5
+#define HIGHLIGHTS 0.75
+
+void adjust_color_balance(
+  layer_t layer, 
+  float cyan_red_coef,
+  float magenta_green_coef,
+  float yellow_blue_coef,
+  float saturation,
+  float lightness,
+  levels_t level,
+  rect_t zone);
 
 void adjust_color_saturation(
   layer_t layer, 
