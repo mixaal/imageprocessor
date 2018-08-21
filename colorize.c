@@ -5,7 +5,7 @@
 
 // Adapted from: https://stackoverflow.com/questions/4404507/algorithm-for-hue-saturation-adjustment-layer-from-photoshop
 
-static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float lightness) ;
+static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float lightness, _Bool preserve_original_pixel_saturation) ;
 
 /**
  * Colorize image: 
@@ -13,7 +13,7 @@ static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float ligh
  *    - saturation : [0, 1]
  *    - lightness : [-1, 1]
  */
-void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, levels_t affect_levels, rect_t zone) {
+void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, levels_t affect_levels, _Bool preserve_original_pixel_saturation, rect_t zone) {
   color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
@@ -37,7 +37,7 @@ void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, lev
        if (affect_levels == HIGHLIGHTS && pixel_intensity < HIGHLIGHTS_MIN_INTENSITY) continue;
        if (affect_levels == MIDTONES && (pixel_intensity <= SHADOWS_MAX_INTENSITY || pixel_intensity >= HIGHLIGHTS_MIN_INTENSITY)) continue;
 
-       vec3 v= colorize_magic(vec3_init(r, g, b), hueRGB, saturation, lightness);
+       vec3 v= colorize_magic(vec3_init(r, g, b), hueRGB, saturation, lightness, preserve_original_pixel_saturation);
        float nr = v.x;
        float ng = v.y;
        float nb = v.z;
@@ -65,15 +65,16 @@ static vec3 color_white()
   return vec3_init(COLOR_MAX, COLOR_MAX, COLOR_MAX);
 }
 
-static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float lightness) 
+static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float lightness, _Bool preserve_original_pixel_saturation) 
 {
-  vec3 color = blend2(vec3_init(COLOR_MAX/2, COLOR_MAX/2, COLOR_MAX/2), hueRGB, saturation);
 
   vec3 normalized_pixel = pixel;
   normalized_pixel.x /= (float) COLOR_MAX;
   normalized_pixel.y /= (float) COLOR_MAX;
   normalized_pixel.z /= (float) COLOR_MAX;
   vec3 HSL = RGBtoHSL(normalized_pixel);
+  
+  vec3 color = blend2(vec3_init(COLOR_MAX/2, COLOR_MAX/2, COLOR_MAX/2), hueRGB, (preserve_original_pixel_saturation) ? HSL.y : saturation);
 
   float sat = HSL.y * (lightness<.5?lightness:1-lightness);
   float value = HSL.z + sat;

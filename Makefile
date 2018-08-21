@@ -5,7 +5,7 @@ CFLAGS=-Wall -Werror -O2 -ggdb -I. -I../
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
-        saturation.o vibrance.o colorize.o brush.o flip.o crop.o
+        saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o
 PROG=improc
 FANTASY=examples/fantasy-forest
 

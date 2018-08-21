@@ -19,5 +19,6 @@
 #include "saturation.h"
 #include "vibrance.h"
 #include "colorize.h"
+#include "gradient_map.h"
 
 #endif /* __IM_FILTERS_H__ */

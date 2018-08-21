@@ -49,6 +49,12 @@ vec3 vec3_init(float x, float y, float z)
   return v;
 }
 
+vec3 vec3_multiply(vec3 v, float k)
+{
+  vec3 o = { v.x*k, v.y*k, v.z*k };
+  return o;
+}
+
 vec3 vec3_add(vec3 v, vec3 c)
 {
   vec3 o = {
