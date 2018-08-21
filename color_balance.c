@@ -3,6 +3,10 @@
 #include "color_balance.h"
 #include "colorize.h"
 
+#define GIMP_TRANSFER_SHADOWS 0
+#define GIMP_TRANSFER_MIDTONES 1
+#define GIMP_TRANSFER_HIGHLIGHTS 2
+
 static float hue_red(void);
 static float hue_yellow(void);
 static float hue_green(void);
@@ -22,51 +26,106 @@ static _Bool inside(float color, float hue)
    return (color >= left && color < right);
 }
 
-// Colorize into balance cyan-red, magenta-green, yellow-blue, -1,1
+// Borrowed from gimp:
+//    https://github.com/GNOME/gimp/blob/master/app/operations/gimpoperationcolorbalance.c
+static float
+gimp_operation_color_balance_map (float  value,
+                                  double lightness,
+                                  double shadows,
+                                  double midtones,
+                                  double highlights)
+{
+  /* Apply masks to the corrections for shadows, midtones and
+   * highlights so that each correction affects only one range.
+   * Those masks look like this:
+   *     ‾\___
+   *     _/‾\_
+   *     ___/‾
+   * with ramps of width a at x = b and x = 1 - b.
+   *
+   * The sum of these masks equals 1 for x in 0..1, so applying the
+   * same correction in the shadows and in the midtones is equivalent
+   * to applying this correction on a virtual shadows_and_midtones
+   * range.
+   */
+  static const double a = 0.25, b = 0.333, scale = 0.7;
+
+  shadows    *= clamp((lightness - b) / -a + 0.5, 0, 1) * scale;
+  midtones   *= clamp ((lightness - b) /  a + 0.5, 0, 1) *
+                clamp ((lightness + b - 1) / -a + 0.5, 0, 1) * scale;
+  highlights *= clamp ((lightness + b - 1) /  a + 0.5, 0, 1) * scale;
+
+  value += shadows;
+  value += midtones;
+  value += highlights;
+  value = clamp(value, 0.0, 1.0);
+
+  return value;
+}
+
+
+// Adjust color balance cyan-red, magenta-green, yellow-blue, -1,1
 void adjust_color_balance(
   layer_t layer, 
-  float cyan_red_coef,
-  float magenta_green_coef,
-  float yellow_blue_coef,
-  float saturation,
-  float lightness,
-  levels_t level,
+  float cyan_red_coef[3],
+  float magenta_green_coef[3],
+  float yellow_blue_coef[3],
   rect_t zone) {
-  cyan_red_coef = clamp(cyan_red_coef, -1 , 1);
-  magenta_green_coef = clamp(magenta_green_coef, -1, 1);
-  yellow_blue_coef = clamp(yellow_blue_coef, -1, 1);
 
-  fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef, magenta_green_coef, yellow_blue_coef);
-  // 0 .. 1 range
-  cyan_red_coef *= 0.5f;
-  cyan_red_coef += 0.5f;
-
-  magenta_green_coef *= 0.5f;
-  magenta_green_coef += 0.5f;
-
-  yellow_blue_coef *= 0.5f;
-  yellow_blue_coef += 0.5f;
-
-  fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef, magenta_green_coef, yellow_blue_coef);
-
-  vec3 base = vec3_init(0.5f, 0.5f, 0.5f);
-  vec3 cyan_red_vector =  vec3_sub( vec3_init(cyan_red_coef, 1- cyan_red_coef, 1- cyan_red_coef), base ) ;
-  vec3 magenta_green_vector = vec3_sub( vec3_init(1-magenta_green_coef, magenta_green_coef, 1-magenta_green_coef), base);
-  vec3 yellow_blue_vector =  vec3_sub( vec3_init(1-yellow_blue_coef, 1-yellow_blue_coef, yellow_blue_coef), base);
-
-  fprintf(stderr, "cyan_red_vector=[%f %f %f]\n", cyan_red_vector.x, cyan_red_vector.y, cyan_red_vector.z);
-  fprintf(stderr, "magenta_green_coef=[%f %f %f]\n", magenta_green_vector.x, magenta_green_vector.y, magenta_green_vector.z);
-  fprintf(stderr, "yellow_blue_coef=[%f %f %f]\n", yellow_blue_vector.x, yellow_blue_vector.y, yellow_blue_vector.z);
-
+  for(int i=0; i<3; i++) {
+    cyan_red_coef[i] = clamp(cyan_red_coef[i], -1 , 1);
+    magenta_green_coef[i] = clamp(magenta_green_coef[i], -1, 1);
+    yellow_blue_coef[i] = clamp(yellow_blue_coef[i], -1, 1);
+    fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef[i], magenta_green_coef[i], yellow_blue_coef[i]);
+  }
   
-  vec3 final_color = vec3_add3( cyan_red_vector, magenta_green_vector, yellow_blue_vector );
+  color_t *image = layer.image;
+  int width = layer.width;
+  int height = layer.height;
+  int color_components = layer.color_components;
+  if (zone.maxy==0) return;
 
-  final_color.x = COLOR_MAX * saturatef(final_color.x);
-  final_color.y = COLOR_MAX * saturatef(final_color.y);
-  final_color.z = COLOR_MAX * saturatef(final_color.z);
+  if (zone.minx<0) zone.minx=0;
+  if (zone.miny<0) zone.miny=0;
+  if (zone.maxx>=width) zone.maxx=width;
+  if (zone.maxy>=height) zone.maxy=height;
+  for(int y=zone.miny; y<zone.maxy; y++)  {
+    for(int x=zone.minx; x<zone.maxx; x++) {
+       int idx = y*width*color_components + x*color_components;
+       float r, g, b;
+       r = (float)image[idx] / COLOR_MAX;
+       g = (float)image[idx+1] / COLOR_MAX;
+       b = (float)image[idx+2] / COLOR_MAX;
 
-  fprintf(stderr, "final_color=[%f %f %f]\n", final_color.x, final_color.y, final_color.z);
-  colorize( layer, final_color, saturation, lightness, level, False, zone );
+       vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
+
+       float r_n = gimp_operation_color_balance_map (r, HSL.z,
+                                              cyan_red_coef[GIMP_TRANSFER_SHADOWS],
+                                              cyan_red_coef[GIMP_TRANSFER_MIDTONES],
+                                              cyan_red_coef[GIMP_TRANSFER_HIGHLIGHTS]);
+
+       float g_n = gimp_operation_color_balance_map (g, HSL.z,
+                                              magenta_green_coef[GIMP_TRANSFER_SHADOWS],
+                                              magenta_green_coef[GIMP_TRANSFER_MIDTONES],
+                                              magenta_green_coef[GIMP_TRANSFER_HIGHLIGHTS]);
+
+       float b_n = gimp_operation_color_balance_map (b, HSL.z,
+                                              yellow_blue_coef[GIMP_TRANSFER_SHADOWS],
+                                              yellow_blue_coef[GIMP_TRANSFER_MIDTONES],
+                                              yellow_blue_coef[GIMP_TRANSFER_HIGHLIGHTS]);
+       image[idx] = COLOR_MAX * r_n;
+       image[idx+1] = COLOR_MAX * g_n;
+       image[idx+2] = COLOR_MAX * b_n;
+       if (r_n > 1.0f) image[idx] = COLOR_MAX;
+       if (g_n > 1.0f) image[idx+1] = COLOR_MAX;
+       if (b_n > 1.0f) image[idx+2] = COLOR_MAX;
+       if (r_n < 0.0f) image[idx] = 0;
+       if (g_n < 0.0f) image[idx+1] = 0;
+       if (b_n < 0.0f) image[idx+2] = 0;
+      
+    }
+  }
+
 }
 
 /** 

@@ -6,13 +6,11 @@
 
 void adjust_color_balance(
   layer_t layer, 
-  float cyan_red_coef,
-  float magenta_green_coef,
-  float yellow_blue_coef,
-  float saturation,
-  float lightness,
-  levels_t level,
+  float cyan_red_coef[3],
+  float magenta_green_coef[3],
+  float yellow_blue_coef[3],
   rect_t zone);
+
 
 void adjust_color_saturation(
   layer_t layer, 
