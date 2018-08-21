@@ -1,10 +1,23 @@
 #include "common.h"
 
+
+vec3 vec3_clamp(vec3 v, float minr, float maxr)
+{
+  vec3 o = { clamp(v.x, minr, maxr), clamp(v.y, minr, maxr), clamp(v.z, minr, maxr) };
+  return o;
+}
+
 float clamp(float x, float minr, float maxr)
 {
   if (x >= maxr ) return maxr;
   if (x <= minr ) return minr;
   return x;
+}
+
+vec3 vec3_dot(vec3 a, vec3 b)
+{
+  vec3 v = { a.x * b.x, a.y * b.y, a.z * b.z};
+  return v;
 }
 
 vec3 blend2(vec3 left, vec3 right, float pos)

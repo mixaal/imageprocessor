@@ -1,10 +1,12 @@
 #include "gauss.h"
 #include "layer.h"
+#include "brush.h"
 #include <stdio.h>
 #include <string.h>
 
 
-void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opacity, int x, int y, vec3 color) {
+
+void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opacity, int x, int y, vec3 color, blend_mode_func_t blend_func) {
    color_t *image = NULL; 
    switch (canvas_select) {
    case IMAGE:
@@ -60,9 +62,12 @@ void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opa
        if (ty >= layer.zone.maxy) ty = layer.zone.maxy-1;
 
        int idx = layer.color_components * (tx + ty * layer.width);
-       image[idx] = (1-g)*image[idx] + COLOR_MAX * color.x * g;
-       image[idx+1] = (1-g)*image[idx+1] +  COLOR_MAX * color.y * g;
-       image[idx+2] = (1-g)*image[idx+2] + COLOR_MAX * color.z * g;
+       vec3 source_pixel = vec3_init(image[idx]/(float)COLOR_MAX, image[idx+1]/(float)COLOR_MAX, image[idx+2]/(float)COLOR_MAX);
+       vec3 brush_pixel  = vec3_multiply(color, g); 
+       vec3 blend = blend_func(brush_pixel, source_pixel, g*opacity);
+       image[idx] = COLOR_MAX * blend.x;
+       image[idx+1] = COLOR_MAX * blend.y;
+       image[idx+2] = COLOR_MAX * blend.z;
      }
    }
 
