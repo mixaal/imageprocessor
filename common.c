@@ -1,5 +1,11 @@
 #include "common.h"
 
+#include <stdio.h>
+
+void vec3_info(vec3 v)
+{
+  fprintf(stderr, "v=[%f %f %f]\n", v.x, v.y, v.z);
+}
 
 vec3 vec3_clamp(vec3 v, float minr, float maxr)
 {
