@@ -24,16 +24,20 @@ static _Bool inside(float color, float hue)
 /** 
  * Adjust color saturation. Range for color saturation: [0, 1]
  */ 
-void adjust_color_saturation(layer_t layer, float reds, float yellows, float greens, float cyans, float blues, float magentas, rect_t zone) {
-  reds = clamp(reds, -1 , 1);
-  yellows = clamp(yellows, -1, 1);
-  greens = clamp(greens, -1, 1);
-  cyans = clamp(cyans, -1, 1);
-  blues = clamp(blues, -1, 1);
-  magentas = clamp(magentas, -1, 1);
+void adjust_color_saturation(
+  layer_t layer, 
+  float reds_sat, float yellows_sat, float greens_sat, float cyans_sat, float blues_sat, float magentas_sat, 
+  float reds_light, float yellows_light, float greens_light, float cyans_light, float blues_light, float magentas_light, 
+  rect_t zone) {
+  reds_sat = clamp(reds_sat, -1 , 1);
+  yellows_sat = clamp(yellows_sat, -1, 1);
+  greens_sat = clamp(greens_sat, -1, 1);
+  cyans_sat = clamp(cyans_sat, -1, 1);
+  blues_sat = clamp(blues_sat, -1, 1);
+  magentas_sat = clamp(magentas_sat, -1, 1);
 
-  printf("reds=%f\nyellows=%f\n,greens=%f\ncyans=%f\nblues=%f\nmagentas=%f\n", reds, yellows, greens, cyans, blues, magentas);
-  printf("redsH=%f\nyellowsH=%f\n,greensH=%f\ncyansH=%f\nbluesH=%f\nmagentasH=%f\n", hue_red(), hue_yellow(), hue_green(), hue_cyan(), hue_blue(), hue_magenta());
+  //printf("reds=%f\nyellows=%f\n,greens=%f\ncyans=%f\nblues=%f\nmagentas=%f\n", reds, yellows, greens, cyans, blues, magentas);
+  //printf("redsH=%f\nyellowsH=%f\n,greensH=%f\ncyansH=%f\nbluesH=%f\nmagentasH=%f\n", hue_red(), hue_yellow(), hue_green(), hue_cyan(), hue_blue(), hue_magenta());
 
   color_t *image = layer.image;
   int width = layer.width;
@@ -56,26 +60,33 @@ void adjust_color_saturation(layer_t layer, float reds, float yellows, float gre
        vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
 
        if (inside(HSL.x, hue_red())) {
-         HSL.y += reds;
+         HSL.y += reds_sat;
+         HSL.z += reds_light;
        }
        
        if (inside(HSL.x, hue_yellow())) {
-         HSL.y += yellows;
+         HSL.y += yellows_sat;
+         HSL.z += yellows_light;
        }
        if (inside(HSL.x, hue_green())) {
-         HSL.y += greens;
+         HSL.y += greens_sat;
+         HSL.z += greens_light;
        }
        if (inside(HSL.x, hue_cyan())) {
-         HSL.y += cyans;
+         HSL.y += cyans_sat;
+         HSL.z += cyans_light;
        }
        if (inside(HSL.x, hue_blue())) {
-         HSL.y += blues;
+         HSL.y += blues_sat;
+         HSL.z += blues_light;
        }
        if (inside(HSL.x, hue_magenta())) {
-         HSL.y += magentas;
+         HSL.y += magentas_sat;
+         HSL.z += magentas_light;
        }
 
        HSL.y = saturatef(HSL.y);
+       HSL.z = saturatef(HSL.z);
        vec3 newRGB = HSLtoRGB(HSL);
        
        float nr = COLOR_MAX * newRGB.x;
