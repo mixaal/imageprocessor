@@ -7,6 +7,12 @@
 #define False 0
 #define True 1
 
+typedef enum { SHADOWS, MIDTONES, HIGHLIGHTS, ALL_LEVELS } levels_t;
+
+#define SHADOWS_MAX_INTENSITY 0.25f
+#define MIDTONES_MID_INTENSITY 0.5f
+#define HIGHLIGHTS_MIN_INTENSITY 0.75f
+
 typedef unsigned char color_t;
 typedef struct { float x, y, z; }  vec3;
 typedef struct { float x, y, z, w; } vec4;

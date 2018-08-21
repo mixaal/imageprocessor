@@ -13,7 +13,7 @@ static vec3 colorize_magic(vec3 pixel, vec3 hueRGB, float saturation, float ligh
  *    - saturation : [0, 1]
  *    - lightness : [-1, 1]
  */
-void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, rect_t zone) {
+void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, levels_t affect_levels, rect_t zone) {
   color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
@@ -31,6 +31,11 @@ void colorize(layer_t layer, vec3 hueRGB, float saturation, float lightness, rec
        r = (float)image[idx] ;
        g = (float)image[idx+1] ;
        b = (float)image[idx+2] ;
+
+       float pixel_intensity = to_gray(vec3_init(r, g, b)) / COLOR_MAX ;
+       if (affect_levels == SHADOWS && pixel_intensity > SHADOWS_MAX_INTENSITY) continue;
+       if (affect_levels == HIGHLIGHTS && pixel_intensity < HIGHLIGHTS_MIN_INTENSITY) continue;
+       if (affect_levels == MIDTONES && (pixel_intensity <= SHADOWS_MAX_INTENSITY || pixel_intensity >= HIGHLIGHTS_MIN_INTENSITY)) continue;
 
        vec3 v= colorize_magic(vec3_init(r, g, b), hueRGB, saturation, lightness);
        float nr = v.x;

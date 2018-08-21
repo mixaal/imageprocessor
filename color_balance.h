@@ -4,12 +4,6 @@
 #include "layer.h"
 #include "common.h"
 
-typedef enum { SHADOWS, MIDTONES, HIGHLIGHTS, ALL_LEVELS } levels_t;
-
-#define SHADOWS 0.25
-#define MIDTONES 0.5
-#define HIGHLIGHTS 0.75
-
 void adjust_color_balance(
   layer_t layer, 
   float cyan_red_coef,

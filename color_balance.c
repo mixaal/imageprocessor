@@ -66,7 +66,7 @@ void adjust_color_balance(
   final_color.z = COLOR_MAX * saturatef(final_color.z);
 
   fprintf(stderr, "final_color=[%f %f %f]\n", final_color.x, final_color.y, final_color.z);
-  colorize( layer, final_color, saturation, lightness, zone );
+  colorize( layer, final_color, saturation, lightness, level, zone );
 }
 
 /** 
