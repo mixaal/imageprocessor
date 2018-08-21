@@ -1,3 +1,11 @@
+/**
+ * Adapted from this video:
+ *
+ *   Fantasy Scene | Blur Background: Photoshop Tutorial
+ *   https://www.youtube.com/watch?v=34pTcSH06HA
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 
