@@ -57,6 +57,19 @@ vec3 blend_substraction(vec3 a, vec3 b, float opacity)
   return blend2( b, output, opacity );
 }
 
+// b + 2a - base
+vec3 blend_linear_light(vec3 a, vec3 b, float opacity)
+{
+  vec3 base = vec3_init(0.5f, 0.5f, 0.5f);
+  opacity = saturatef(opacity);
+  a = vec3_clamp(a, 0.0f, 1.0f);
+  b = vec3_clamp(b, 0.0f, 1.0f);
+  vec3 output = vec3_sub(vec3_add(b, vec3_multiply(a, 2.0f)), base);
+  output=vec3_clamp(output, 0.0f, 1.0f);
+  return blend2( b, output, opacity );
+}
+
+// known also as linear dodge
 vec3 blend_addition(vec3 a, vec3 b, float opacity)
 {
   opacity = saturatef(opacity);
