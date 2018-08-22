@@ -133,7 +133,7 @@ image_t read_JPEG_file (char * filename)
   r.color_components = 3;
   r.mask = NULL;
   r.opacity = 1.0f;
-  r.blend_mode = NORMAL;
+  r.blend_func = blend_normal;
   rect_t default_zone = {0, 0, r.width, r.height};
   r.zone = default_zone;
   /* Step 7: Finish decompression */

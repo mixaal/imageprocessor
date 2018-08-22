@@ -63,6 +63,8 @@ int main(int argc, char *argv[]) {
    * Set up lights mask ans merge-down.
    */
   street_lights.mask = street_lights_mask.image;
+  //street_lights.blend_func = blend_lighten_only;
+  street_lights.blend_func = blend_linear_light;
   layer_t layers[2] =  { street_night, street_lights };
   layer_t output = layer_merge_down( 2, layers );
   write_JPEG_file("final_street.jpg", output, 90);

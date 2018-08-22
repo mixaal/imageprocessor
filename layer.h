@@ -5,6 +5,7 @@
 #include <jpeglib.h>
 
 #include "common_types.h"
+#include "layer_modes.h"
 
 typedef struct {
   int minx, miny, maxx, maxy;
@@ -23,7 +24,7 @@ typedef struct {
   int stride;
   int color_components;
   rect_t zone;
-  blend_mode_t blend_mode;
+  blend_mode_func_t blend_func;
   float opacity;
 } image_t;
 
