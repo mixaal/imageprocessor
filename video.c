@@ -39,6 +39,7 @@
 #include <libavutil/timestamp.h>
 
 #include "video.h"
+#include "xmalloc.h"
 
 #define INBUF_SIZE 4096
 
@@ -112,9 +113,51 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
             av_image_copy(video_dst_data, video_dst_linesize,
                           (const uint8_t **)(frame->data), frame->linesize,
                           pix_fmt, width, height);
+            //if (pix_fmt!=PIX_FMT_YUV420P) {
+            //  fprintf(stderr, "Unknown pixel format: %d\n", pix_fmt);
+            //  exit(-1);
+            //}
+            unsigned ch = 0;
+            u_int8_t *src = video_dst_data[0];
+            int total_size = width * height;
+            int line_size = video_dst_linesize[0];
+            int line_size2 = video_dst_linesize[0] / 2;
 
+            u_int8_t *dest_copy = xmalloc(3 * width * height / 2);
+            for(int y=0; y<height; y++) {
+              for (int x=0; x<width; x++) {
+                 int Y_offset = x+y*line_size;
+                 int U_offset = (y/2) * line_size2 + (x/2) + total_size;
+                 int V_offset = (y/2) * line_size2 + (x/2) + total_size + total_size/4;
+                 float Y = src[Y_offset];
+                 float U = src[U_offset];
+                 float V = src[V_offset];
+
+                 float rTmp = Y + (1.370705 * (V-128));
+                 float gTmp = Y - (0.698001 * (V-128)) - (0.337633 * (U-128));
+                 float bTmp = Y + (1.732446 * (U-128));
+                 float R = clamp(rTmp, 0, 255);
+                 float G = clamp(gTmp, 0, 255);
+                 float B = clamp(bTmp, 0, 255);
+                 float Iv = 0.3f * R + 0.6f*G + 0.1f*G;
+                 R = G = B = Iv;
+
+                 Y = 0.299f * R + 0.587f * G + 0.114f * B;
+                 U = 128.0f - 0.169f * R - 0.331f * G + 0.499 * B;
+                 V = 128.0f + 0.499f * R - 0.418f * G - 0.0813f * B;
+                 
+                 Y = clamp(Y, 0, 255);
+                 U = clamp(U, 0, 255);
+                 V = clamp(V, 0, 255);
+
+                 dest_copy[Y_offset] = (u_int8_t) Y;
+                 dest_copy[U_offset] = (u_int8_t) U;
+                 dest_copy[V_offset] = (u_int8_t) V;
+              }
+            }
             /* write to rawvideo file */
-            fwrite(video_dst_data[0], 1, video_dst_bufsize, output_file);
+            //fwrite(video_dst_data[0], 1, video_dst_bufsize, output_file);
+            fwrite(dest_copy, 1, video_dst_bufsize, output_file);
         }
     }
 
@@ -211,6 +254,7 @@ void process_video(const char *filename, const char *video_dst_filename, filter_
            fprintf(stderr, "Could not allocate raw video buffer\n");
            goto end;
         }
+        fprintf(stderr, "Image buffer allocated: %d\n", ret);
         video_dst_bufsize = ret;
     }
 
