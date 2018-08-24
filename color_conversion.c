@@ -24,7 +24,7 @@ float luminance(vec3 color)
 {
   float fmin = minf(color.x, color.y, color.z);
   float fmax = maxf(color.x, color.y, color.z);
-  return (fmax + fmin) / COLOR_MAX / 2.0f;
+  return (fmax + fmin) / 2.0f;
 }
 
 vec3 HUEtoRGB(float H)

@@ -12,8 +12,6 @@
 #include "kelvin_temp.h"
 #include "color_conversion.h"
 
-#define LUMINANCE_PRESERVATION 0.25
-
 vec3 ColorTemperatureToRGB(float temperatureInKelvins)
 {
   vec3 retColor;
@@ -45,7 +43,7 @@ vec3 ColorTemperatureToRGB(float temperatureInKelvins)
 }
 
 
-void kelvin_temperature(layer_t layer, float colorTempK, float factor, rect_t zone) {
+void kelvin_temperature(layer_t layer, float colorTempK, float factor, float luminance_preservation, rect_t zone) {
   color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
@@ -66,16 +64,18 @@ void kelvin_temperature(layer_t layer, float colorTempK, float factor, rect_t zo
        float ng = (float) image[idx+1] / COLOR_MAX;
        float nb = (float) image[idx+2] / COLOR_MAX;
 
-
-       float originalLuminance = luminance(vec3_init(nr, ng, nb));
+     
+       //float originalLuminance = luminance(vec3_init(nr, ng, nb));
+       float originalLuminance = RGBtoHSL(vec3_init(nr, ng, nb)).z;
        vec3 blended = vec3_init( 
-            mix(nr, nr * colorTempRGB.x, factor),
-            mix(ng, ng * colorTempRGB.y, factor),
-            mix(nb, nb * colorTempRGB.z, factor)
+            mix(nr, /*nr **/ colorTempRGB.x, factor),
+            mix(ng, /*ng **/ colorTempRGB.y, factor),
+            mix(nb, /*nb **/ colorTempRGB.z, factor)
        );
        vec3 resultHSL = RGBtoHSL(blended);
+       //printf("originalLuminance=%f newLuminance=%f\n", originalLuminance, resultHSL.z);
        vec3 luminancePreservedRGB = HSLtoRGB(vec3_init(resultHSL.x, resultHSL.y, originalLuminance));        
-       vec3 fragColor = vec3_mix(blended, luminancePreservedRGB, LUMINANCE_PRESERVATION);
+       vec3 fragColor = vec3_mix(blended, luminancePreservedRGB, luminance_preservation);
        nr = COLOR_MAX * fragColor.x;
        ng = COLOR_MAX * fragColor.y;
        nb = COLOR_MAX * fragColor.z;

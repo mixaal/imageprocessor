@@ -9,10 +9,14 @@ OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o 
 PROG=improc
 FANTASY=examples/fantasy-forest
 DAYNIGHT=examples/day-to-night
+TRUE_BLOOD=examples/true-blood
 
 LIBS=-ljpeg -lm
 
-all: $(FANTASY) $(DAYNIGHT)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD)
+
+$(TRUE_BLOOD): $(TRUE_BLOOD).o $(OBJECTS)
+	$(CC) -o $(TRUE_BLOOD) $(TRUE_BLOOD).o $(OBJECTS) $(LIBS)
 
 $(DAYNIGHT): $(DAYNIGHT).o $(OBJECTS)
 	$(CC) -o $(DAYNIGHT) $(DAYNIGHT).o $(OBJECTS) $(LIBS)
@@ -24,4 +28,4 @@ $(PROG): main.o $(OBJECTS)
 	$(CC) -o $(PROG) main.o $(OBJECTS) $(LIBS)
 
 clean:
-	$(RM) $(PROG) $(DAYNIGHT) $(FANTASY) main.o $(PROG).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS)
+	$(RM) $(PROG) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS)
