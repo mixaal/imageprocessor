@@ -158,6 +158,7 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
             /* write to rawvideo file */
             //fwrite(video_dst_data[0], 1, video_dst_bufsize, output_file);
             fwrite(dest_copy, 1, video_dst_bufsize, output_file);
+            free(dest_copy);
         }
     }
 
