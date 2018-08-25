@@ -71,7 +71,7 @@ static void video_info(AVFormatContext *fmt_ctx, AVCodecContext *codec_ctx)
 
 static int registered =0 ;
 
-static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame *frame)
+static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame *frame, filter_func_t layer_filter)
 {
     int ret = 0;
     int decoded = pkt.size;
@@ -104,7 +104,7 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
                 return -1;
             }
 
-            printf("video_frame%s n:%d coded_n:%d\n",
+            fprintf(stderr, "video_frame%s n:%d coded_n:%d\r",
                    cached ? "(cached)" : "",
                    video_frame_count++, frame->coded_picture_number);
 
@@ -124,11 +124,13 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
             int line_size2 = video_dst_linesize[0] / 2;
 
             u_int8_t *dest_copy = xmalloc(3 * width * height / 2);
+            layer_t layer = layer_new_dim(width, height, 3, False, False);
             for(int y=0; y<height; y++) {
               for (int x=0; x<width; x++) {
                  int Y_offset = x+y*line_size;
                  int U_offset = (y/2) * line_size2 + (x/2) + total_size;
                  int V_offset = (y/2) * line_size2 + (x/2) + total_size + total_size/4;
+                 int idx = (y * width + x) *  layer.color_components;
                  float Y = src[Y_offset];
                  float U = src[U_offset];
                  float V = src[V_offset];
@@ -139,12 +141,26 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
                  float R = clamp(rTmp, 0, 255);
                  float G = clamp(gTmp, 0, 255);
                  float B = clamp(bTmp, 0, 255);
-                 float Iv = 0.3f * R + 0.6f*G + 0.1f*G;
-                 R = G = B = Iv;
+                 layer.image[idx] = (color_t) R;
+                 layer.image[idx+1] = (color_t) G;
+                 layer.image[idx+2] = (color_t) B;
+               }
+            }
+            layer_filter(layer, NULL);
+            for(int y=0; y<height; y++) {
+              for (int x=0; x<width; x++) {
+                 int Y_offset = x+y*line_size;
+                 int U_offset = (y/2) * line_size2 + (x/2) + total_size;
+                 int V_offset = (y/2) * line_size2 + (x/2) + total_size + total_size/4;
+                 int idx = (y * width + x) *  layer.color_components;
 
-                 Y = 0.299f * R + 0.587f * G + 0.114f * B;
-                 U = 128.0f - 0.169f * R - 0.331f * G + 0.499 * B;
-                 V = 128.0f + 0.499f * R - 0.418f * G - 0.0813f * B;
+                 float R = layer.image[idx];
+                 float G = layer.image[idx+1];
+                 float B = layer.image[idx+2];
+
+                 float Y = 0.299f * R + 0.587f * G + 0.114f * B;
+                 float U = 128.0f - 0.169f * R - 0.331f * G + 0.499 * B;
+                 float V = 128.0f + 0.499f * R - 0.418f * G - 0.0813f * B;
                  
                  Y = clamp(Y, 0, 255);
                  U = clamp(U, 0, 255);
@@ -155,6 +171,7 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
                  dest_copy[V_offset] = (u_int8_t) V;
               }
             }
+            layer_free(layer);
             /* write to rawvideo file */
             //fwrite(video_dst_data[0], 1, video_dst_bufsize, output_file);
             fwrite(dest_copy, 1, video_dst_bufsize, output_file);
@@ -206,7 +223,7 @@ static int open_codec_context(const char *src_filename, int *stream_idx,
 
 
 
-void process_video(const char *filename, const char *video_dst_filename, filter_func_t filter_func) 
+void process_video(const char *filename, const char *video_dst_filename, filter_func_t layer_filter) 
 {
     int got_frame = 0;
     FILE *video_dst_file = fopen(video_dst_filename, "wb");
@@ -287,7 +304,7 @@ void process_video(const char *filename, const char *video_dst_filename, filter_
         AVPacket orig_pkt = pkt;
         do {
             //printf("frame5=%p\n", frame);
-            int ret = decode_packet(&got_frame, 0, video_dst_file, frame);
+            int ret = decode_packet(&got_frame, 0, video_dst_file, frame, layer_filter);
             if (ret < 0)
                 break;
             pkt.data += ret;
@@ -300,7 +317,7 @@ void process_video(const char *filename, const char *video_dst_filename, filter_
     pkt.data = NULL;
     pkt.size = 0;
     do {
-        decode_packet(&got_frame, 1, video_dst_file, frame);
+        decode_packet(&got_frame, 1, video_dst_file, frame, layer_filter);
     } while (got_frame);
 
     printf("Demuxing succeeded.\n");
