@@ -24,6 +24,7 @@ void gradient_map(
   if (weight == 0.0f) weight = 0.5f;
   vec3 center_color = vec3_mix(start_color, end_color, 0.5f);
 
+#pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;

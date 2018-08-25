@@ -1,6 +1,6 @@
 CC=gcc
 RM=rm -f
-CFLAGS=-Wall -Werror -O2 -ggdb -I. -I../
+CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
 
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
@@ -12,7 +12,7 @@ DAYNIGHT=examples/day-to-night
 TRUE_BLOOD=examples/true-blood
 VIDEO_PROC=examples/video-processing
 
-LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil
+LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 
 all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC)
 

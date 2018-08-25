@@ -15,6 +15,7 @@ void temperature(layer_t layer, float temp, rect_t zone) {
   if (zone.miny<0) zone.miny=0;
   if (zone.maxx>=width) zone.maxx=width;
   if (zone.maxy>=height) zone.maxy=height;
+#pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;

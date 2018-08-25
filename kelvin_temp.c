@@ -57,6 +57,7 @@ void kelvin_temperature(layer_t layer, float colorTempK, float factor, float lum
 
   vec3 colorTempRGB = ColorTemperatureToRGB(colorTempK);
 
+#pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
