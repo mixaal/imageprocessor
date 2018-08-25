@@ -65,9 +65,6 @@ void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opa
        vec3 source_pixel = vec3_init(image[idx]/(float)COLOR_MAX, image[idx+1]/(float)COLOR_MAX, image[idx+2]/(float)COLOR_MAX);
        vec3 brush_pixel  = vec3_multiply(color, g); 
        vec3 blend = blend_func(brush_pixel, source_pixel, g*opacity);
-       if (blend.x > 1.0) printf("FUCKOFF.x\n");
-       if (blend.y > 1.0) printf("FUCKOFF.y\n");
-       if (blend.z > 1.0) printf("FUCKOFF.z\n");
        image[idx] = COLOR_MAX * blend.x;
        image[idx+1] = COLOR_MAX * blend.y;
        image[idx+2] = COLOR_MAX * blend.z;

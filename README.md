@@ -144,3 +144,16 @@ Code:
 
 
 ![Fantasy Forest](data/fantasy-forest.jpg)
+
+## Vectorscope Diagram
+
+```c
+     layer_t vectorscope_layer = layer_new_dim(400, 400, layer.color_components, False, False);
+     vectorscope_t out;
+     int max_H, max_S;
+     vectorscope(layer,  out, &max_H, &max_S, layer.zone);
+     draw_vectorscope(vectorscope_layer, out);
+     write_JPEG_file("vectorscope.jpg", vectorscope_layer, 90);
+
+```
+![Vectorscope example](data/vectorscope.jpg)

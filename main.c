@@ -3,6 +3,7 @@
 
 #include "filters.h"
 #include "brush.h"
+#include "vectorscope.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
      image_t layer = read_JPEG_file(argv[i]);
      printf("w=%d h=%d stride=%d\n", layer.width, layer.height, layer.stride);
      if (!layer.rc) continue;
-     rect_t zone = {0, 0, layer.width/2, layer.height};
+     //rect_t zone = {0, 0, layer.width/2, layer.height};
      printf("BW\n");
     // bw(layer, zone);
      printf("Gauss\n");
@@ -33,20 +34,25 @@ int main(int argc, char *argv[])
      //saturation(layer, 1.0f, zone);
      //vibrance(layer, 0.5f, zone);
      //colorize(layer, vec3_init(COLOR_MAX, 0, 0), 0.5, 0.0, zone);
-     layer_t brush_layer = layer_new_dim(layer.width, layer.height, 3, True, False);
-     printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
-     brush_touch(brush_layer, IMAGE, 100, 1.0f, 100, 100, vec3_init(1.0f, 1.0f, 1.0f));
-     printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
-     brush_touch(brush_layer, IMAGE, 500, 1.0f, 500, 500, vec3_init(1.0f, 1.0f, 0.0f));
-     printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
-     brush_touch(brush_layer, MASK, 100, 1.0f, 100, 100, vec3_init(1.0f, 1.0f, 1.0f));
-     printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
-     brush_touch(brush_layer, MASK, 500, 1.0f, 500, 500, vec3_init(1.0f, 1.0f, 1.0f));
-     printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
-     layer_t layers[] = { layer, brush_layer };
-     brush_layer.opacity = 0.5f;
-     layer_t output = layer_merge_down(2, layers);
-     write_JPEG_file("output.jpg", output, 90);
+     //layer_t brush_layer = layer_new_dim(layer.width, layer.height, 3, True, False);
+     //printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
+     //brush_touch(brush_layer, IMAGE, 100, 1.0f, 100, 100, vec3_init(1.0f, 1.0f, 1.0f));
+     //printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
+     //brush_touch(brush_layer, IMAGE, 500, 1.0f, 500, 500, vec3_init(1.0f, 1.0f, 0.0f));
+     //printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
+     //brush_touch(brush_layer, MASK, 100, 1.0f, 100, 100, vec3_init(1.0f, 1.0f, 1.0f));
+     //printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
+     //brush_touch(brush_layer, MASK, 500, 1.0f, 500, 500, vec3_init(1.0f, 1.0f, 1.0f));
+     //printf("brush_layer.image=%p brush_layer.mask=%p\n", brush_layer.image, brush_layer.mask);
+     //layer_t layers[] = { layer, brush_layer };
+     //brush_layer.opacity = 0.5f;
+     //layer_t output = layer_merge_down(2, layers);
+     layer_t vectorscope_layer = layer_new_dim(400, 400, layer.color_components, False, False);
+     vectorscope_t out;
+     int max_H, max_S;
+     vectorscope(layer,  out, &max_H, &max_S, layer.zone);
+     draw_vectorscope(vectorscope_layer, out);
+     write_JPEG_file("vectorscope.jpg", vectorscope_layer, 90);
      layer_free(layer);
   }
   return EXIT_SUCCESS;

@@ -6,7 +6,7 @@ CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
-        auto_tone.o comics.o
+        auto_tone.o comics.o shapes.o vectorscope.o
 
 PROG=improc
 FANTASY=examples/fantasy-forest
@@ -17,7 +17,7 @@ COMICS=examples/comics-example
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG)
 
 $(COMICS): $(COMICS).o $(OBJECTS)
 	$(CC) -o $(COMICS) $(COMICS).o $(OBJECTS) $(LIBS)
