@@ -5,16 +5,22 @@ CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
-        saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o
+        saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
+        auto_tone.o comics.o
+
 PROG=improc
 FANTASY=examples/fantasy-forest
 DAYNIGHT=examples/day-to-night
 TRUE_BLOOD=examples/true-blood
 VIDEO_PROC=examples/video-processing
+COMICS=examples/comics-example
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS)
+
+$(COMICS): $(COMICS).o $(OBJECTS)
+	$(CC) -o $(COMICS) $(COMICS).o $(OBJECTS) $(LIBS)
 
 $(TRUE_BLOOD): $(TRUE_BLOOD).o $(OBJECTS)
 	$(CC) -o $(TRUE_BLOOD) $(TRUE_BLOOD).o $(OBJECTS) $(LIBS)
@@ -35,4 +41,4 @@ video.o: video.c
 	$(CC) -Wall -O2 -ggdb -c $< -o $@
 
 clean:
-	$(RM) $(PROG) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS)
+	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS)

@@ -20,5 +20,7 @@
 #include "vibrance.h"
 #include "colorize.h"
 #include "gradient_map.h"
+#include "auto_tone.h"
+#include "comics.h"
 
 #endif /* __IM_FILTERS_H__ */

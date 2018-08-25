@@ -6,9 +6,11 @@
 
 static void filter_frame(layer_t layer, void *arg)
 {
-  colorize(layer, vec3_init(0.0f, 0.0f, COLOR_MAX), 0.8f, 0.0f, ALL_LEVELS, False, layer.zone);
+ // colorize(layer, vec3_init(0.0f, 0.0f, COLOR_MAX), 0.8f, 0.0f, ALL_LEVELS, False, layer.zone);
   //brightness(layer, -COLOR_MAX / 3, layer.zone);
-  exposure(layer, -1.9f, layer.zone);
+ // exposure(layer, -1.9f, layer.zone);
+ //auto_tone(layer, layer.zone);
+ comics(layer, layer.zone);
 }
 
 int main(int argc, char *argv[]) {
