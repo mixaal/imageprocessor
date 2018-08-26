@@ -185,7 +185,7 @@ Code:
 
 ```
 
-![Recolor Example](data/red-car/jpg)
+![Recolor Example](data/red-car.jpg)
 
 ## Vectorscope Diagram
 
