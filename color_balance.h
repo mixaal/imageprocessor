@@ -11,7 +11,15 @@ void adjust_color_balance(
   float yellow_blue_coef[3],
   rect_t zone);
 
-
+void replace_color(
+  layer_t layer, 
+  float reds_replacement, 
+  float yellows_replacement, 
+  float greens_replacement, 
+  float cyans_replacement, 
+  float blues_replacement, 
+  float magentas_replacement, 
+  rect_t zone) ;
 void adjust_color_saturation(
   layer_t layer, 
   float reds_sat, float yellows_sat, float greens_sat, float cyans_sat, float blues_sat, float magentas_sat, 

@@ -14,10 +14,14 @@ DAYNIGHT=examples/day-to-night
 TRUE_BLOOD=examples/true-blood
 VIDEO_PROC=examples/video-processing
 COMICS=examples/comics-example
+REDCAR=examples/replace_color
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)
+
+$(REDCAR): $(REDCAR).o $(OBJECTS)
+	$(CC) -o $(REDCAR)  $(REDCAR).o $(OBJECTS) $(LIBS)
 
 $(COMICS): $(COMICS).o $(OBJECTS)
 	$(CC) -o $(COMICS) $(COMICS).o $(OBJECTS) $(LIBS)
@@ -41,4 +45,4 @@ video.o: video.c
 	$(CC) -Wall -O2 -ggdb -c $< -o $@
 
 clean:
-	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS)
+	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o

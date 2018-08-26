@@ -2,6 +2,7 @@
 #include "color_conversion.h"
 #include "color_balance.h"
 #include "colorize.h"
+#include <math.h>
 
 #define GIMP_TRANSFER_SHADOWS 0
 #define GIMP_TRANSFER_MIDTONES 1
@@ -20,8 +21,12 @@ static _Bool inside(float color, float hue)
 {
    float left = hue - one_twelth;
    float right = hue + one_twelth;
-   if (left < 0.0f) left += 1.0f;
-   if (right > 1.0f) right -= 1.0f;
+   if (left < 0) {
+     left += 1.0f;
+     return (color >= left && color <= 1.0f) || (color>=0 && color<right);
+   }
+   //if (left < 0.0f) left += 1.0f;
+   //if (right > 1.0f) right -= 1.0f;
 
    return (color >= left && color < right);
 }
@@ -128,6 +133,95 @@ void adjust_color_balance(
   }
 
 }
+/** 
+ * Replace color. Range for color replacement: [-1, 1]
+ */ 
+void replace_color(
+  layer_t layer, 
+  float reds_replacement, 
+  float yellows_replacement, 
+  float greens_replacement, 
+  float cyans_replacement, 
+  float blues_replacement, 
+  float magentas_replacement, 
+  rect_t zone) {
+  reds_replacement= clamp(reds_replacement, -1 , 1);
+  yellows_replacement = clamp(yellows_replacement, -1, 1);
+  greens_replacement = clamp(greens_replacement, -1, 1);
+  cyans_replacement = clamp(cyans_replacement, -1, 1);
+  blues_replacement = clamp(blues_replacement, -1, 1);
+  magentas_replacement = clamp(magentas_replacement, -1, 1);
+
+  color_t *image = layer.image;
+  int width = layer.width;
+  int height = layer.height;
+  int color_components = layer.color_components;
+  if (zone.maxy==0) return;
+
+  if (zone.minx<0) zone.minx=0;
+  if (zone.miny<0) zone.miny=0;
+  if (zone.maxx>=width) zone.maxx=width;
+  if (zone.maxy>=height) zone.maxy=height;
+  for(int y=zone.miny; y<zone.maxy; y++)  {
+    for(int x=zone.minx; x<zone.maxx; x++) {
+       int idx = y*width*color_components + x*color_components;
+       float r, g, b;
+       r = (float)image[idx] / COLOR_MAX;
+       g = (float)image[idx+1] / COLOR_MAX;
+       b = (float)image[idx+2] / COLOR_MAX;
+
+       vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
+
+       if(x==1021 && y==649) {
+         printf("r=%f b=%f g=%f hue=%f\n", r, g, b, HSL.x);
+       }
+
+       if (inside(HSL.x, hue_red())) {
+         //printf("HSL.x=%f\n", HSL.x);
+         HSL.x += reds_replacement;
+         //printf("HSL.x2=%f\n", HSL.x);
+       }
+       
+       if (inside(HSL.x, hue_yellow())) {
+         HSL.x += yellows_replacement;
+       }
+       if (inside(HSL.x, hue_green())) {
+         HSL.x += greens_replacement;
+       }
+       if (inside(HSL.x, hue_cyan())) {
+         HSL.x += cyans_replacement;
+       }
+       if (inside(HSL.x, hue_blue())) {
+         HSL.x += blues_replacement;
+       }
+       if (inside(HSL.x, hue_magenta())) {
+         HSL.x += magentas_replacement;
+       }
+
+       if (HSL.x < 0) HSL.x += 1.0f;
+       if (HSL.x > 1.0f) HSL.x = HSL.x - floorf(HSL.x);
+
+       HSL.y = saturatef(HSL.y);
+       HSL.z = saturatef(HSL.z);
+       vec3 newRGB = HSLtoRGB(HSL);
+       
+       float nr = COLOR_MAX * newRGB.x;
+       float ng = COLOR_MAX * newRGB.y;
+       float nb = COLOR_MAX * newRGB.z;
+       if (nr > COLOR_MAX) nr = COLOR_MAX;
+       if (ng > COLOR_MAX) ng = COLOR_MAX;
+       if (nb > COLOR_MAX) nb = COLOR_MAX;
+       if (nr < 0.0f) nr = 0.0f;
+       if (ng < 0.0f) ng = 0.0f;
+       if (nb < 0.0f) nb = 0.0f;
+       image[idx] = (color_t) nr;
+       image[idx+1] = (color_t) ng;
+       image[idx+2] = (color_t) nb;
+    }
+  }
+
+}
+
 
 /** 
  * Adjust color saturation. Range for color saturation: [0, 1]
