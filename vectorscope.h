@@ -1,8 +1,10 @@
 #ifndef __IM_VECTORSCOPE_H__
 #define __IM_VECTORSCOPE_H__ 1
 
-#define HUE_BINS 360
-#define SATURATION_BINS 100
+#define HK 10
+#define SK 5
+#define HUE_BINS (HK*360)
+#define SATURATION_BINS (SK*100)
 
 #include "layer.h"
 

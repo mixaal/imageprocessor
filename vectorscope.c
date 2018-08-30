@@ -38,8 +38,14 @@ void vectorscope(image_t layer, vectorscope_t out, int *max_bin_H, int *max_bin_
        float H = HSL.x * 360.0f;
        float S = HSL.y * 100.0f;
        //printf("H=%f S=%f\n", H, S);  
-       int bin_H = (int)H ;
-       int bin_S = (int)S ;
+       int bin_H = (int)(H*HK) ;
+       int bin_S = (int)(S*SK) ;
+       if (bin_H >= HUE_BINS) {
+         bin_H = HUE_BINS-1;
+       }
+       if (bin_S >= SATURATION_BINS) 
+        bin_S = SATURATION_BINS - 1;
+
        out[bin_H][bin_S] ++;
        if (out[bin_H][bin_S] > maxSum) {
          maxSum = out[bin_H][bin_S];
@@ -77,21 +83,24 @@ void draw_vectorscope(layer_t layer, vectorscope_t vectorscope) {
        if (vectorscope[i][j]>0 && vectorscope[i][j]<minSum) minSum = vectorscope[i][j];
      }
    }
-  fprintf(stderr, "minSum=%f\n", minSum);
-  float bk = log((1/0.4)/(1-minSum));
-  float ak = 0.4/exp(bk*minSum);
-
-  for (int r = maxr/10; r <= maxr; r+=maxr/10) {
-    draw_circle( layer, vec3_init(1.0f, 0.0f, 0.0f), 1.0f, cx, cy, r, blend_normal);
-  }
+  float ratio = 1.0f/minSum;
+  fprintf(stderr, "minSum=%f ratio=%f\n", minSum, 1.0f/minSum);
+  //float bk = log((1/0.4)/(1-minSum));
+  //float ak = 0.4/exp(bk*minSum);
+  // 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+  float bins = ratio/(10.0f * (1.0f - 0.4f));
+  printf("bins=%f\n", bins);
   for(int h=0; h<HUE_BINS; h++) {
     for(int s=0; s<SATURATION_BINS; s++) {
        float I = vectorscope[h][s];
        if (I > 0.0f) { 
          double a = h * M_PI / 180.0f;
-         int xx = (int)(cx + maxr * s * cos(a) / 100.0f);
-         int yy = (int)(cy + maxr * s * sin(a) / 100.0f);
-         I = ak * exp(bk*I);
+         int xx = (int)(cx + maxr * s/(float)SK * cos(a/HK) / 100.0f);
+         int yy = (int)(cy + maxr * s/(float)SK * sin(a/HK) / 100.0f);
+         //I = ak * exp(bk*I);
+         float r = I / minSum / bins;
+         I = 0.4f + r/10.0f;
+         //printf("r=%f I=%f\n", r, I);
          //if (I < 0.4f) I = 0.4f;
          if  (depth_map[xx][yy]<I) {
             depth_map[xx][yy] = I;
@@ -99,5 +108,9 @@ void draw_vectorscope(layer_t layer, vectorscope_t vectorscope) {
          }
        }
     }
+  }
+
+  for (int r = maxr/10; r <= maxr; r+=maxr/10) {
+    draw_circle( layer, vec3_init(1.0f, 0.0f, 0.0f), 1.0f, cx, cy, r, blend_normal);
   }
 }
