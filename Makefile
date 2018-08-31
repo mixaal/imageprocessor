@@ -1,7 +1,9 @@
 CC=gcc
+CXX=g++
+OPENCVFLAGS=`pkg-config --cflags opencv`
 RM=rm -f
 CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
-
+CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ $(OPENCVFLAGS)
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
@@ -15,10 +17,15 @@ TRUE_BLOOD=examples/true-blood
 VIDEO_PROC=examples/video-processing
 COMICS=examples/comics-example
 REDCAR=examples/replace_color
+TRACKING=examples/tracking
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
+OPENCVLIBS=`pkg-config --libs opencv`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR) $(TRACKING)
+
+$(TRACKING): $(TRACKING).o
+	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OPENCVLIBS)
 
 $(REDCAR): $(REDCAR).o $(OBJECTS)
 	$(CC) -o $(REDCAR)  $(REDCAR).o $(OBJECTS) $(LIBS)
@@ -45,4 +52,4 @@ video.o: video.c
 	$(CC) -Wall -O2 -ggdb -c $< -o $@
 
 clean:
-	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o
+	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o
