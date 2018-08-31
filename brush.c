@@ -71,4 +71,8 @@ void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opa
      }
    }
 
+   for (int i=0; i<radius; i++) {
+     free(kernel[i]);
+   }
+   free(kernel);
 }

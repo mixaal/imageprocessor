@@ -70,7 +70,7 @@ static void frame_vfx_filter(layer_t layer, int frame_no, void *arg)
    /**
    * Create mask for night light image.
    */
-  int x2 = (zone.minx + zone.maxx) >> 1;
+  int x2 = zone.maxx;
   int y4 = (zone.maxy - zone.miny) >> 2;
   brush_touch(lights_mask, IMAGE, 400, 0.67f, x2, zone.miny, vec3_init(1.0f, 1.0f, 1.0f), blend_normal);
   brush_touch(lights_mask, IMAGE, 600, 0.27f, x2, zone.miny+y4, vec3_init(1.0f, 1.0f, 1.0f), blend_normal);
@@ -84,6 +84,9 @@ static void frame_vfx_filter(layer_t layer, int frame_no, void *arg)
   layer_t layers[2] =  { night, lights };
   layer_t output = layer_merge_down( 2, layers );
   memcpy(layer.image, output.image, layer.width * layer.height * layer.color_components * sizeof(color_t));
+
+  layer_free(night);
+  layer_free(lights);
 }
 
 static void detect_window()

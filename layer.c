@@ -213,6 +213,9 @@ layer_t layer_merge_down(int N, layer_t *layers) {
   for(int i=1; i<N; i++)  {
     layer_t current_layer = layers[i];
     output = layer_merge_two(current_layer, output);
+    memcpy(layers[0].image, output.image, output.width * output.height * output.color_components * sizeof(color_t));
+    layer_free(output);
+    output = layers[0];
   }
   return output;
 }
