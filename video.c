@@ -146,7 +146,7 @@ static int decode_packet(int *got_frame, int cached, FILE *output_file, AVFrame 
                  layer.image[idx+2] = (color_t) B;
                }
             }
-            layer_filter(layer, NULL);
+            layer_filter(layer, video_frame_count-1, NULL);
             for(int y=0; y<height; y++) {
               for (int x=0; x<width; x++) {
                  int Y_offset = x+y*line_size;

@@ -1,11 +1,18 @@
 #ifndef __IM_LAYER_H__
 #define __IM_LAYER_H__ 1
 
+
 #include <stdio.h>
 #include <jpeglib.h>
+#include <stdbool.h>
 
 #include "common_types.h"
 #include "layer_modes.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct {
   int minx, miny, maxx, maxy;
@@ -30,6 +37,7 @@ typedef struct {
 
 typedef image_t layer_t;
 
+
 layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white);
 void add_layer_mask(layer_t layer, layer_t mask);
 void add_layer_mask_color(layer_t layer, vec3 color);
@@ -42,5 +50,10 @@ void layer_add(image_t dest, image_t from, image_t what);
 layer_t layer_merge_down(int N, layer_t *layers);
 void layer_info(layer_t layer);
 layer_t layer_merge_two(layer_t layer1, layer_t layer2);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __IM_LAYER_H__ */

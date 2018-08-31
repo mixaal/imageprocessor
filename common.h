@@ -4,6 +4,10 @@
 
 #include "common_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void vec3_info(vec3 v);
 vec3 vec3_clamp(vec3 v, float minr, float maxr);
 vec3 vec3_add3(vec3 u, vec3 v, vec3 w);
@@ -23,4 +27,7 @@ vec3 vec3_init(float x, float y, float z);
 vec3 vec3_mix(vec3 a, vec3 b, float k);
 float clamp(float, float, float);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* __IM_COMMON_H__ */

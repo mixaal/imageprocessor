@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   write_JPEG_file("lights_mask.jpg", street_lights_mask, 90);
 
   /**
-   * Set up lights mask ans merge-down.
+   * Set up lights mask and merge-down.
    */
   street_lights.mask = street_lights_mask.image;
   //street_lights.blend_func = blend_lighten_only;

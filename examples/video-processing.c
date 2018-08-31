@@ -4,7 +4,7 @@
 #include <filters.h>
 #include <video.h>
 
-static void filter_frame(layer_t layer, void *arg)
+static void filter_frame(layer_t layer, int frame_no, void *arg)
 {
  // colorize(layer, vec3_init(0.0f, 0.0f, COLOR_MAX), 0.8f, 0.0f, ALL_LEVELS, False, layer.zone);
   //brightness(layer, -COLOR_MAX / 3, layer.zone);

@@ -4,6 +4,10 @@
 #include "layer.h"
 #include "common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void adjust_color_balance(
   layer_t layer, 
   float cyan_red_coef[3],
@@ -25,4 +29,9 @@ void adjust_color_saturation(
   float reds_sat, float yellows_sat, float greens_sat, float cyans_sat, float blues_sat, float magentas_sat, 
   float reds_light, float yellows_light, float greens_light, float cyans_light, float blues_light, float magentas_light, 
   rect_t zone);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* __IM_COLOR_BALANCE_H__ */
