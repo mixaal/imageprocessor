@@ -18,11 +18,15 @@ VIDEO_PROC=examples/video-processing
 COMICS=examples/comics-example
 REDCAR=examples/replace_color
 TRACKING=examples/tracking
+EYE_ENHANCER=examples/eye-enhancer
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 OPENCVLIBS=`pkg-config --libs opencv`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR) $(TRACKING)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR) $(TRACKING) $(EYE_ENHANCER)
+
+$(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
+	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
 
 $(TRACKING): $(TRACKING).o $(OBJECTS)
 	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
@@ -52,4 +56,4 @@ video.o: video.c
 	$(CC) -Wall -O2 -ggdb -c $< -o $@
 
 clean:
-	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o
+	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o $(EYE_ENHANCER) $(EYE_ENHANCER).o

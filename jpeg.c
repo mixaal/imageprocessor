@@ -22,7 +22,7 @@ static void put_scanline_someplace(color_t *image, JSAMPROW buffer, int row_stri
    }
 }
 
-image_t read_JPEG_file (char * filename)
+image_t read_JPEG_file (const char * filename)
 {
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -164,7 +164,7 @@ image_t read_JPEG_file (char * filename)
 }
 
 
-void write_JPEG_file (char * filename, layer_t layer, int quality)
+void write_JPEG_file (const char * filename, layer_t layer, int quality)
 {
   /* This struct contains the JPEG compression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
