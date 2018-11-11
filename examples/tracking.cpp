@@ -1,6 +1,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include <opencv2/core/ocl.hpp>
+#include <opencv2/tracking/tracker.hpp>
+#include <opencv2/tracking/tldDataset.hpp>
 
 #include <filters.h>
 #include <video.h>
@@ -100,7 +102,7 @@ static void detect_window()
  
     Ptr<Tracker> tracker;
  
-    #if (CV_MINOR_VERSION < 3)
+    #if (CV_MAJOR_VERSION  != 4) ||  ((CV_MAJOR_VERSION==3) &&(CV_MINOR_VERSION < 3))
     {
         tracker = Tracker::create(trackerType);
     }
