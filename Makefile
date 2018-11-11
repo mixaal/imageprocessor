@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++
-OPENCVFLAGS=`pkg-config --cflags opencv`
+OPENCVFLAGS=`pkg-config --cflags opencv4`
 RM=rm -f
 CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
 CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ $(OPENCVFLAGS)
@@ -21,9 +21,9 @@ TRACKING=examples/tracking
 EYE_ENHANCER=examples/eye-enhancer
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
-OPENCVLIBS=`pkg-config --libs opencv`
+OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR) $(TRACKING) $(EYE_ENHANCER)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
