@@ -10,6 +10,8 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 
+#include <vector>
+
 #include <stdio.h>
 #include <filters.h>
 #include <shapes.h>
@@ -17,7 +19,8 @@
 using namespace cv;
 using namespace std;
 
-static Rect face;
+static std::vector<Rect> faces;
+static std::vector<Rect> eyes;
 
 
 static void face_and_eye_detect(char *image_name) 
@@ -45,21 +48,29 @@ static void face_and_eye_detect(char *image_name)
     exit(-1);
   }
   for(unsigned int i=0; i<detections.size(); i++) {
-	  cerr << "Detection " << detections[i] << " with weight " << weights[i] << endl;
+    cerr << "Detection " << detections[i] << " with weight " << weights[i] << endl;
+    faces.push_back(detections[i]);
   }
   rectangle(img, detections[0], Scalar(255, 255, 0));
   imshow("Image", img);
   //cerr << "Detection " << detections[0] << " with weight " << weights[0] << endl;
 //  cvWaitKey();
-  face = detections[0];
 }
 
 void mark_face(char *image_name)
 {
   
   layer_t layer = read_JPEG_file(image_name);
-  rect_t face_zone = {int(face.x), int(face.y), int(face.x+face.width), int(face.y+face.height)};
-  draw_rect(layer, vec3_init(1.0f, 1.0f, 0.0f), 1.0f, face_zone, blend_normal);
+
+  for(unsigned int i=0; i<faces.size(); ++i) {
+    int xx = int(faces.at(i).x);
+    int yy = int(faces.at(i).y);
+    int w = int(faces.at(i).width);
+    int h = int(faces.at(i).height);
+    rect_t face_zone = {xx, yy, xx+w, yy+h};
+    printf("xx=%d yy=%d w=%d h=%d\n", xx, yy, w, h);
+    draw_rect(layer, vec3_init(1.0f, 1.0f, 0.0f), 1.0f, face_zone, blend_normal);
+  }
   write_JPEG_file(string("face.jpg").c_str(), layer, 90);
 }
 
