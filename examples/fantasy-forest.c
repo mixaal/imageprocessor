@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   float cyan_red[3] = { 0.0f, -0.22f, -0.03f };
   float magenta_green[3] = { 0.05f, -0.08f, -0.07f };
   float yellow_blue[3] = { 0.09f, 0.07f, 0.02f };
-  adjust_color_balance(sequoia_trees, cyan_red, magenta_green, yellow_blue, sequoia_trees.zone);
+  adjust_color_balance(sequoia_trees, cyan_red, magenta_green, yellow_blue, false, sequoia_trees.zone);
   layer_info(sequoia_trees);
 
   write_JPEG_file("output.jpg", sequoia_trees, 90);

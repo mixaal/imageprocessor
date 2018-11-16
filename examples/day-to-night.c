@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   float cyan_red[3] = { 0.0f, 0.0f, 0.03f };
   float magenta_green[3] = { 0.05f, 0.08f, 0.07f };
   float yellow_blue[3] = { -0.3f, -0.3f, -0.3f };
-  adjust_color_balance(street_lights, cyan_red, magenta_green, yellow_blue, street_lights.zone);
+  adjust_color_balance(street_lights, cyan_red, magenta_green, yellow_blue, false, street_lights.zone);
 
   unsharp(street_lights, 20, 1.05, street_lights.zone);
   write_JPEG_file("lights.jpg", street_lights, 90);

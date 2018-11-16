@@ -75,6 +75,7 @@ void adjust_color_balance(
   float cyan_red_coef[3],
   float magenta_green_coef[3],
   float yellow_blue_coef[3],
+  _Bool preserve_luminosity,
   rect_t zone) {
 
   for(int i=0; i<3; i++) {
@@ -119,6 +120,21 @@ void adjust_color_balance(
                                               yellow_blue_coef[GIMP_TRANSFER_SHADOWS],
                                               yellow_blue_coef[GIMP_TRANSFER_MIDTONES],
                                               yellow_blue_coef[GIMP_TRANSFER_HIGHLIGHTS]);
+
+        if (preserve_luminosity)
+        {
+          vec3 rgb = vec3_init(r_n, g_n, b_n);
+          vec3 hsl = RGBtoHSL(rgb);
+
+          hsl.z = HSL.z;
+
+          rgb = HSLtoRGB(hsl);
+
+          r_n = rgb.x;
+          g_n = rgb.y;
+          b_n = rgb.z;
+         }
+
        image[idx] = COLOR_MAX * r_n;
        image[idx+1] = COLOR_MAX * g_n;
        image[idx+2] = COLOR_MAX * b_n;

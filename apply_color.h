@@ -17,7 +17,7 @@ typedef struct {
 } apply_color_params_t;
 
 
-apply_color_params_t apply_color(layer_t source_layer, rect_t source_zone, layer_t destination_layer, float step) ;
+apply_color_params_t apply_color(layer_t source_layer, rect_t source_zone, layer_t destination_layer, float step, _Bool preserve_luminosity) ;
 
 #ifdef __cplusplus
 }

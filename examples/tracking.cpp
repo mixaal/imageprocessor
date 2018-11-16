@@ -68,7 +68,7 @@ static void frame_vfx_filter(layer_t layer, int frame_no, void *arg)
   float cyan_red[3] = { 0.0f, 0.0f, 0.03f };
   float magenta_green[3] = { 0.05f, 0.08f, 0.07f };
   float yellow_blue[3] = { -0.3f, -0.3f, -0.3f };
-  adjust_color_balance(lights, cyan_red, magenta_green, yellow_blue, lights.zone);
+  adjust_color_balance(lights, cyan_red, magenta_green, yellow_blue, false, lights.zone);
    /**
    * Create mask for night light image.
    */

@@ -13,6 +13,7 @@ void adjust_color_balance(
   float cyan_red_coef[3],
   float magenta_green_coef[3],
   float yellow_blue_coef[3],
+  _Bool preserve_luminosity,
   rect_t zone);
 
 void replace_color(

@@ -27,7 +27,9 @@ static two_best_t apply_range(
    float step, 
    vec3 start, vec3 end, 
    int level_index, 
-   apply_color_params_t params)
+   apply_color_params_t params,
+   _Bool preserve_luminosity
+)
 {
     apply_color_params_t saved_params = params;
     apply_color_params_t second_best = params;
@@ -49,7 +51,7 @@ static two_best_t apply_range(
        params.yellow_blue_coef[level_index] = yb;
        //print_params(params);
        layer_t adjust_layer = layer_copy(destination_layer);
-       adjust_color_balance(adjust_layer, params.cyan_red_coef, params.magenta_green_coef, params.yellow_blue_coef, destination_layer.zone);
+       adjust_color_balance(adjust_layer, params.cyan_red_coef, params.magenta_green_coef, params.yellow_blue_coef, preserve_luminosity, destination_layer.zone);
        histogram_t destination_histogram = histogram_from_layer(adjust_layer, RGB, destination_layer.zone);
        layer_free(adjust_layer);
        float error = histogram_difference(&destination_histogram, &source_histogram);
@@ -64,7 +66,7 @@ static two_best_t apply_range(
     return r;
 }
 
-apply_color_params_t apply_color(layer_t source_layer, rect_t source_zone, layer_t destination_layer, float step) 
+apply_color_params_t apply_color(layer_t source_layer, rect_t source_zone, layer_t destination_layer, float step, _Bool preserve_luminosity) 
 {
     histogram_t source_histogram = histogram_from_layer(source_layer, RGB, source_zone);
     two_best_t highlights, midtones, shadows;
@@ -86,20 +88,20 @@ apply_color_params_t apply_color(layer_t source_layer, rect_t source_zone, layer
          start_vec = vec3_init(saved_params.cyan_red_coef[1], saved_params.magenta_green_coef[1], saved_params.yellow_blue_coef[1]);
          end_vec   = vec3_init(second_best_midtones.cyan_red_coef[1], second_best_midtones.magenta_green_coef[1], second_best_midtones.yellow_blue_coef[1]);
        }
-       midtones   = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 1, saved_params);
+       midtones   = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 1, saved_params, preserve_luminosity);
 
        if(i!=0) {
          start_vec = vec3_init(saved_params.cyan_red_coef[2], saved_params.magenta_green_coef[2], saved_params.yellow_blue_coef[2]);
          end_vec   = vec3_init(second_best_midtones.cyan_red_coef[2], second_best_midtones.magenta_green_coef[2], second_best_midtones.yellow_blue_coef[2]);
        }
-       highlights = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 2, midtones.best);
+       highlights = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 2, midtones.best, preserve_luminosity);
 
 
        if(i!=0) {
          start_vec = vec3_init(saved_params.cyan_red_coef[2], saved_params.magenta_green_coef[0], saved_params.yellow_blue_coef[0]);
          end_vec   = vec3_init(second_best_midtones.cyan_red_coef[2], second_best_midtones.magenta_green_coef[0], second_best_midtones.yellow_blue_coef[0]);
        }
-       shadows    = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 0, highlights.best);
+       shadows    = apply_range(source_histogram, destination_layer, step, start_vec, end_vec, 0, highlights.best, preserve_luminosity);
  
        saved_params = shadows.best;
        print_params(saved_params);
