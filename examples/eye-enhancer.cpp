@@ -41,8 +41,8 @@ static void face_and_eye_detect(char *image_name)
   vector<int> levels;
   vector<Rect> detections;
   CascadeClassifier model("data/haarcascade_frontalface_default.xml");
-   model.detectMultiScale(img, detections, levels, weights, 1.1, 5, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30), Size(128,128), true);
- //model.detectMultiScale(img, detections, levels, weights, 1.1, 5, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
+   model.detectMultiScale(img, detections, levels, weights, 1.1, 5, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30), Size(1024,1024), true);
+  //model.detectMultiScale(img, detections, levels, weights, 1.1, 5, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
   if (detections.size() == 0) {
     cerr << "nothing detected" << endl;
     exit(-1);
