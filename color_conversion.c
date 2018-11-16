@@ -95,3 +95,49 @@ vec3 RGBtoHSL(vec3 RGB)
     return vec3_init(HCV.x, S, L);
 }
 
+
+// Adapted from: https://github.com/antimatter15/rgb-lab/blob/master/color.js
+vec3 RGB2Lab(vec3 rgb)
+{
+  float r = rgb.x,
+      g = rgb.y,
+      b = rgb.z,
+      x, y, z;
+
+  r = (r > 0.04045) ? powf((r + 0.055) / 1.055, 2.4) : r / 12.92;
+  g = (g > 0.04045) ? powf((g + 0.055) / 1.055, 2.4) : g / 12.92;
+  b = (b > 0.04045) ? powf((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+  x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+  y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+  z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+
+  x = (x > 0.008856) ? powf(x, 1/3) : (7.787 * x) + 16/116;
+  y = (y > 0.008856) ? powf(y, 1/3) : (7.787 * y) + 16/116;
+  z = (z > 0.008856) ? powf(z, 1/3) : (7.787 * z) + 16/116;
+
+  vec3 result = {(116 * y) - 16, 500 * (x - y), 200 * (y - z)};
+
+  return result;
+}
+
+// calculate the perceptual distance between colors in CIELAB
+// https://github.com/THEjoezack/ColorMine/blob/master/ColorMine/ColorSpaces/Comparisons/Cie94Comparison.cs
+
+float deltaE(vec3 labA, vec3 labB){
+  float deltaL = labA.x - labB.x;
+  float deltaA = labA.y - labB.y;
+  float deltaB = labA.z - labB.z;
+  float c1 = sqrtf(labA.y * labA.y + labA.z * labA.z);
+  float c2 = sqrtf(labB.y * labB.y + labB.z * labB.z);
+  float deltaC = c1 - c2;
+  float deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
+  deltaH = deltaH < 0 ? 0 : sqrtf(deltaH);
+  float sc = 1.0 + 0.045 * c1;
+  float sh = 1.0 + 0.015 * c1;
+  float deltaLKlsl = deltaL / (1.0);
+  float deltaCkcsc = deltaC / (sc);
+  float deltaHkhsh = deltaH / (sh);
+  float i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
+  return i < 0 ? 0 : sqrtf(i);
+}

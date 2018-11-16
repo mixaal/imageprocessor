@@ -8,7 +8,7 @@ CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ $(OPENCVFLAGS)
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
-        auto_tone.o comics.o shapes.o vectorscope.o
+        auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o
 
 PROG=improc
 FANTASY=examples/fantasy-forest
@@ -19,17 +19,21 @@ COMICS=examples/comics-example
 REDCAR=examples/replace_color
 TRACKING=examples/tracking
 EYE_ENHANCER=examples/eye-enhancer
+APPLY_COLOR=examples/apply_color
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING) $(APPLY_COLOR)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
 
 $(TRACKING): $(TRACKING).o $(OBJECTS)
 	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
+
+$(APPLY_COLOR): $(APPLY_COLOR).o $(OBJECTS)
+	$(CC) -o $(APPLY_COLOR)  $(APPLY_COLOR).o $(OBJECTS) $(LIBS)
 
 $(REDCAR): $(REDCAR).o $(OBJECTS)
 	$(CC) -o $(REDCAR)  $(REDCAR).o $(OBJECTS) $(LIBS)

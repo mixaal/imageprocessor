@@ -12,6 +12,21 @@ void draw_circle(layer_t layer, vec3 color, float opacity, int x, int y, int r, 
   }
 }  
 
+
+vec3 get_pixel(layer_t layer, int x, int y)
+{
+   vec3 color = vec3_init(-1.0f, -1.0f, -1.0f);
+   if (x < layer.zone.minx || x>=layer.zone.maxx) return color;
+   if (y < layer.zone.miny || y>=layer.zone.maxy) return color;
+   color_t *image = layer.image;
+   int width = layer.width;
+   int color_components = layer.color_components;
+   int idx = y*width*color_components + x*color_components;
+
+   vec3 source_pixel = vec3_init(image[idx]/(float)COLOR_MAX, image[idx+1]/(float)COLOR_MAX, image[idx+2]/(float)COLOR_MAX);
+   return source_pixel;
+}
+
 void draw_pixel(layer_t layer, vec3 color, float opacity, int x, int y, blend_mode_func_t blend_func)
 {
    if (x < layer.zone.minx || x>=layer.zone.maxx) return;

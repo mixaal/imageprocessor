@@ -81,7 +81,7 @@ void adjust_color_balance(
     cyan_red_coef[i] = clamp(cyan_red_coef[i], -1 , 1);
     magenta_green_coef[i] = clamp(magenta_green_coef[i], -1, 1);
     yellow_blue_coef[i] = clamp(yellow_blue_coef[i], -1, 1);
-    fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef[i], magenta_green_coef[i], yellow_blue_coef[i]);
+    //fprintf(stderr, "cyan_red_coef=%f\nmagenta_green_coef=%f\nyellow_blue_coef=%f\n", cyan_red_coef[i], magenta_green_coef[i], yellow_blue_coef[i]);
   }
   
   color_t *image = layer.image;
@@ -172,9 +172,6 @@ void replace_color(
 
        vec3 HSL = RGBtoHSL(vec3_init(r, g, b));
 
-       if(x==1021 && y==649) {
-         printf("r=%f b=%f g=%f hue=%f\n", r, g, b, HSL.x);
-       }
 
        if (inside(HSL.x, hue_red())) {
          //printf("HSL.x=%f\n", HSL.x);

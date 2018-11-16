@@ -14,6 +14,8 @@ vec3 HSLtoRGB(vec3 HSL);
 vec3 RGBtoHCV(vec3 RGB);
 vec3 RGBtoHSL(vec3 RGB);
 
+float deltaE(vec3 labA, vec3 labB);
+vec3 RGB2Lab(vec3 rgb);
 #ifdef __cplusplus
 }
 #endif
