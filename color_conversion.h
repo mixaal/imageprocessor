@@ -13,6 +13,13 @@ vec3 HUEtoRGB(float H);
 vec3 HSLtoRGB(vec3 HSL);
 vec3 RGBtoHCV(vec3 RGB);
 vec3 RGBtoHSL(vec3 RGB);
+vec3 LMStoRGB(vec3 LMS);
+vec3 LabtoLMS(vec3 Lab);
+vec3 LMStoLab(vec3 LMS);
+vec3 log10LMS(vec3 LMS);
+vec3 pow10LMS(vec3 LMS);
+vec3 RGBtoLMS(vec3 RGB);
+vec3 RGBtoXYZ(vec3 RGB);
 
 float deltaE(vec3 labA, vec3 labB);
 vec3 RGB2Lab(vec3 rgb);

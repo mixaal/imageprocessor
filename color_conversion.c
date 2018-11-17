@@ -95,30 +95,73 @@ vec3 RGBtoHSL(vec3 RGB)
     return vec3_init(HCV.x, S, L);
 }
 
+// Based on: Color Transfer between Images, Erik Reinhard, Michael Ashikhmin, Bruce Gooch, and Peter Shirley, 2001
 
-// Adapted from: https://github.com/antimatter15/rgb-lab/blob/master/color.js
-vec3 RGB2Lab(vec3 rgb)
+vec3 RGBtoXYZ(vec3 RGB)
 {
-  float r = rgb.x,
-      g = rgb.y,
-      b = rgb.z,
-      x, y, z;
+   vec3 XYZ = vec3_init(
+      0.5141f*RGB.x + 0.3239f*RGB.y + 0.1604f*RGB.z,
+      0.2651f*RGB.x + 0.6702f*RGB.y + 0.0641f*RGB.z,
+      0.0241f*RGB.x + 0.1228f*RGB.y + 0.8444f*RGB.z
+   );
+   return XYZ;
+}
 
-  r = (r > 0.04045) ? powf((r + 0.055) / 1.055, 2.4) : r / 12.92;
-  g = (g > 0.04045) ? powf((g + 0.055) / 1.055, 2.4) : g / 12.92;
-  b = (b > 0.04045) ? powf((b + 0.055) / 1.055, 2.4) : b / 12.92;
+vec3 RGBtoLMS(vec3 RGB)
+{
+  vec3 LMS = vec3_init(
+      0.3811f*RGB.x + 0.5783f*RGB.y + 0.0402f*RGB.z,
+      0.1967f*RGB.x + 0.7244f*RGB.y + 0.0782f*RGB.z,
+      0.0241f*RGB.x + 0.1228f*RGB.y + 0.8444f*RGB.z
+  );
+  return LMS;
+}
 
-  x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
-  y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
-  z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+vec3 log10LMS(vec3 LMS)
+{
+  vec3 log_scale = vec3_init(
+     log10f(LMS.x), log10f(LMS.y), log10f(LMS.z)
+  );
+  return log_scale;
+}
 
-  x = (x > 0.008856) ? powf(x, 1/3) : (7.787 * x) + 16/116;
-  y = (y > 0.008856) ? powf(y, 1/3) : (7.787 * y) + 16/116;
-  z = (z > 0.008856) ? powf(z, 1/3) : (7.787 * z) + 16/116;
+vec3 pow10LMS(vec3 LMS)
+{
+  vec3 linear_scale = vec3_init(
+     powf(10.0f, LMS.x), powf(10.0f, LMS.y), powf(10.0f, LMS.z)
+  );
+  return linear_scale;
+}
 
-  vec3 result = {(116 * y) - 16, 500 * (x - y), 200 * (y - z)};
 
-  return result;
+vec3 LMStoLab(vec3 LMS)
+{
+  vec3 LAB = vec3_init(
+      LMS.x/sqrtf(3) + LMS.y/sqrtf(3) + LMS.z/sqrtf(3),
+      LMS.x/sqrtf(6) + LMS.y/sqrtf(6) - 2*LMS.z/sqrtf(6),
+      LMS.x/sqrtf(2) - LMS.y/sqrtf(2)
+  );
+  return LAB;
+}
+
+vec3 LabtoLMS(vec3 Lab)
+{
+  vec3 LMS = vec3_init(
+      Lab.x/sqrtf(3) + Lab.y/sqrtf(6) + Lab.z/sqrtf(2),
+      Lab.x/sqrtf(3) + Lab.y/sqrtf(6) - Lab.z/sqrtf(2),
+      Lab.x/sqrtf(3) - 2*Lab.y/sqrtf(6)
+  );
+  return LMS;
+}
+
+vec3 LMStoRGB(vec3 LMS)
+{
+  vec3 RGB = vec3_init(
+        4.4679f * LMS.x - 3.5873f * LMS.y  + 0.1193f * LMS.z,
+       -1.2186f * LMS.x + 2.3809f * LMS.y  - 0.1624f * LMS.z,
+        0.0497f * LMS.x - 0.2439f * LMS.y  + 1.2045f * LMS.z
+  );
+  return RGB;
 }
 
 // calculate the perceptual distance between colors in CIELAB

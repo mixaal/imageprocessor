@@ -20,17 +20,21 @@ REDCAR=examples/replace_color
 TRACKING=examples/tracking
 EYE_ENHANCER=examples/eye-enhancer
 APPLY_COLOR=examples/apply_color
+COLOR_CONV_TEST=examples/color_conv_test
 
 LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
 OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING) $(APPLY_COLOR)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
 
 $(TRACKING): $(TRACKING).o $(OBJECTS)
 	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
+
+$(COLOR_CONV_TEST): $(COLOR_CONV_TEST).o $(OBJECTS)
+	$(CC) -o $(COLOR_CONV_TEST)  $(COLOR_CONV_TEST).o $(OBJECTS) $(LIBS)
 
 $(APPLY_COLOR): $(APPLY_COLOR).o $(OBJECTS)
 	$(CC) -o $(APPLY_COLOR)  $(APPLY_COLOR).o $(OBJECTS) $(LIBS)
