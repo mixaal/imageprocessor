@@ -7,7 +7,7 @@ int main(void)
 {
 
   float min_L=FLT_MAX, max_L=FLT_MIN, min_a=FLT_MAX, max_a=FLT_MIN, min_b=FLT_MAX, max_b=FLT_MIN;
-  for (unsigned int i=0; i<16777216; i++) {
+  for (unsigned int i=0; i<=16777216; i++) {
     unsigned char r = (i&0xff0000) >> 16;
     unsigned char g = (i&0xff00) >> 8;
     unsigned char b = (i&0xff);
