@@ -1,6 +1,10 @@
 # imageprocessor
 Process images in a batch way. Implement various filter for multiple image and video processing.
 
+## Latest Build
+
+[![Build Status](https://travis-ci.com/mixaal/imageprocessor.svg?branch=master)](https://travis-ci.com/mixaal/imageprocessor)
+
 ## Examples
 
 ### Temperature Manipulation
