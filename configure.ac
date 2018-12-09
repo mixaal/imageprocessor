@@ -5,10 +5,11 @@ AC_CONFIG_SRCDIR([vibrance.c])
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
-AC_CHECK_LIB(jpeg,  main, [], [
-   echo "Error - you need jpeg lib!"
-   exit -1
-])
+#AC_CHECK_LIB(jpeg,  main, [], [
+#   echo "Error - you need jpeg lib!"
+#   exit -1
+#])
+AC_CHECK_LIB(jpeg,  main, [], [AC_MSG_ERROR("jpeg lib not found")])
 AC_CHECK_LIB(m,  main, [], [
    echo "Error - you need math lib!"
    exit -1
