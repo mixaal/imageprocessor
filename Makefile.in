@@ -1,9 +1,9 @@
-CC=gcc
-CXX=g++
-OPENCVFLAGS=`pkg-config --cflags opencv4`
+CC=@CC@
+CXX=@CXX@
+#OPENCVFLAGS=`pkg-config --cflags opencv4`
 RM=rm -f
 CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
-CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ $(OPENCVFLAGS)
+CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ @OPENCV_CFLAGS@
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
@@ -22,16 +22,16 @@ EYE_ENHANCER=examples/eye-enhancer
 APPLY_COLOR=examples/apply_color
 COLOR_CONV_TEST=examples/color_conv_test
 
-LIBS=-ljpeg -lm -lavcodec -lavformat -lavutil -lpthread -fopenmp
-OPENCVLIBS=`pkg-config --libs opencv4`
+LIBS=@LIBS@ -fopenmp
+#OPENCVLIBS=`pkg-config --libs opencv4`
 
 all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
-	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
+	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)
 
 $(TRACKING): $(TRACKING).o $(OBJECTS)
-	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  $(OPENCVLIBS) $(LIBS)
+	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)
 
 $(COLOR_CONV_TEST): $(COLOR_CONV_TEST).o $(OBJECTS)
 	$(CC) -o $(COLOR_CONV_TEST)  $(COLOR_CONV_TEST).o $(OBJECTS) $(LIBS)
@@ -65,3 +65,6 @@ video.o: video.c
 
 clean:
 	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o $(EYE_ENHANCER) $(EYE_ENHANCER).o
+
+test:
+	echo "passed"
