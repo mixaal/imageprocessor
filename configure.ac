@@ -4,10 +4,6 @@ AC_CONFIG_MACRO_DIR(m4)
 AC_CONFIG_SRCDIR([vibrance.c])
 AC_PROG_CC
 AC_PROG_CXX
-PKG_CHECK_MODULES([OPENCV], [opencv4], [], [
-   echo "Error - you need opencv4 lib!"
-   exit -1
-])
 AC_CHECK_LIB(jpeg,  main, [], [
    echo "Error - you need jpeg lib!"
    exit -1
@@ -30,6 +26,10 @@ AC_CHECK_LIB(avutil,  main, [], [
 ])
 AC_CHECK_LIB(pthread,  main, [], [
    echo "Error - you need pthread lib!"
+   exit -1
+])
+PKG_CHECK_MODULES([OPENCV], [opencv4], [], [
+   echo "Error - you need opencv4 lib!"
    exit -1
 ])
 AC_CONFIG_FILES([Makefile])
