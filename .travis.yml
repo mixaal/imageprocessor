@@ -1,2 +1,2 @@
 language: c
-install: sudo apt-get install automake autoconf libtool; autoreconf -i
+install: sudo apt-get install automake autoconf libtool; ./rebuild.sh
