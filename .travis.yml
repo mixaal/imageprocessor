@@ -1,2 +1,2 @@
 language: c
-install: sudo apt-get install -y automake autoconf libtool libjpeg-dev libavformat-dev libavcodec-dev libavutil-dev && ./auto-gen.sh
+install: sudo apt-get install -y automake autoconf libtool libjpeg-dev libavformat-dev libavcodec-dev libavutil-dev build-essential cmake unzip pkg-config libpng-dev libtiff-dev  libswscale-dev libv4l-dev  libxvidcore-dev libx264-dev libgtk-3-dev libatlas-base-dev gfortran python3-dev && ./auto-gen.sh
