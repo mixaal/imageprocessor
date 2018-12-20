@@ -5,6 +5,14 @@ Process images in a batch way. Implement various filter for multiple image and v
 
 [![Build Status](https://travis-ci.com/mixaal/imageprocessor.svg?branch=master)](https://travis-ci.com/mixaal/imageprocessor)
 
+## Build
+
+```
+./auto-gen.sh
+./configure
+make
+```
+
 ## Examples
 
 ### Temperature Manipulation

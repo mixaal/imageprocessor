@@ -8,7 +8,7 @@ CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ @OPENCV_CFLAGS@
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
-        auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o
+        auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o
 
 PROG=improc
 FANTASY=examples/fantasy-forest
@@ -20,12 +20,15 @@ REDCAR=examples/replace_color
 TRACKING=examples/tracking
 EYE_ENHANCER=examples/eye-enhancer
 APPLY_COLOR=examples/apply_color
+APPLY_COLOR_REINHARD=examples/apply_color_reinhard2001
 COLOR_CONV_TEST=examples/color_conv_test
+
+SUFFIXES=.o .c .cc .cpp
 
 LIBS=@LIBS@ -fopenmp
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(EYE_ENHANCER) $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)
@@ -35,6 +38,10 @@ $(TRACKING): $(TRACKING).o $(OBJECTS)
 
 $(COLOR_CONV_TEST): $(COLOR_CONV_TEST).o $(OBJECTS)
 	$(CC) -o $(COLOR_CONV_TEST)  $(COLOR_CONV_TEST).o $(OBJECTS) $(LIBS)
+
+
+$(APPLY_COLOR_REINHARD): $(APPLY_COLOR_REINHARD).o $(OBJECTS)
+	$(CC) -o $(APPLY_COLOR_REINHARD)  $(APPLY_COLOR_REINHARD).o $(OBJECTS) $(LIBS)
 
 $(APPLY_COLOR): $(APPLY_COLOR).o $(OBJECTS)
 	$(CC) -o $(APPLY_COLOR)  $(APPLY_COLOR).o $(OBJECTS) $(LIBS)

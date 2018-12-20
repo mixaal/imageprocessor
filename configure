@@ -4355,6 +4355,10 @@ fi
 
 
 
+#AC_CHECK_LIB(jpeg,  main, [], [
+#   echo "Error - you need jpeg lib!"
+#   exit -1
+#])
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ljpeg" >&5
 $as_echo_n "checking for main in -ljpeg... " >&6; }
@@ -4394,10 +4398,7 @@ _ACEOF
   LIBS="-ljpeg $LIBS"
 
 else
-
-   echo "Error - you need jpeg lib!"
-   exit -1
-
+  as_fn_error $? "\"jpeg lib not found\"" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lm" >&5
