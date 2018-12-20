@@ -1,0 +1,5 @@
+cat opencv4/opencv4.split* > opencv4/opencv4.tar.gz
+tar xzvf opencv4/opencv4.tar.gz
+cd build
+sudo make install
+pkg-config --libs opencv4
