@@ -51,7 +51,7 @@ void histogram_draw(layer_t layer, histogram_t h, _Bool log_scale)
    if(log_scale) {
       maxY = log(max_samples);
    }
-   int hy = layer.height;
+   int hy = layer.height/3;
    for(int i = 0 ; i<BINS; i++ ) {
       int b_cnt = h.z[i];
       int r_cnt = h.x[i];
@@ -66,9 +66,9 @@ void histogram_draw(layer_t layer, histogram_t h, _Bool log_scale)
           if(draw_r!=0) draw_r = (int)(hy * log(r_cnt) / maxY);
       }
       for(int j=0; j<step; j++) {
-        hdraw(layer, vec3_init(0.0f, 0.0f, 1.0f), i*step+j, hy, hy-draw_b);
-        hdraw(layer, vec3_init(1.0f, 0.0f, 0.0f), i*step+j, hy, hy-draw_r);
-        hdraw(layer, vec3_init(0.0f, 1.0f, 0.0f), i*step+j, hy, hy-draw_g);
+        hdraw(layer, vec3_init(0.0f, 0.0f, 1.0f), i*step+j, layer.height-2*hy, layer.height-2*hy-draw_b);
+        hdraw(layer, vec3_init(1.0f, 0.0f, 0.0f), i*step+j, layer.height-hy, layer.height-hy-draw_r);
+        hdraw(layer, vec3_init(0.0f, 1.0f, 0.0f), i*step+j, layer.height, layer.height-draw_g);
       }
    }
 }
