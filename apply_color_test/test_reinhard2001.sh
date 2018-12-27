@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 
 
+cd $(dirname $0)
+
 function test()
 {
   ../examples/apply_color_reinhard2001 $1 $2 &> color.log
@@ -50,7 +52,7 @@ cat >report.html <<EOH
 </tr>
 EOH
 
-test "storm.jpg" "source.jpg"
+#test "storm.jpg" "source.jpg"
 
 #test "storm.jpg" "alpy.JPG"
 #test "storm.jpg" "hrad.JPG"

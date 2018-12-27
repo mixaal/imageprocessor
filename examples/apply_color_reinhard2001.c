@@ -17,7 +17,7 @@ static void save_histogram(const char *filename, layer_t layer)
 {
 
   layer_t hist_layer = layer_new_dim(512, 300, 3, false, false);
-  histogram_t h = histogram_from_layer(layer, RGB, layer.zone);
+  histogram_t h = histogram_from_layer(layer, LAB, layer.zone);
   histogram_draw(hist_layer, h, true);
   write_JPEG_file(filename, hist_layer, 90);
   layer_free(hist_layer);
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   /**
    * Apply tonality from source to dest.
    */
-  apply_color_reinhard2001(source, dest, source.zone, dest.zone);
+  apply_color_reinhard2001(source, dest, source.zone, dest.zone, 1.0f /*variance*/, 1.0f /*mean*/);
   write_JPEG_file("apply-color-reinhard.jpg", dest, 90);
 
   /**

@@ -11,7 +11,7 @@ struct mean_and_variance {
   float L_m, L_s, a_m, a_s, b_m, b_s;
 };
 
-static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance source_stat, struct mean_and_variance dest_stat);
+static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef);
 static struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone);
 static void print_stat(const char *msg, struct mean_and_variance r);
 
@@ -25,12 +25,12 @@ static void print_stat(const char *msg, struct mean_and_variance r);
  * @param dest_zone - zone in destination image to influence
  *
  */ 
-void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone) {
+void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef) {
    struct mean_and_variance src_stat = compute_mean_and_variance(source, source_zone);
    print_stat("source     :", src_stat);
    struct mean_and_variance dst_stat = compute_mean_and_variance(dest, dest_zone);
    print_stat("destination:", dst_stat);
-   apply_reinhard2001(source, dest, source_zone, dest_zone, src_stat, dst_stat);
+   apply_reinhard2001(source, dest, source_zone, dest_zone, src_stat, dst_stat, variance_coef, mean_coef);
    struct mean_and_variance result_stat = compute_mean_and_variance(dest, dest_zone);
    print_stat("result     :", result_stat);
 }
@@ -102,7 +102,7 @@ static struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t 
   return r;
 }
 
-static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat) {
+static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef) {
    color_t *image = dest.image;
    int width = dest.width;
    int height = dest.height;
@@ -117,9 +117,9 @@ static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone,
   if (zone.maxy>=height) zone.maxy=height;
 
   vec3 k = vec3_init(
-     src_stat.L_s / dst_stat.L_s,
-     src_stat.a_s / dst_stat.a_s,
-     src_stat.b_s / dst_stat.b_s
+     1+((src_stat.L_s / dst_stat.L_s)-1)*variance_coef,
+     1+((src_stat.a_s / dst_stat.a_s)-1)*variance_coef,
+     1+((src_stat.b_s / dst_stat.b_s)-1)*variance_coef
   );
  vec3_info(k);
 #pragma omp parallel for
@@ -150,11 +150,11 @@ static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone,
        b *= k.z; 
 
        /**
-        * Add the source mean.
+        * Add the source mean alpha-blended with destination mean.
         */
-       L += src_stat.L_m;
-       a += src_stat.a_m;
-       b += src_stat.b_m;
+       L += (1.0f - mean_coef) * dst_stat.L_m + mean_coef * src_stat.L_m;
+       a += (1.0f - mean_coef) * dst_stat.a_m + mean_coef * src_stat.a_m;
+       b += (1.0f - mean_coef) * dst_stat.b_m + mean_coef * src_stat.b_m;
 
  
        vec3 backToLMS = LabtoLMS(vec3_init((float)L, (float)a, (float)b));

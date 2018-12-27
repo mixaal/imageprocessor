@@ -1,15 +1,35 @@
 #include "histogram.h"
 #include "color_conversion.h"
+#include "common.h"
 #include "shapes.h"
 #include <string.h>
 #include <math.h>
 
-static histogram_t histogram_init() {
+static histogram_t histogram_init(color_space_t color_space) {
   histogram_t h;
   memset(&h, 0, sizeof(h));
+  h.color_space = color_space;
   return h;
 }
+#define L_MIN 0.0f
+#define L_MAX 1.73f
 
+#define a_MIN -0.65f
+#define a_MAX 0.65f
+
+#define b_MIN -0.131f
+#define b_MAX 0.131f
+
+static void histogram_Lab_sample(histogram_t *h, float L, float a, float b)
+{
+   int x = BINS * (L - L_MIN)/(L_MAX - L_MIN);
+   int y = BINS * (a - a_MIN)/(a_MAX - a_MIN);
+   int z = BINS * (b - b_MIN)/(b_MAX - b_MIN);
+   h->samples ++;
+   h->x[x] ++;
+   h->y[y] ++;
+   h->z[z] ++;
+}
 
 static void histogram_sample(histogram_t *h, int r, int g, int b)
 {
@@ -66,11 +86,23 @@ void histogram_draw(layer_t layer, histogram_t h, _Bool log_scale)
           if(draw_r!=0) draw_r = (int)(hy * log(r_cnt) / maxY);
       }
       for(int j=0; j<step; j++) {
-        hdraw(layer, vec3_init(0.0f, 0.0f, 1.0f), i*step+j, layer.height-2*hy, layer.height-2*hy-draw_b);
-        hdraw(layer, vec3_init(1.0f, 0.0f, 0.0f), i*step+j, layer.height-hy, layer.height-hy-draw_r);
-        hdraw(layer, vec3_init(0.0f, 1.0f, 0.0f), i*step+j, layer.height, layer.height-draw_g);
+        vec3 color1 = vec3_init(1.0f, 0.0f, 0.0f);
+        vec3 color2 = vec3_init(0.0f, 1.0f, 0.0f);
+        vec3 color3 = vec3_init(0.0f, 0.0f, 1.0f);
+        if(h.color_space == LAB) {
+           color1 = vec3_init(1.0f, 1.0f, 1.0f);
+           color2 = vec3_init(1.0f, 1.0f, 0.0f);
+           color3 = vec3_init(1.0f, 0.0f, 1.0f);
+        }
+
+        hdraw(layer, color1, i*step+j, layer.height-2*hy, layer.height-2*hy-draw_r);
+        hdraw(layer, color2, i*step+j, layer.height-1*hy, layer.height-1*hy-draw_g);
+        hdraw(layer, color3, i*step+j, layer.height-0*hy, layer.height-0*hy-draw_b);
       }
    }
+   hdraw(layer, vec3_init(1.0f, 1.0f, 1.0f), layer.width/4, 0, layer.height);
+   hdraw(layer, vec3_init(1.0f, 1.0f, 1.0f), layer.width/2, 0, layer.height);
+   hdraw(layer, vec3_init(1.0f, 1.0f, 1.0f), 3*layer.width/4, 0, layer.height);
 }
 
 histogram_t histogram_from_layer(layer_t layer, color_space_t color_space, rect_t zone)
@@ -79,7 +111,7 @@ histogram_t histogram_from_layer(layer_t layer, color_space_t color_space, rect_
    int width = layer.width;
    int height = layer.height;
    int color_components = layer.color_components;
-   histogram_t h = histogram_init();
+   histogram_t h = histogram_init(color_space);
    if (zone.maxy==0) return h;
 
    if (zone.minx<0) zone.minx=0;
@@ -95,15 +127,15 @@ histogram_t histogram_from_layer(layer_t layer, color_space_t color_space, rect_
        r = image[idx];
        g = image[idx+1];
        b = image[idx+2];
-       //vec3 v = vec3_init((float)r/COLOR_MAX, (float)g/COLOR_MAX, (float)b/COLOR_MAX);
-       
+       vec3 rgb = vec3_init((float)r/COLOR_MAX, (float)g/COLOR_MAX, (float)b/COLOR_MAX);
+       vec3 LMS = RGBtoLMS(rgb);
+       vec3 Lab = LMStoLab(LMS);
        switch(color_space) {
-           case Lab:
-               //histogram_sample(&h, RGB2Lab(v));
+           case LAB:
+               histogram_Lab_sample(&h, Lab.x, Lab.y, Lab.z);
                break;
            case RGB:
            default: 
-               //histogram_sample(&h, v);
                histogram_sample(&h, r, g, b);
        }
     }

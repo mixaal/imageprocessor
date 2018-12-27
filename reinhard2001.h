@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone) ;
+void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef);
 
 #ifdef __cplusplus
 }

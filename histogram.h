@@ -12,9 +12,10 @@ extern "C" {
 
 #define BINS 256
 
-typedef enum { RGB, Lab } color_space_t;
+typedef enum { RGB, LAB } color_space_t;
 
 typedef struct {
+  color_space_t color_space;
   int x[BINS];
   int y[BINS];
   int z[BINS];
