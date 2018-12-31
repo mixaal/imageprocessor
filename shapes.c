@@ -43,6 +43,34 @@ void draw_pixel(layer_t layer, vec3 color, float opacity, int x, int y, blend_mo
    image[idx+2] = COLOR_MAX * blend.z;
 }
 
+void draw_filled_rect(layer_t layer, vec3 color, float opacity, rect_t rect, blend_mode_func_t blend_func) 
+{
+   color_t *image = layer.image;
+   int width = layer.width;
+   int color_components = layer.color_components;
+
+   int minx = rect.minx < layer.zone.minx ? layer.zone.minx : rect.minx;
+   int miny = rect.miny < layer.zone.miny ? layer.zone.miny : rect.miny;
+   int maxx = rect.maxx >= layer.zone.maxx ? layer.zone.maxx-1 : rect.maxx;
+   int maxy = rect.maxy >= layer.zone.maxy ? layer.zone.maxy-1 : rect.maxy;
+
+   for(int y = miny; y<=maxy; y++) 
+   for(int x = minx; x<=maxx; x++) {
+       int idx;
+       vec3 source_pixel, blend;
+       if (rect.minx >= layer.zone.minx) {
+         idx = y*width*color_components + x*color_components;
+         source_pixel = vec3_init(image[idx]/(float)COLOR_MAX, image[idx+1]/(float)COLOR_MAX, image[idx+2]/(float)COLOR_MAX);
+         blend = blend_func(color, source_pixel, opacity);
+         image[idx] = COLOR_MAX * blend.x;
+         image[idx+1] = COLOR_MAX * blend.y;
+         image[idx+2] = COLOR_MAX * blend.z;
+       }
+   }
+ 
+}
+
+
 void draw_rect(layer_t layer, vec3 color, float opacity, rect_t rect, blend_mode_func_t blend_func)
 {
    color_t *image = layer.image;

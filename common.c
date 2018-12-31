@@ -2,6 +2,11 @@
 
 #include <stdio.h>
 
+float vec3_dist(vec3 a, vec3 b)
+{
+  return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z);
+}
+
 void vec3_info(vec3 v)
 {
   fprintf(stderr, "v=[%f %f %f]\n", v.x, v.y, v.z);

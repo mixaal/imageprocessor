@@ -8,9 +8,10 @@ CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ @OPENCV_CFLAGS@
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
-        auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o
+        auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o llist.o kmeans.o
 
 PROG=improc
+DOMINANT_COLORS=examples/dominant_colors
 FANTASY=examples/fantasy-forest
 DAYNIGHT=examples/day-to-night
 TRUE_BLOOD=examples/true-blood
@@ -28,13 +29,16 @@ SUFFIXES=.o .c .cc .cpp
 LIBS=@LIBS@ -fopenmp
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD)
+all: $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)
 
 $(TRACKING): $(TRACKING).o $(OBJECTS)
 	$(CXX) -o $(TRACKING)  $(TRACKING).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)
+
+$(DOMINANT_COLORS): $(DOMINANT_COLORS).o $(OBJECTS)
+	$(CC) -o $(DOMINANT_COLORS)  $(DOMINANT_COLORS).o $(OBJECTS) $(LIBS)
 
 $(COLOR_CONV_TEST): $(COLOR_CONV_TEST).o $(OBJECTS)
 	$(CC) -o $(COLOR_CONV_TEST)  $(COLOR_CONV_TEST).o $(OBJECTS) $(LIBS)

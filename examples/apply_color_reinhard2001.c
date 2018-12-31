@@ -17,7 +17,7 @@ static void save_histogram(const char *filename, layer_t layer)
 {
 
   layer_t hist_layer = layer_new_dim(512, 300, 3, false, false);
-  histogram_t h = histogram_from_layer(layer, LAB, layer.zone);
+  histogram_t h = histogram_from_layer(layer, RGB, layer.zone);
   histogram_draw(hist_layer, h, true);
   write_JPEG_file(filename, hist_layer, 90);
   layer_free(hist_layer);
