@@ -11,14 +11,6 @@ static histogram_t histogram_init(color_space_t color_space) {
   h.color_space = color_space;
   return h;
 }
-#define L_MIN 0.0f
-#define L_MAX 1.73f
-
-#define a_MIN -0.65f
-#define a_MAX 0.65f
-
-#define b_MIN -0.131f
-#define b_MAX 0.131f
 
 static void histogram_Lab_sample(histogram_t *h, float L, float a, float b)
 {

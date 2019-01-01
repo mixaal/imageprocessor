@@ -2,6 +2,15 @@
 #define __IM_COLOR_CONVERSION_H__ 1
 
 #include "common.h"
+#define L_MIN 0.0f
+#define L_MAX 1.73f
+
+#define a_MIN -0.65f
+#define a_MAX 0.65f
+
+#define b_MIN -0.131f
+#define b_MAX 0.131f
+
 
 
 #ifdef __cplusplus

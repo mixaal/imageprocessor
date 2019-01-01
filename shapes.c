@@ -1,6 +1,17 @@
 #include "shapes.h"
 #include <math.h>
 
+void draw_gauss(layer_t layer, vec3 color, float opacity, rect_t zone, float sigma, blend_mode_func_t blend_func)
+{
+  float dx = (zone.maxx - zone.minx);
+  float kx = dx / (6*sigma);
+  float ky = (zone.maxy - zone.miny);
+  for (float x = -3*sigma; x< 3*sigma; x+=sigma/100.0f) {
+     float y = exp(-x*x/(2*sigma*sigma));
+     draw_pixel(layer, color, opacity, zone.minx + dx/2 + kx*x, zone.maxy - ky * y, blend_func);
+  }
+}
+
 void draw_circle(layer_t layer, vec3 color, float opacity, int x, int y, int r, blend_mode_func_t blend_func)
 {
   for(double a=0; a<2*M_PI; a+=1.0/r) {
