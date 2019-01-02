@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentage, vec3 *variance);
+int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentage, vec3 *variance);
 
 #ifdef __cplusplus
 }

@@ -16,8 +16,9 @@
  * @param zone  zone to operate on
  * @param n     how many dominant colors to output
  * @param result resulting pre-allocated vector storing colors.
+ * @return segmentation result
  */
-void kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentage, vec3 *variance) {
+int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentage, vec3 *variance) {
    vec3 *new_means_sum = xmalloc(n*sizeof(vec3));
    size_t *sums = xmalloc(n*sizeof(size_t));
    printf("random vectors:\n");
@@ -26,7 +27,7 @@ void kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
    int width = layer.width;
    int height = layer.height;
    int color_components = layer.color_components;
-  if (zone.maxy==0) return;
+  if (zone.maxy==0) return NULL;
 
    int *pixel_category = xmalloc(sizeof(int)*layer.width*layer.height);
   if (zone.minx<0) zone.minx=0;
@@ -135,8 +136,9 @@ void kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
         }
       }
 
-      free(pixel_category);
-      return;
+      return pixel_category;
     }
   }
+ 
+      return pixel_category;
 }

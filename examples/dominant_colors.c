@@ -6,7 +6,9 @@
 #include "shapes.h"
 #include "color_conversion.h"
 
-#define DOMINANT_COLORS 5
+#define DOMINANT_COLORS 8
+
+static void save_segmentation(const char *segmentation_filename, int width, int height, vec3 *dominant_colors, int *segmentation) ;
 
 int main(int argc, char *argv[]) {
   /**
@@ -25,7 +27,9 @@ int main(int argc, char *argv[]) {
   /**
    * Compute dominant colors using k-means.
    */
-  kmeans(source, source.zone, DOMINANT_COLORS, dominant_colors, percentage, variance);
+  int *segmentation = kmeans(source, source.zone, DOMINANT_COLORS, dominant_colors, percentage, variance);
+
+  save_segmentation("image-segmentation.jpg", source.width, source.height, dominant_colors, segmentation);
 
   printf("dominant colors\n");
   for(int i=0;i<DOMINANT_COLORS; i++) vec3_info(dominant_colors[i]);
@@ -54,6 +58,28 @@ int main(int argc, char *argv[]) {
      draw_gauss(colors, vec3_init(0.0f, 0.0f, 1.0f), 1.0f, shape_gauss_z, variance[i].z, blend_normal);
   }
   write_JPEG_file("dominant-colors.jpg", colors, 90);
+  free(segmentation);
 
   return 0;
+}
+
+static void save_segmentation(const char *segmentation_filename, int width, int height, vec3 *dominant_colors, int *segmentation) 
+{
+   layer_t layer_copy = layer_new_dim(width, height, 3, False, False);
+   for(int x=0; x<width; x++) for (int y=0; y<height; y++) {
+       int category = segmentation[y*width + x];
+       
+       vec3 color;
+       if (category>=0) {
+           color = LMStoRGB(LabtoLMS(dominant_colors[category]));
+       } else {
+           color = vec3_init(0, 0, 0);
+       }
+       int idx = y * width * 3 + x * 3;
+       layer_copy.image[idx] = COLOR_MAX * color.x;
+       layer_copy.image[idx+1] = COLOR_MAX * color.y;
+       layer_copy.image[idx+2] = COLOR_MAX * color.z;
+   }
+   write_JPEG_file(segmentation_filename, layer_copy, 90);
+   layer_free(layer_copy);
 }

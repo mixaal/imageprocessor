@@ -9,11 +9,12 @@
 #include "color_conversion.h"
 #include "permgen.h"
 #include "kmeans.h"
+#include "shapes.h"
 
 #include <math.h>
 #include <float.h>
 
-#define DOMINANT_COLORS_NO 5
+#define DOMINANT_COLORS_NO 8
 #define DELTA 15.0f
 
 static float color_distance(vec3 src, vec3 dst);
@@ -87,7 +88,8 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
        vec3 rgb = vec3_init(rc/255.0f, gc/255.0f, bc/255.0f);    
        vec3 LMS = RGBtoLMS(rgb);
        vec3 Lab = LMStoLab(LMS);
-  
+       float Pxy[DOMINANT_COLORS_NO];
+#if 0
        float Psum = 0.0f;
        for(int j=0; j<DOMINANT_COLORS_NO; j++) {
          float dx = pow(Lab.x - dest_dominant_colors[j].x, 2.0f) / (2*dest_variance[j].x);
@@ -95,7 +97,6 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
          float dz = pow(Lab.z - dest_dominant_colors[j].z, 2.0f) / (2*dest_variance[j].z);
          Psum += exp(-dx -dy -dz) ;
        }
-       float Pxy[DOMINANT_COLORS_NO];
        for(int j=0; j<DOMINANT_COLORS_NO; j++) {
          float dx = pow(Lab.x - dest_dominant_colors[j].x, 2.0f) / (2*dest_variance[j].x);
          float dy = pow(Lab.y - dest_dominant_colors[j].y, 2.0f) / (2*dest_variance[j].y);
@@ -103,20 +104,35 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
          Pxy[j] = exp(-dx -dy -dz) / Psum ;
          //printf("Pxy[%d]=%f\n", j, Pxy[j]);
        }
+#endif
        vec3 Io = vec3_init(0, 0, 0);
        for(int j=0; j<DOMINANT_COLORS_NO; j++) {
           vec3 sigma_src = source_variance[mapping[j]];
           vec3 sigma_dst = dest_variance[j];
           if (sigma_src.x < 0 || sigma_src.y < 0 || sigma_src.z < 0) continue;
           if (sigma_dst.x < 0 || sigma_dst.y < 0 || sigma_dst.z < 0) continue;
-          Pxy[j] = 0.2f;
+          Pxy[j] = 1.0f/DOMINANT_COLORS_NO;
+#if 0
           Io = vec3_add(Io, vec3_init(
-             Pxy[j] * (sqrtf(sigma_src.x)/sqrtf(sigma_dst.x) * (Lab.x - dest_dominant_colors[j].x) + source_dominant_colors[mapping[j]].x),
-             Pxy[j] * (sqrtf(sigma_src.y)/sqrtf(sigma_dst.y) * (Lab.y - dest_dominant_colors[j].y) + source_dominant_colors[mapping[j]].y),
-             Pxy[j] * (sqrtf(sigma_src.z)/sqrtf(sigma_dst.z) * (Lab.z - dest_dominant_colors[j].z) + source_dominant_colors[mapping[j]].z)
+             Pxy[j] * (sqrtf(sigma_src.x)/sqrtf(sigma_dst.x) *  (Lab.x - dest_dominant_colors[j].x) + source_dominant_colors[mapping[j]].x),
+             Pxy[j] * (sqrtf(sigma_src.y)/sqrtf(sigma_dst.y) *  (Lab.y - dest_dominant_colors[j].y) + source_dominant_colors[mapping[j]].y),
+             Pxy[j] * (sqrtf(sigma_src.z)/sqrtf(sigma_dst.z) *  (Lab.z - dest_dominant_colors[j].z) + source_dominant_colors[mapping[j]].z)
           ));
+#endif
+          Io = vec3_add(Io, vec3_init(
+             Pxy[j] * ((Lab.x - dest_dominant_colors[j].x) + source_dominant_colors[mapping[j]].x),
+             Pxy[j] * ((Lab.y - dest_dominant_colors[j].y) + source_dominant_colors[mapping[j]].y),
+             Pxy[j] * ((Lab.z - dest_dominant_colors[j].z) + source_dominant_colors[mapping[j]].z)
+          ));
+          if(y==0 && x==0)  {
+            printf("x===0 y===0\n");
+            vec3_info(Lab);
+            vec3_info(Io);
+            printf("===========\n");
+          }
+
        }
-       
+             
        vec3 backToRGB = LMStoRGB(LabtoLMS(Io));
        image[idx] = COLOR_MAX * backToRGB.x;
        image[idx+1] = COLOR_MAX * backToRGB.y;
@@ -132,7 +148,12 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
      }
    }
 
-
+   for(int j=0; j<DOMINANT_COLORS_NO; j++) {
+     rect_t shape_src = {j*20, 0, j*20+19, 20};
+     rect_t shape_dst = {j*20, 40, j*20+19, 60};
+     draw_filled_rect(dest, LMStoRGB(LabtoLMS(dest_dominant_colors[j])), 1.0f, shape_src, blend_normal);
+     draw_filled_rect(dest, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]])), 1.0f, shape_dst, blend_normal);
+   }
 }
 
 static float color_distance(vec3 src, vec3 dst)
@@ -144,3 +165,4 @@ static float color_distance(vec3 src, vec3 dst)
    float dz2 = pow(src_Lab.z - dst_Lab.z, 2);
    return 1 - exp(-sqrt(dx2+dy2+dz2)/DELTA);
 }
+

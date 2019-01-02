@@ -1,5 +1,6 @@
 *jpg
 *avi
+*.o
 config.log
 config.status
 Makefile
