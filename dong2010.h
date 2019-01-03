@@ -3,6 +3,6 @@
 
 #include "layer.h"
 
-void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone);
+void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, int n);
 
 #endif /* __IM_DONG_2010_H__ */

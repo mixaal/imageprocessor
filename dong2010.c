@@ -15,14 +15,14 @@
 #include <float.h>
 #include <stdlib.h>
 
-#define DOMINANT_COLORS_NO 8
+//#define DOMINANT_COLORS_NO 8
 #define DELTA 15.0f
 #define DELTA_S 0.4f
 #define DELTA_C 1.0f
 
 static float color_distance(vec3 src, vec3 dst);
 
-void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone) {
+void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, int DOMINANT_COLORS_NO) {
  
 
    /**
