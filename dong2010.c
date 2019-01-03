@@ -79,7 +79,6 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
 
   float zx = zone.maxx - zone.minx;
   float zy = zone.maxy - zone.miny;
-//#pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     printf("y=%d\n", y);
     for(int x=zone.minx; x<zone.maxx; x++) {
