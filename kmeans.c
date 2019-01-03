@@ -3,11 +3,48 @@
 #include <float.h>
 #include <math.h>
 #include <time.h>
+#include <stdlib.h>
 #include "color_conversion.h"
 
 #define MAX_ITERATIONS 100
 #define EPSILON 0.001
 
+static void color_info(color_info_t color_info)
+{
+  printf("color_info={color=[%f, %f, %f], center=[%f %f] intensity=%f, category=%d, variance=[%f %f %f]}\n",
+     color_info.color.x, color_info.color.y, color_info.color.z, 
+     color_info.center.x, color_info.center.y,
+     color_info.intensity, color_info.category,
+     color_info.variance.x, color_info.variance.y, color_info.variance.z);
+}
+
+
+#if 0
+static float compare_colors(const color_info_t c1, const color_info_t c2) 
+{
+  float Iv1 = c1.intensity;
+  float Iv2 = c2.intensity;
+  printf("Iv1 - Iv2 = %f\n", Iv1 - Iv2);
+  return Iv1 - Iv2;
+}
+
+static void sort_color_info(color_info_t *color_info, size_t n)
+{
+  for(int i=0; i<n; i++) {
+    _Bool swapped = False;
+    for (int j=0; j<n; j++) {
+      //printf("swapped = %d, color_info[%d]=%p\n", swapped, i, &color_info[i]);
+      if (compare_colors(color_info[i], color_info[j]) > 0.0f) {
+         swapped = True;
+         color_info_t temp = color_info[i];
+         color_info[i] = color_info[j];
+         color_info[j] = temp;
+      }
+    }
+    if(!swapped) return;
+  }
+}
+#endif
 
 /**
  * Compute most dominant colors using kmeans algorithm.
@@ -18,7 +55,7 @@
  * @param result resulting pre-allocated vector storing colors.
  * @return segmentation result
  */
-int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentage, vec3 *variance) {
+int *kmeans(layer_t layer, rect_t zone, size_t n, color_info_t *result) {
    vec3 *new_means_sum = xmalloc(n*sizeof(vec3));
    size_t *sums = xmalloc(n*sizeof(size_t));
    printf("random vectors:\n");
@@ -47,15 +84,16 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
       float sy=floor(zone.miny + (zone.maxy - zone.miny) * (float)rand() / (float)RAND_MAX);
       int idx = (int)sy*width*color_components + (int)sx*color_components;
       
-      result[i] = vec3_init(
+      result[i].category = i;
+      result[i].color = vec3_init(
           (float)image[idx]/COLOR_MAX, (float)image[idx+1]/COLOR_MAX, (float)image[idx+2]/COLOR_MAX
       );
-      vec3_info(result[i]);
+      vec3_info(result[i].color);
    }
 
   for(int iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
     printf("k-means iteration: %d\n", iteration);
-    for(int j=0; j<n; j++) vec3_info(result[j]);
+    for(int j=0; j<n; j++) vec3_info(result[j].color);
 #pragma omp parallel for
     for(int y=zone.miny; y<zone.maxy; y++)  {
       for(int x=zone.minx; x<zone.maxx; x++) {
@@ -69,7 +107,7 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
          float max_dist = FLT_MAX;
          int category = -1;
          for(int j=0; j<n; j++) {
-           float d = vec3_dist(v, result[j]);
+           float d = vec3_dist2(v, result[j].color);
            if (d < max_dist) {
              max_dist = d;
              category = j;
@@ -84,19 +122,23 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
     }
     float delta = 0.0f;
     for(int j=0; j<n; j++) {
-      //printf("sums[%d]=%ld\n", j, sums[j]);
       if(sums[j] != 0 ) {
-        if (percentage!=NULL) {
-          percentage[j] = (float)sums[j] / total_pixels;
+        result[j].percentage = (float)sums[j] / total_pixels;
+        if(result[j].percentage < 0) {
+           printf("sums[%d]=%ld total_pixels=%ld\n", j, sums[j], total_pixels);
+           exit(-1);
         }
+        result[j].samples = sums[j];
         new_means_sum[j].x /= sums[j];
         new_means_sum[j].y /= sums[j];
         new_means_sum[j].z /= sums[j];
-        delta += vec3_dist(new_means_sum[j], result[j]);
+        delta += vec3_dist2(new_means_sum[j], result[j].color);
         //printf("delta=%f\n", delta);
-        result[j].x = new_means_sum[j].x;
-        result[j].y = new_means_sum[j].y;
-        result[j].z = new_means_sum[j].z;
+        result[j].color.x = new_means_sum[j].x;
+        result[j].color.y = new_means_sum[j].y;
+        result[j].color.z = new_means_sum[j].z;
+      } else {
+        result[j].samples = 1;
       }
       new_means_sum[j].x = 0.0f;
       new_means_sum[j].y = 0.0f;
@@ -105,13 +147,11 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
     }
     if (delta < EPSILON) {
       for(int j=0; j<n; j++) {
-           printf("result[%d]=\n", j);
-           vec3_info(result[j]);
-           result[j] = LMStoLab(RGBtoLMS(result[j]));
-           vec3_info(result[j]);
+           result[j].intensity = to_gray(result[j].color);
+           result[j].color = LMStoLab(RGBtoLMS(result[j].color));
+           result[j].variance = vec3_init(0.0f, 0.0f, 0.0f);
+           result[j].center   = vec3_init(0.0f, 0.0f, 0.0f);
       }
-      if (variance!=NULL) {
-      for(int j=0; j<n; j++) variance[j] = vec3_init(-1.0f, -1.0f, -1.0f);
 #pragma omp parallel for
       for(int y=zone.miny; y<zone.maxy; y++)  {
         for(int x=zone.minx; x<zone.maxx; x++) {
@@ -125,20 +165,48 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, vec3 *result, float *percentag
           vec3 Lab = LMStoLab(RGBtoLMS(v));
           int category = pixel_category[y*width+x]; 
           if (category>=0) {
-            variance[category] = vec3_init(
-              pow(Lab.x - result[category].x, 2.0f), 
-              pow(Lab.y - result[category].y, 2.0f), 
-              pow(Lab.z - result[category].z, 2.0f)
-            );
-          }
-          
+            result[category].center   = vec3_add(result[category].center, vec3_init(
+                (float)x, (float)y, 0.0f
+            )); 
+            result[category].variance = vec3_add(result[category].variance, vec3_init(
+              pow(Lab.x - result[category].color.x, 2.0f), 
+              pow(Lab.y - result[category].color.y, 2.0f), 
+              pow(Lab.z - result[category].color.z, 2.0f)
+            ));
           }
         }
       }
 
+      for(int j=0; j<n; j++) {
+        result[j].center.x /= (float) result[j].samples;
+        result[j].center.y /= (float) result[j].samples;
+        result[j].center.x /= (float) (zone.maxx - zone.minx);
+        result[j].center.y /= (float) (zone.maxy - zone.miny);
+
+        result[j].variance.x /= (float) result[j].samples;
+        result[j].variance.y /= (float) result[j].samples;
+        result[j].variance.z /= (float) result[j].samples;
+
+        result[j].variance.x = sqrtf(result[j].variance.x);
+        result[j].variance.y = sqrtf(result[j].variance.y);
+        result[j].variance.z = sqrtf(result[j].variance.z);
+      }
+      printf("==================\n");
+      for(int j=0; j<n; j++) {
+           printf("result[%d]=\n", j);
+           color_info(result[j]);
+      }
+      printf("==================\n");
+      //sort_color_info(result, n);
+      for(int j=0; j<n; j++) {
+           printf("result[%d]=\n", j);
+           color_info(result[j]);
+      }
+      printf("==================\n");
       return pixel_category;
     }
   }
- 
-      return pixel_category;
+  printf("hopefully won't get here\n");
+  //sort_color_info(result, n);
+  return pixel_category;
 }

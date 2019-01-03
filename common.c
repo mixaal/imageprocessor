@@ -1,8 +1,19 @@
 #include "common.h"
 
 #include <stdio.h>
+#include <math.h>
+
+float gaussian_kernel(float distance, float bandwidth)
+{
+  return (1.0f/(bandwidth*sqrtf(2*M_PI)))*exp(-0.5f*(powf(distance/bandwidth, 2.0f)));
+}
 
 float vec3_dist(vec3 a, vec3 b)
+{
+  return sqrtf((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z));
+}
+
+float vec3_dist2(vec3 a, vec3 b)
 {
   return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z);
 }
