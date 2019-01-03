@@ -13,6 +13,12 @@ float vec3_dist(vec3 a, vec3 b)
   return sqrtf((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z));
 }
 
+double vec3_dist2_double(vec3 a, vec3 b)
+{
+  
+  return ((double)a.x - (double)b.x)*((double)a.x - (double)b.x) + ((double)a.y - (double)b.y)*((double)a.y - (double)b.y) + ((double)a.z - (double)b.z)*((double)a.z - (double)b.z);
+}
+
 float vec3_dist2(vec3 a, vec3 b)
 {
   return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z);

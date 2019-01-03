@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+double vec3_dist2_double(vec3 a, vec3 b);
 float gaussian_kernel(float distance, float bandwidth);
 float vec3_dist(vec3 a, vec3 b);
 float vec3_dist2(vec3 a, vec3 b);
