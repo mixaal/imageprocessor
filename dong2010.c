@@ -10,6 +10,7 @@
 #include "permgen.h"
 #include "kmeans.h"
 #include "shapes.h"
+#include "emd.h"
 
 #include <math.h>
 #include <float.h>
@@ -21,8 +22,11 @@
 #define DELTA_C 1.0f
 
 static float color_distance(vec3 src, vec3 dst);
+static float emd_distance(feature_t *src, feature_t *dst) {
+    return color_distance(*src, *dst);
+}
 
-void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, int DOMINANT_COLORS_NO) {
+void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, int DOMINANT_COLORS_NO, match_t match, _Bool preserve_luminance) {
  
 
    /**
@@ -65,25 +69,53 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
          }
       }
     } else {
-      _Bool taken[DOMINANT_COLORS_NO];
-      for(int i=0; i<DOMINANT_COLORS_NO; i++) taken[i]=False;
-      for(int i=0; i<DOMINANT_COLORS_NO; i++) {
-        float min_error = FLT_MAX;
-        int current_mapping = -1;
-        for (int j=0; j<DOMINANT_COLORS_NO; j++) {
-            float error = color_distance(source_dominant_colors[j].color, dest_dominant_colors[i].color);
-            if(error<min_error) printf("want    %d -> %d [error=%f, min_error=%f] taken?=%d\n", i, j, error, min_error, taken[j]);
-            if(error<min_error && !taken[j]) {
-              min_error = error;
-              current_mapping = j;
-            }
+      switch(match) {
+      case EMD:{
+        feature_t h1[DOMINANT_COLORS_NO];
+        feature_t h2[DOMINANT_COLORS_NO];
+        float w1[DOMINANT_COLORS_NO];
+        float w2[DOMINANT_COLORS_NO];
+        for(int i=0; i<DOMINANT_COLORS_NO; i++) {
+           h1[i] = dest_dominant_colors[i].color;
+           h2[i] = source_dominant_colors[i].color;
+           //w1[i] = dest_dominant_colors[i].percentage;
+           //w2[i] = source_dominant_colors[i].percentage;
+           w1[i]=w2[i]=1.0f;
         }
-        printf("mapping %d -> %d [%f]\n", i, current_mapping, min_error);
-        taken[current_mapping] = True;
-        mapping[i] = current_mapping;
+        signature_t s1 = {DOMINANT_COLORS_NO, h1, w1};
+        signature_t s2 = {DOMINANT_COLORS_NO, h2, w2};
+        flow_t flow[2*DOMINANT_COLORS_NO-1];
+        int flow_size;
+        float e = emd(&s1, &s2, emd_distance, flow, &flow_size);
+        printf("e=%f\n", e);
+        if(flow_size != DOMINANT_COLORS_NO) {
+            for(int i=0; i<flow_size; i++) {
+                printf("flow: from: %d -> %d [amount=%f] [p1=%f] [p2=%f] \n", flow[i].from, flow[i].to, flow[i].amount, w1[i], w2[i]);
+            }
+            fprintf(stderr, "Unexpected error: flow_size (%d) != DOMINANT_COLORS_NO (%d)\n", flow_size, DOMINANT_COLORS_NO);
+            exit(-1);
+        }
+        for(int i=0; i<flow_size; i++) {
+          printf("flow: from: %d -> %d [%f] \n", flow[i].from, flow[i].to, flow[i].amount);
+          mapping[flow[i].from] = flow[i].to;
+        }
+        }
+        break;
+      case CLOSEST_DISTANCE:
+        for(int i=0; i<DOMINANT_COLORS_NO; i++) {
+          float min_error = FLT_MAX;
+          for (int j=0; j<DOMINANT_COLORS_NO; j++) {
+            float error = color_distance(source_dominant_colors[j].color, dest_dominant_colors[i].color);
+            if(error<min_error) {
+              min_error = error;
+              mapping[i] = j;
+            }
+          }
+        }
+        break;
       }
-    }
-   exit(-1);
+   }
+   //exit(-1);
 
    color_t *image = dest.image;
    int width = dest.width;
@@ -165,7 +197,8 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
             //vec3_info(Io);
             printf("===========\n");
           }
-
+   
+          if(preserve_luminance ) Io.x = Lab.x; // Preserve source luminance 
        }
              
        vec3 backToRGB = LMStoRGB(LabtoLMS(Io));

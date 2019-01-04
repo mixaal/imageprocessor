@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
 #include "emd.h"
 
@@ -106,7 +107,7 @@ float emd(signature_t *Signature1, signature_t *Signature2,
   double totalCost;
   float w;
   node2_t *XP;
-  flow_t *FlowP;
+  flow_t *FlowP = NULL;
   node1_t U[MAX_SIG_SIZE1], V[MAX_SIG_SIZE1];
 
   w = init(Signature1, Signature2, Dist);
@@ -408,7 +409,7 @@ static void findBasicVariables(node1_t *U, node1_t *V)
 static int isOptimal(node1_t *U, node1_t *V)
 {    
   double delta, deltaMin;
-  int i, j, minI, minJ;
+  int i, j, minI=INT_MAX, minJ=INT_MAX;
 
   /* FIND THE MINIMAL Cij-Ui-Vj OVER ALL i,j */
   deltaMin = INFINITY;
@@ -455,7 +456,7 @@ static void newSol()
     int i, j, k;
     double xMin;
     int steps;
-    node2_t *Loop[2*MAX_SIG_SIZE1], *CurX, *LeaveX;
+    node2_t *Loop[2*MAX_SIG_SIZE1], *CurX, *LeaveX=NULL;
  
 #if DEBUG_LEVEL > 3
     printf("EnterX = (%d,%d)\n", _EnterX->i, _EnterX->j);
@@ -834,6 +835,7 @@ static void addBasicVariable(int minI, int minJ, double *S, double *D,
 /**********************
     printSolution
 **********************/
+#if DEBUG_LEVEL > 1
 static void printSolution()
 {
   node2_t *P;
@@ -855,5 +857,5 @@ static void printSolution()
 
   printf("COST = %f\n", totalCost);
 }
-
+#endif
 

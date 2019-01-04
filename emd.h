@@ -15,16 +15,19 @@
     E-Mail: rubner@cs.stanford.edu   URL: http://vision.stanford.edu/~rubner
 */
 
+#include "common.h"
 
 /* DEFINITIONS */
 #define MAX_SIG_SIZE   100
-#define MAX_ITERATIONS 500
-#define INFINITY       1e20
+#define MAX_ITERATIONS 1500
+#ifndef INFINITY
+#  define INFINITY       1e20
+#endif
 #define EPSILON        1e-6
 
 /*****************************************************************************/
 /* feature_t SHOULD BE MODIFIED BY THE USER TO REFLECT THE FEATURE TYPE      */
-typedef int feature_t;
+typedef vec3 feature_t;
 /*****************************************************************************/
 
 
