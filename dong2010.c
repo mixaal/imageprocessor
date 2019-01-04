@@ -47,22 +47,43 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
      */
     int mapping[DOMINANT_COLORS_NO];
     
-    permgen_t p = permgen_init(DOMINANT_COLORS_NO);
-    float best_error = FLT_MAX;
-    while(permgen_has_more(&p)) {
-       int *perm = permgen_get_next(&p);
-       float error = 0.0f;
-       for(int i=0; i<DOMINANT_COLORS_NO; i++) {
-          error += color_distance(source_dominant_colors[perm[i]].color, dest_dominant_colors[i].color);
-       }
-       if( error < best_error ) {
-          best_error = error;
-          /**
-           * Preserve the best mapping so far.
-           */
-          for(int i=0; i<DOMINANT_COLORS_NO; i++) mapping[i] = perm[i];
-       }
+    if (DOMINANT_COLORS_NO<10) {
+      permgen_t p = permgen_init(DOMINANT_COLORS_NO);
+      float best_error = FLT_MAX;
+      while(permgen_has_more(&p)) {
+         int *perm = permgen_get_next(&p);
+         float error = 0.0f;
+         for(int i=0; i<DOMINANT_COLORS_NO; i++) {
+            error += color_distance(source_dominant_colors[perm[i]].color, dest_dominant_colors[i].color);
+         }
+         if( error < best_error ) {
+            best_error = error;
+            /**
+             * Preserve the best mapping so far.
+             */
+            for(int i=0; i<DOMINANT_COLORS_NO; i++) mapping[i] = perm[i];
+         }
+      }
+    } else {
+      _Bool taken[DOMINANT_COLORS_NO];
+      for(int i=0; i<DOMINANT_COLORS_NO; i++) taken[i]=False;
+      for(int i=0; i<DOMINANT_COLORS_NO; i++) {
+        float min_error = FLT_MAX;
+        int current_mapping = -1;
+        for (int j=0; j<DOMINANT_COLORS_NO; j++) {
+            float error = color_distance(source_dominant_colors[j].color, dest_dominant_colors[i].color);
+            if(error<min_error) printf("want    %d -> %d [error=%f, min_error=%f] taken?=%d\n", i, j, error, min_error, taken[j]);
+            if(error<min_error && !taken[j]) {
+              min_error = error;
+              current_mapping = j;
+            }
+        }
+        printf("mapping %d -> %d [%f]\n", i, current_mapping, min_error);
+        taken[current_mapping] = True;
+        mapping[i] = current_mapping;
+      }
     }
+   exit(-1);
 
    color_t *image = dest.image;
    int width = dest.width;
@@ -120,6 +141,7 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
        }
        vec3 Io = vec3_init(0, 0, 0);
        for(int j=0; j<DOMINANT_COLORS_NO; j++) {
+          //printf("mapping[%d]=%d\n",j, mapping[j]);
           vec3 sigma_src = source_dominant_colors[mapping[j]].variance;
           vec3 sigma_dst = dest_dominant_colors[j].variance;
           if (sigma_src.x < 0 || sigma_src.y < 0 || sigma_src.z < 0) continue;
