@@ -107,7 +107,7 @@ class EpipolarGeometry(object):
         self.pts2 = np.array(self.pts2)
         F,mask= cv2.findFundamentalMat(self.pts1,self.pts2,cv2.FM_LMEDS)
         self.F = F
-        print "F={}".format(F)
+        print("F={}".format(F))
         self.mask = mask
 
     def left_matches(self):
@@ -184,7 +184,7 @@ class PerspectiveTransform(object):
         p2fNew = pts2.reshape((pts2.shape[0] * 2, 1))
 
         (im_height, im_width)=self.left_matcher.shape
-        print "im_height: {}, im_width={}".format(im_height, im_width)
+        print("im_height: {}, im_width={}".format(im_height, im_width))
 
         retBool ,rectmat1, rectmat2 = cv2.stereoRectifyUncalibrated(p1fNew,p2fNew,self.F,(im_width, im_height))
 

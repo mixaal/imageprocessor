@@ -10,9 +10,15 @@ int main(int argc, char *argv[]) {
    */
   layer_t source = read_JPEG_file(argv[1]);
   layer_t dest   = read_JPEG_file(argv[2]);
+  int colors = 32;
+
+  if(argc>3) {
+    colors = atoi(argv[3]);
+    fprintf(stderr, "Custom number for colors segmentation: %d\n", colors);
+  }
   layer_info(source);
 
-  apply_color_dong2010(source, dest, source.zone, dest.zone, 32, CLOSEST_DISTANCE, True);
+  apply_color_dong2010(source, dest, source.zone, dest.zone, colors, CLOSEST_DISTANCE, True);
   write_JPEG_file("dong.jpg", dest, 90);
 
   return 0;
