@@ -8,41 +8,43 @@
 
 #define DOMINANT_COLORS 8
 
+static int dominant_colors = DOMINANT_COLORS;
 static void save_segmentation(const char *segmentation_filename, int width, int height, color_info_t *color_info, int *segmentation) ;
 
 int main(int argc, char *argv[]) {
   /**
    * Read the source image to take the tonality from
    */
+  if(argc>=3) dominant_colors = atoi(argv[2]);
   layer_t source = read_JPEG_file(argv[1]);
   layer_info(source);
 
   /**
    * Store the most dominant colors here.
    */
-  color_info_t color_info[DOMINANT_COLORS];
+  color_info_t color_info[dominant_colors];
 
   /**
    * Compute dominant colors using k-means.
    */
-  int *segmentation = kmeans(source, source.zone, DOMINANT_COLORS, color_info);
+  int *segmentation = kmeans(source, source.zone, dominant_colors, color_info);
 
   save_segmentation("image-segmentation.jpg", source.width, source.height, color_info, segmentation);
 
   printf("dominant colors\n");
-  for(int i=0;i<DOMINANT_COLORS; i++) vec3_info(color_info[i].color);
+  for(int i=0;i<dominant_colors; i++) vec3_info(color_info[i].color);
   printf("percentage:\n");
-  for(int i=0;i<DOMINANT_COLORS; i++) printf("%f\n", color_info[i].percentage);
+  for(int i=0;i<dominant_colors; i++) printf("%f\n", color_info[i].percentage);
   printf("variance:\n");
-  for(int i=0;i<DOMINANT_COLORS; i++) vec3_info(color_info[i].variance);
+  for(int i=0;i<dominant_colors; i++) vec3_info(color_info[i].variance);
   printf("=================\n");
 
   /**
    * Print and draw dominant colors.
    */
-  int dx = 1024 / DOMINANT_COLORS;
-  layer_t colors = layer_new_dim(DOMINANT_COLORS*dx, 512, 3, False, False);
-  for(int i=0; i<DOMINANT_COLORS; i++) {
+  int dx = 1024 / dominant_colors;
+  layer_t colors = layer_new_dim(dominant_colors*dx, 512, 3, False, False);
+  for(int i=0; i<dominant_colors; i++) {
      vec3_info(color_info[i].color);
      rect_t shape = {i*dx, 0, i*dx+dx-1, 255};
      rect_t shape2 = {i*dx, 511-256*color_info[i].percentage, i*dx+dx-1, 511};
@@ -66,7 +68,7 @@ int main(int argc, char *argv[]) {
 static color_info_t find_color_info(int category, color_info_t *color_info)
 {
   color_info_t d;
-  for(int i=0; i<DOMINANT_COLORS; i++) {
+  for(int i=0; i<dominant_colors; i++) {
      if(color_info[i].category == category) return color_info[i];
   }
   return d;
