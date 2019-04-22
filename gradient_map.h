@@ -15,6 +15,17 @@ void gradient_map(
   float opacity,
   rect_t zone);
 
+void gradient_fill(
+  layer_t layer,
+  vec3 start_color,
+  vec3 end_color,
+  float weight,
+  float opacity,
+  vec3 start_point,
+  vec3 direction,
+  rect_t zone,
+  float alpha_mask,
+  _Bool mask);
 
 
 #ifdef __cplusplus

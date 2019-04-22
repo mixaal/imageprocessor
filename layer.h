@@ -40,6 +40,7 @@ typedef image_t layer_t;
 
 layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white);
 void add_layer_mask(layer_t layer, layer_t mask);
+void layer_mask(layer_t *source, float intensity_threshold, float alpha_mask);
 void add_layer_mask_color(layer_t layer, vec3 color);
 image_t layer_new(image_t source);
 void layer_substract(image_t dest, image_t from, image_t what);

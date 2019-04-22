@@ -3,6 +3,7 @@
 #include "layer.h"
 #include "xmalloc.h"
 #include "common.h"
+#include "color_conversion.h"
 
 void layer_info(layer_t layer)
 {
@@ -15,6 +16,37 @@ image_t layer_new(image_t source) {
    image_t image = source;
    image.image = image_copy;
    return image;
+}
+
+/**
+ * Create layer mask from source layer.
+ * 
+ * @param source              source layer to use
+ * @param intensity_threshold whatever lower this intensity is black, others are white
+ * @param alpha_mask          if output intensity (black/white) is below this alpha mask do not write it, useful for overlays
+ */ 
+void layer_mask(layer_t *source, float intensity_threshold, float alpha_mask)
+{
+   int width  = source -> width;
+   int height = source -> height;
+   int color_components = source -> color_components;
+   size_t nbytes = width * height * color_components * sizeof(color_t);
+   source -> mask = xmalloc(nbytes);
+   for(int y=0; y<height; y++) {
+     for(int x=0; x<width; x++) {
+       int idx = (y*width + x) * color_components;
+       vec3 c = vec3_init(
+             (float)source -> image[idx]/COLOR_MAX,  
+             (float)source -> image[idx+1]/COLOR_MAX,  
+             (float)source -> image[idx+2]/COLOR_MAX
+       );
+       float Iv = to_gray(c);
+       if(Iv < intensity_threshold && alpha_mask > 0) continue;
+       source -> mask[idx] = (Iv >= intensity_threshold ) ? 0xff : 0x00;
+       source -> mask[idx+1] = (Iv >= intensity_threshold ) ? 0xff : 0x00;
+       source -> mask[idx+2] = (Iv >= intensity_threshold ) ? 0xff : 0x00;
+      }
+   }
 }
 
 layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white) {

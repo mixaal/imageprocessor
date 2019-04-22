@@ -1,5 +1,42 @@
 #include "auto_tone.h"
 #include <stdlib.h>
+#include "color_conversion.h"
+
+void hdr(image_t layer, rect_t zone) {
+   color_t *image = layer.image;
+   int width = layer.width;
+   int height = layer.height;
+   int color_components = layer.color_components;
+  if (zone.maxy==0) return;
+
+  if (zone.minx<0) zone.minx=0;
+  if (zone.miny<0) zone.miny=0;
+  if (zone.maxx>=width) zone.maxx=width;
+  if (zone.maxy>=height) zone.maxy=height;
+#pragma omp parallel for
+  for(int y=zone.miny; y<zone.maxy; y++)  {
+    for(int x=zone.minx; x<zone.maxx; x++) {
+       int idx = y*width*color_components + x*color_components;
+       color_t r, g, b;
+       r = image[idx];
+       g = image[idx+1];
+       b = image[idx+2];
+       vec3 c = vec3_init(
+            (float)r / COLOR_MAX,
+            (float)g / COLOR_MAX,
+            (float)b / COLOR_MAX
+       );
+       float Vout = c.z / (c.z + 1.0) ;
+       printf("c.z=%f Vout=%f\n", c.z, Vout);
+       c.z = Vout;
+       vec3 out = HSLtoRGB(c);
+       image[idx] = COLOR_MAX * out.x;
+       image[idx+1] = COLOR_MAX * out.y;
+       image[idx+2] = COLOR_MAX * out.z;
+    }
+  }
+}
+
 void auto_tone(image_t layer, rect_t zone) {
    color_t *image = layer.image;
    int width = layer.width;

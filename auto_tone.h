@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 void auto_tone(image_t layer, rect_t zone);
+void hdr(image_t layer, rect_t zone);
 
 #ifdef __cplusplus
 }

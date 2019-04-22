@@ -17,7 +17,10 @@
 
 float to_gray(vec3 color) 
 {
-  return 0.3f * color.x + 0.59f * color.y + 0.11f * color.z;
+  float I = 0.3f * color.x + 0.59f * color.y + 0.11f * color.z;
+  if(I<0.0f) I=0.0f;
+  if(I>1.0f) I=1.0f;
+  return I;
 }
 
 float luminance(vec3 color)

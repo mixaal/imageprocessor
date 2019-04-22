@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   int w = sequoia_trees.width;
   int h = sequoia_trees.height;
   rect_t blur_zone = {0, 0, 0.77f*w, 0.89f*h};
-  gauss(sequoia_trees, 20, 0.0f, blur_zone);
+  gauss(sequoia_trees, 20, 0.0f, blur_zone, False);
   vec3 fantasy_orange = vec3_init(1.0f, 156.0f/255.0f, 97.0f/255.0f);
   brush_touch(sequoia_trees, IMAGE, 1000, 1.0f, 0.7f*w, 0.1f*h, fantasy_orange, blend_linear_light);
   brush_touch(sequoia_trees, IMAGE, 1000, 1.0f, 0.4f*w, 0.45f*h, fantasy_orange, blend_linear_light);
