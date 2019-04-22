@@ -30,7 +30,7 @@ vec3 pow10LMS(vec3 LMS);
 vec3 RGBtoLMS(vec3 RGB);
 vec3 RGBtoXYZ(vec3 RGB);
 
-float deltaE(vec3 labA, vec3 labB);
+float delta_Lab(vec3 labA, vec3 labB);
 vec3 RGB2Lab(vec3 rgb);
 #ifdef __cplusplus
 }

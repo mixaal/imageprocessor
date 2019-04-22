@@ -170,7 +170,7 @@ vec3 LMStoRGB(vec3 LMS)
 // calculate the perceptual distance between colors in CIELAB
 // https://github.com/THEjoezack/ColorMine/blob/master/ColorMine/ColorSpaces/Comparisons/Cie94Comparison.cs
 
-float deltaE(vec3 labA, vec3 labB){
+float delta_Lab(vec3 labA, vec3 labB){
   float deltaL = labA.x - labB.x;
   float deltaA = labA.y - labB.y;
   float deltaB = labA.z - labB.z;

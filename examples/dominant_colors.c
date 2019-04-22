@@ -31,13 +31,13 @@ int main(int argc, char *argv[]) {
 
   save_segmentation("image-segmentation.jpg", source.width, source.height, color_info, segmentation);
 
-  printf("dominant colors\n");
+  fprintf(stderr, "\n\ndominant colors\n");
   for(int i=0;i<dominant_colors; i++) vec3_info(color_info[i].color);
-  printf("percentage:\n");
+  fprintf(stderr, "percentage:\n");
   for(int i=0;i<dominant_colors; i++) printf("%f\n", color_info[i].percentage);
-  printf("variance:\n");
+  fprintf(stderr, "variance:\n");
   for(int i=0;i<dominant_colors; i++) vec3_info(color_info[i].variance);
-  printf("=================\n");
+  fprintf(stderr, "=================\n");
 
   /**
    * Print and draw dominant colors.

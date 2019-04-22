@@ -11,10 +11,12 @@
 #include "kmeans.h"
 #include "shapes.h"
 #include "emd.h"
+#include "jpeg.h"
 
 #include <math.h>
 #include <float.h>
 #include <stdlib.h>
+#include <string.h>
 
 //#define DOMINANT_COLORS_NO 8
 #define DELTA 15.0f
@@ -37,13 +39,21 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
     kmeans(source, source.zone, DOMINANT_COLORS_NO, source_dominant_colors);
     int *segmentation = kmeans(dest, dest.zone, DOMINANT_COLORS_NO, dest_dominant_colors);
 
-    printf("source dominant colors\n");
-    for(int j=0; j<DOMINANT_COLORS_NO; j++) vec3_info(source_dominant_colors[j].color);
-    printf("dest dominant colors\n");
-    for(int j=0; j<DOMINANT_COLORS_NO; j++) vec3_info(dest_dominant_colors[j].color);
-    printf("source variance\n");
+    /**
+     * Create probability visualization layers.
+     */
+    layer_t Pxy_layer[DOMINANT_COLORS_NO];
+    for(int k=0; k<DOMINANT_COLORS_NO; k++) {
+       Pxy_layer[k] = layer_new_dim(dest.width, dest.height, dest.color_components, False, False);
+    }
+
+    fprintf(stderr, "\n\nsource dominant colors\n");
+    for(int j=0; j<DOMINANT_COLORS_NO; j++) {vec3_info(source_dominant_colors[j].color); vec3_info(LMStoRGB(LabtoLMS(source_dominant_colors[j].color)));}
+    fprintf(stderr, "dest dominant colors\n");
+    for(int j=0; j<DOMINANT_COLORS_NO; j++) {vec3_info(dest_dominant_colors[j].color); vec3_info(LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)));}
+    fprintf(stderr, "source variance\n");
     for(int j=0; j<DOMINANT_COLORS_NO; j++) vec3_info(source_dominant_colors[j].variance);
-    printf("dest variance\n");
+    fprintf(stderr, "dest variance\n");
     for(int j=0; j<DOMINANT_COLORS_NO; j++) vec3_info(dest_dominant_colors[j].variance);
 
     /**
@@ -180,6 +190,11 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
           if (sigma_dst.x < 0 || sigma_dst.y < 0 || sigma_dst.z < 0) continue;
           //Pxy[j] = 1.0f/DOMINANT_COLORS_NO;
           float Pxy = jDxy[j] / Psum;
+          vec3 Cj = LMStoRGB(LabtoLMS(dest_dominant_colors[j].color));
+          Pxy_layer[j].image[idx]   = 100 * log10f(COLOR_MAX * Pxy) * Cj.x;
+          Pxy_layer[j].image[idx+1] = 100 * log10f(COLOR_MAX * Pxy) * Cj.y;
+          Pxy_layer[j].image[idx+2] = 100 * log10f(COLOR_MAX * Pxy) * Cj.z;
+
           vec3 delta = vec3_init(
              Pxy * ((sigma_src.x/sigma_dst.x)*(Lab.x - dest_dominant_colors[j].color.x) + source_dominant_colors[mapping[j]].color.x),
              Pxy * ((sigma_src.y/sigma_dst.y)*(Lab.y - dest_dominant_colors[j].color.y) + source_dominant_colors[mapping[j]].color.y),
@@ -216,12 +231,24 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
      }
    }
 
+   layer_t tonemap = layer_new_dim(DOMINANT_COLORS_NO*20, 60, 3, False, False);
+
    for(int j=0; j<DOMINANT_COLORS_NO; j++) {
      rect_t shape_src = {j*20, 0, j*20+19, 20};
-     rect_t shape_dst = {j*20, 40, j*20+19, 60};
+     rect_t shape_dst = {j*20, 40, j*20+19, 59};
+     printf("color mapping: %d --> %d\n", j, mapping[j]);
      draw_filled_rect(dest, LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)), 1.0f, shape_src, blend_normal);
      draw_filled_rect(dest, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]].color)), 1.0f, shape_dst, blend_normal);
+     draw_filled_rect(tonemap, LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)), 1.0f, shape_src, blend_normal);
+     draw_filled_rect(tonemap, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]].color)), 1.0f, shape_dst, blend_normal);
+     char filename[256];
+     memset(filename, 0, 256);
+     sprintf(filename, "tonemap-%d.jpg", j);
+     write_JPEG_file(filename, Pxy_layer[j], 90);
+     layer_free(Pxy_layer[j]);
    }
+   
+   write_JPEG_file("tonemap.jpg", tonemap, 90);
 }
 
 static float color_distance(vec3 src, vec3 dst)
@@ -232,5 +259,6 @@ static float color_distance(vec3 src, vec3 dst)
    float dy2 = pow(src_Lab.y - dst_Lab.y, 2);
    float dz2 = pow(src_Lab.z - dst_Lab.z, 2);
    return 1 - exp(-sqrt(dx2+dy2+dz2)/DELTA);
+   //return delta_Lab(src_Lab, dst_Lab);
 }
 
