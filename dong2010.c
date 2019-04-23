@@ -28,6 +28,8 @@ static float emd_distance(feature_t *src, feature_t *dst) {
     return color_distance(*src, *dst);
 }
 
+#define NEIGHBOURHOOD_RADIUS 10
+
 void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, int DOMINANT_COLORS_NO, match_t match, _Bool preserve_luminance) {
  
 
@@ -161,7 +163,7 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
        float fx = x / zx;
        float fy = y / zy;
       
-       for(int xx=x-1; xx<=x+1; xx++) for(int yy=y-1; yy<=y+1; yy++) {
+       for(int xx=x-NEIGHBOURHOOD_RADIUS; xx<=x+NEIGHBOURHOOD_RADIUS; xx++) for(int yy=y-NEIGHBOURHOOD_RADIUS; yy<=y+NEIGHBOURHOOD_RADIUS; yy++) {
           //printf("xx=%d yy=%d\n", xx, yy);
           if(xx<0 || yy<0) continue;
           if(xx>=width || yy>=height) continue;
@@ -174,6 +176,7 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
           int Rj = segmentation[yy*width +xx]; 
           vec3 mu_j = dest_dominant_colors[Rj].color;
           vec3 center = dest_dominant_colors[Rj].center;
+          if(x==100 && y==100) printf("Rj=%d center=[%f %f] fx=%f fy=%f\n", Rj, center.x, center.y, fx, fy);
           jDxy[Rj] += exp(-powf(fx-center.x,2.0f)-powf(fy-center.y,2)/DELTA_S)*exp(-vec3_dist(Lab, mu_j)/DELTA_C);
           
        }
@@ -237,8 +240,8 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
      rect_t shape_src = {j*20, 0, j*20+19, 20};
      rect_t shape_dst = {j*20, 40, j*20+19, 59};
      printf("color mapping: %d --> %d\n", j, mapping[j]);
-     draw_filled_rect(dest, LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)), 1.0f, shape_src, blend_normal);
-     draw_filled_rect(dest, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]].color)), 1.0f, shape_dst, blend_normal);
+     //draw_filled_rect(dest, LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)), 1.0f, shape_src, blend_normal);
+     //draw_filled_rect(dest, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]].color)), 1.0f, shape_dst, blend_normal);
      draw_filled_rect(tonemap, LMStoRGB(LabtoLMS(dest_dominant_colors[j].color)), 1.0f, shape_src, blend_normal);
      draw_filled_rect(tonemap, LMStoRGB(LabtoLMS(source_dominant_colors[mapping[j]].color)), 1.0f, shape_dst, blend_normal);
      char filename[256];
