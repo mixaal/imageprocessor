@@ -101,10 +101,10 @@ static void save_segmentation(const char *segmentation_filename, int width, int 
                  color.y, 
                  color.z 
              ), 
-             1.0f, 5, 
+             1.0f, width/200, 
              width * color_info[i].center.x, 
              height * color_info[i].center.y, 
-             20, 20
+             width/20, width/20
      );
    }
 
