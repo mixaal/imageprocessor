@@ -36,8 +36,8 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
     */
     color_info_t source_dominant_colors[DOMINANT_COLORS_NO];
     color_info_t dest_dominant_colors[DOMINANT_COLORS_NO];
-    kmeans(source, source.zone, DOMINANT_COLORS_NO, source_dominant_colors);
-    int *segmentation = kmeans(dest, dest.zone, DOMINANT_COLORS_NO, dest_dominant_colors);
+    kmeans_clusters(source, source.zone, DOMINANT_COLORS_NO, source_dominant_colors);
+    int *segmentation = kmeans_clusters(dest, dest.zone, DOMINANT_COLORS_NO, dest_dominant_colors);
 
     /**
      * Create probability visualization layers.

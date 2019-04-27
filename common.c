@@ -19,6 +19,17 @@ double vec3_dist2_double(vec3 a, vec3 b)
   return ((double)a.x - (double)b.x)*((double)a.x - (double)b.x) + ((double)a.y - (double)b.y)*((double)a.y - (double)b.y) + ((double)a.z - (double)b.z)*((double)a.z - (double)b.z);
 }
 
+double vec5_dist2_double(vec5 a, vec5 b)
+{
+  
+  return ((double)a.x - (double)b.x)*((double)a.x - (double)b.x) + 
+         ((double)a.y - (double)b.y)*((double)a.y - (double)b.y) + 
+         ((double)a.r - (double)b.r)*((double)a.r - (double)b.r) +
+         ((double)a.g - (double)b.g)*((double)a.g - (double)b.g) +
+         ((double)a.b - (double)b.b)*((double)a.b - (double)b.b) ;
+}
+
+
 float vec3_dist2(vec3 a, vec3 b)
 {
   return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z);
@@ -87,6 +98,13 @@ float mix(float a, float b, float k)
 vec3 vec3_init(float x, float y, float z) 
 {
   vec3 v = {x, y, z};
+  return v;
+}
+
+
+vec5 vec5_init(float x, float y, vec3 color)
+{
+  vec5 v = {x, y, color.x, color.y, color.z};
   return v;
 }
 

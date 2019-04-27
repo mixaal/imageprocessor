@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
   /**
    * Compute dominant colors using k-means.
    */
-  int *segmentation = kmeans(source, source.zone, dominant_colors, color_info);
-
+  int *segmentation = kmeans_clusters(source, source.zone, dominant_colors, color_info);
+  
   save_segmentation("image-segmentation.jpg", source.width, source.height, color_info, segmentation);
 
   fprintf(stderr, "\n\ndominant colors\n");
@@ -90,6 +90,24 @@ static void save_segmentation(const char *segmentation_filename, int width, int 
        layer_copy.image[idx+1] = COLOR_MAX * color.y;
        layer_copy.image[idx+2] = COLOR_MAX * color.z;
    }
+   for(int i=0; i<dominant_colors; i++) { 
+     vec3 color = color_info[i].color;
+     color.x *= 0.8f;
+     color = LMStoRGB(LabtoLMS(color));
+     draw_cross(
+             layer_copy, 
+             vec3_init(
+                 color.x, 
+                 color.y, 
+                 color.z 
+             ), 
+             1.0f, 5, 
+             width * color_info[i].center.x, 
+             height * color_info[i].center.y, 
+             20, 20
+     );
+   }
+
    write_JPEG_file(segmentation_filename, layer_copy, 90);
    layer_free(layer_copy);
 }

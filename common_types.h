@@ -16,6 +16,7 @@ typedef enum { SHADOWS, MIDTONES, HIGHLIGHTS, ALL_LEVELS } levels_t;
 typedef unsigned char color_t;
 typedef struct { float x, y, z; }  vec3;
 typedef struct { float x, y, z, w; } vec4;
+typedef struct { float x, y, r, g, b; } vec5;
 
 #define COLOR_MAX 255
 #define COLOR_MID 128

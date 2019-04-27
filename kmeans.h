@@ -39,6 +39,7 @@ typedef struct {
 } color_info_t;
 
 int *kmeans(layer_t layer, rect_t zone, size_t n, color_info_t *result);
+int *kmeans_clusters(layer_t layer, rect_t zone, size_t n, color_info_t *result) ;
 
 #ifdef __cplusplus
 }

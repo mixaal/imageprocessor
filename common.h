@@ -8,7 +8,9 @@
 extern "C" {
 #endif
 
+vec5 vec5_init(float x, float y, vec3 color);
 double vec3_dist2_double(vec3 a, vec3 b);
+double vec5_dist2_double(vec5 a, vec5 b);
 float gaussian_kernel(float distance, float bandwidth);
 float vec3_dist(vec3 a, vec3 b);
 float vec3_dist2(vec3 a, vec3 b);
