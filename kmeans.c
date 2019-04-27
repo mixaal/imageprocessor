@@ -82,7 +82,7 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, color_info_t *result) {
  
 
   /**
-   * Choose radnom samples from the image as initial centroids.
+   * Choose N uniform samples between 10% and 90% of the image index array.
    */
   
   for(int i=0; i<n; i++) {
@@ -136,7 +136,7 @@ int *kmeans(layer_t layer, rect_t zone, size_t n, color_info_t *result) {
          double max_dist = FLT_MAX;
          int category = -1;
          for(int j=0; j<n; j++) {
-           double d = vec3_dist2_double(v, result[j].color);
+           double d = color_distance(v, result[j].color);
            if (d < max_dist) {
              max_dist = d;
              category = j;

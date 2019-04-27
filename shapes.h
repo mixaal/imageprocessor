@@ -16,6 +16,7 @@ void draw_pixel(layer_t layer, vec3 color, float opacity, int x, int y, blend_mo
 void draw_rect(layer_t layer, vec3 color, float opacity, rect_t rect, blend_mode_func_t b);
 vec3 get_pixel(layer_t layer, int x, int y);
 void draw_filled_rect(layer_t layer, vec3 color, float opacity, rect_t rect, blend_mode_func_t blend_func);
+void draw_cross(layer_t layer, vec3 color, float opacity, int width, int cx, int cy, int w, int h);
 
 #ifdef __cplusplus
 }

@@ -19,11 +19,9 @@
 #include <string.h>
 
 //#define DOMINANT_COLORS_NO 8
-#define DELTA 15.0f
 #define DELTA_S 0.4f
 #define DELTA_C 1.0f
 
-static float color_distance(vec3 src, vec3 dst);
 static float emd_distance(feature_t *src, feature_t *dst) {
     return color_distance(*src, *dst);
 }
@@ -247,21 +245,15 @@ void apply_color_dong2010(layer_t source, layer_t dest, rect_t source_zone, rect
      char filename[256];
      memset(filename, 0, 256);
      sprintf(filename, "tonemap-%d.jpg", j);
+ 
+     vec3 center = dest_dominant_colors[j].center;
+     printf("j=%d cx=%f, cy=%f\n", j, center.x, center.y);
+     int w = Pxy_layer[j].width;
+     int h = Pxy_layer[j].height;
+     draw_cross(Pxy_layer[j], vec3_init(1.0f, 1.0f, 0.0f), 1.0f, 5, w*center.x, h*center.y, w/20, w/20);
      write_JPEG_file(filename, Pxy_layer[j], 90);
      layer_free(Pxy_layer[j]);
    }
    
    write_JPEG_file("tonemap.jpg", tonemap, 90);
 }
-
-static float color_distance(vec3 src, vec3 dst)
-{
-   vec3 src_Lab = LMStoLab(RGBtoLMS(src));
-   vec3 dst_Lab = LMStoLab(RGBtoLMS(dst));
-   float dx2 = pow(src_Lab.x - dst_Lab.x, 2);
-   float dy2 = pow(src_Lab.y - dst_Lab.y, 2);
-   float dz2 = pow(src_Lab.z - dst_Lab.z, 2);
-   return 1 - exp(-sqrt(dx2+dy2+dz2)/DELTA);
-   //return delta_Lab(src_Lab, dst_Lab);
-}
-

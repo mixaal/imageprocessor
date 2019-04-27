@@ -38,6 +38,15 @@ vec3 get_pixel(layer_t layer, int x, int y)
    return source_pixel;
 }
 
+void draw_cross(layer_t layer, vec3 color, float opacity, int width, int cx, int cy, int w, int h)
+{
+   int w2 = w >> 1;
+   int h2 = h >> 1;
+   int width2 = width >> 1;
+   for(int x=cx-w2; x<=cx+w2; x++) for(int y=cy-width2; y<=cy+width2; y++) draw_pixel(layer, color, opacity, x, y, blend_normal);
+   for(int y=cy-h2; y<=cy+h2; y++) for(int x=cx-width2; x<=cx+width2; x++) draw_pixel(layer, color, opacity, x, y, blend_normal);
+}
+
 void draw_pixel(layer_t layer, vec3 color, float opacity, int x, int y, blend_mode_func_t blend_func)
 {
    if (x < layer.zone.minx || x>=layer.zone.maxx) return;

@@ -187,3 +187,23 @@ float delta_Lab(vec3 labA, vec3 labB){
   float i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
   return i < 0 ? 0 : sqrtf(i);
 }
+
+/**
+ * Compute perceptual color distance between src and dst.
+ * 
+ * @param src color in RGB space
+ * @param dst color in RGB space
+ * @returns perceptual color distance
+ */
+float color_distance(vec3 src, vec3 dst)
+{
+#define DELTA 15.0f
+   vec3 src_Lab = LMStoLab(RGBtoLMS(src));
+   vec3 dst_Lab = LMStoLab(RGBtoLMS(dst));
+   float dx2 = pow(src_Lab.x - dst_Lab.x, 2);
+   float dy2 = pow(src_Lab.y - dst_Lab.y, 2);
+   float dz2 = pow(src_Lab.z - dst_Lab.z, 2);
+   return 1 - exp(-sqrt(dx2+dy2+dz2)/DELTA);
+   //return delta_Lab(src_Lab, dst_Lab);
+}
+
