@@ -5,27 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-typedef struct {
- float x, y, z;
-} vec3;
-
-vec3 vec3_multiply(vec3 v, float k)
-{
-  vec3 o = { v.x*k, v.y*k, v.z*k };
-  return o;
-}
-
-vec3 vec3_add(vec3 v, vec3 c)
-{
-  vec3 o = {
-    v.x + c.x,
-    v.y + c.y,
-    v.z + c.z
-  };
-  return o;
-}
-
-
+#include <common.h>
 
 typedef struct {
   vec3 domain_max, domain_min; 
@@ -158,6 +138,7 @@ vec3 trilinear_interpolation(lut_t lut, vec3 color)
    return C;
 }
 
+#ifdef __TEST__
 int main(int argc, char **argv)
 {
    lut_t lut;
@@ -176,3 +157,4 @@ int main(int argc, char **argv)
    printf("LUT=[%f %f %f]\n", C.x, C.y, C.z);
    return 0;
 }
+#endif
