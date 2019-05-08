@@ -5,16 +5,57 @@
 #include <string.h>
 #include <math.h>
 
-#include <common.h>
+#include <lut.h>
+#include <layer.h>
 
-typedef struct {
-  vec3 domain_max, domain_min; 
-  int lut_size;
-  vec3 *color_grade;
-} lut_t;
+static vec3 trilinear_interpolation(lut_t lut, vec3 color);
+static void base_cube(lut_t lut, vec3 rgb, int *i, int *j, int *k);
 
 
 #define IDX(lut, i, j, k) ((i)+lut.lut_size*(j)+lut.lut_size*lut.lut_size*(k))
+
+
+void lut_translate(layer_t layer, lut_t lut, rect_t zone) 
+{
+   color_t *image = layer.image;
+   int width = layer.width;
+   int height = layer.height;
+   int color_components = layer.color_components;
+  if (zone.maxy==0) return;
+
+  if (zone.minx<0) zone.minx=0;
+  if (zone.miny<0) zone.miny=0;
+  if (zone.maxx>=width) zone.maxx=width;
+  if (zone.maxy>=height) zone.maxy=height;
+#pragma omp parallel for
+  for(int y=zone.miny; y<zone.maxy; y++)  {
+    for(int x=zone.minx; x<zone.maxx; x++) {
+       int idx = y*width*color_components + x*color_components;
+       color_t r, g, b;
+       r = image[idx];
+       g = image[idx+1];
+       b = image[idx+2];
+       vec3 color = vec3_init(r/(float)COLOR_MAX, g/(float)COLOR_MAX, b/(float)COLOR_MAX);
+       vec3 new = trilinear_interpolation(lut, color);
+
+       int nr = COLOR_MAX*new.x;
+       int ng = COLOR_MAX*new.y;
+       int nb = COLOR_MAX*new.z;
+       if(nr<0) nr = 0;
+       if(ng<0) ng = 0;
+       if(nb<0) nb = 0;
+
+       if(nr>COLOR_MAX) nr = COLOR_MAX;
+       if(ng>COLOR_MAX) ng = COLOR_MAX;
+       if(nb>COLOR_MAX) nb = COLOR_MAX;
+
+       image[idx] = nr;
+       image[idx+1] = ng;
+       image[idx+2] = nb;
+    }
+  }
+
+}
 
 static void base_cube(lut_t lut, vec3 rgb, int *i, int *j, int *k)
 {
@@ -97,14 +138,14 @@ _Bool read_lut(const char *filename, lut_t *lut)
   return 1;
 }
 
-vec3 trilinear_interpolation(lut_t lut, vec3 color)
+static vec3 trilinear_interpolation(lut_t lut, vec3 color)
 {
    int i, j, k;
    base_cube(lut, color, &i, &j, &k);
 
    int idx0 = IDX(lut, i, j, k);
    int idx1 = IDX(lut, i+1, j+1, k+1);
-   printf("XXX: idx0=%d idx1=%d\n", idx0, idx1);
+   //printf("XXX: idx0=%d idx1=%d\n", idx0, idx1);
    vec3 C000 = lut.color_grade[idx0];
    vec3 C111 = lut.color_grade[idx1];
    vec3 C100 = lut.color_grade[IDX(lut, i+1, j, k)];
@@ -124,7 +165,7 @@ vec3 trilinear_interpolation(lut_t lut, vec3 color)
    if(dCy<0.0001f) yd = 1.0f;
    if(dCz<0.0001f) zd = 1.0f;
 
-   printf("delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
+   //printf("delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
 
    vec3 C00 = vec3_add(vec3_multiply(C000, 1-xd), vec3_multiply(C100, xd));
    vec3 C01 = vec3_add(vec3_multiply(C001, 1-xd), vec3_multiply(C101, xd));
