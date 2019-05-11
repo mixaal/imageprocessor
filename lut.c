@@ -173,6 +173,13 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    fprintf(stderr, "C111:::\n");
    vec3_info(C111);
    fprintf(stderr, "delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
+   if(xd<0) xd=0;
+   if(yd<0) yd=0;
+   if(zd<0) zd=0;
+
+   if(xd>1.0f) xd=1.0f;
+   if(yd>1.0f) yd=1.0f;
+   if(zd>1.0f) zd=1.0f;
 
    vec3 C00 = vec3_add(vec3_multiply(C000, 1-xd), vec3_multiply(C100, xd));
    vec3 C01 = vec3_add(vec3_multiply(C001, 1-xd), vec3_multiply(C101, xd));
