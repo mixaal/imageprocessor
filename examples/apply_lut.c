@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jpeg.h>
 #include <color_balance.h>
@@ -34,9 +35,12 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Can't read lut from %s\n", argv[2]);
     exit(EXIT_FAILURE);
   }
+  _Bool fast = 0;
+  if(argc>3 && !strcmp(argv[3], "fast=true")) fast=1;
   
   save_histogram("histogram-before-lut.jpg", source);
-  lut_translate(source, lut, source.zone);
+  if(fast && (lut.lut_size==64 || lut.lut_size==32)) fprintf(stderr, "Using fast lookup table\n"); else fprintf(stderr, "Using slow trilinear interpolation\n");
+  lut_translate(source, lut, source.zone, fast);
   write_JPEG_file("apply-lut-result.jpg", source, 90);
   save_histogram("histogram-after-lut.jpg", source);
 

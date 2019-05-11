@@ -12,6 +12,6 @@ typedef struct {
 
 
 _Bool read_lut(const char *filename, lut_t *lut);
-void lut_translate(layer_t layer, lut_t lut, rect_t zone);
+void lut_translate(layer_t layer, lut_t lut, rect_t zone, _Bool fast);
 
 #endif /* __IM_LUT_H__ */

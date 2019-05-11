@@ -12,11 +12,38 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color);
 static void base_cube(lut_t lut, vec3 rgb, int *i, int *j, int *k);
 
 
-//#define IDX(lut, i, j, k) ((k)+lut.lut_size*(j)+lut.lut_size*lut.lut_size*(i))
 #define IDX(lut, i, j, k) ((i)+lut.lut_size*(j)+lut.lut_size*lut.lut_size*(k))
 
 
-void lut_translate(layer_t layer, lut_t lut, rect_t zone) 
+static vec3 fast_lookup32(lut_t lut, color_t r, color_t g, color_t b)
+{
+  r /= 8;
+  g /= 8;
+  b /= 8;
+  int lut_idx = r + 32 * g + 32*32*b;
+  vec3 new = lut.color_grade[lut_idx];
+  return new;
+}
+
+static vec3 fast_lookup64(lut_t lut, color_t r, color_t g, color_t b)
+{
+  r /= 4;
+  g /= 4;
+  b /= 4;
+  int lut_idx = r + 64 * g + 64*64*b;
+  vec3 new = lut.color_grade[lut_idx];
+  return new;
+}
+
+/**
+ * Apply lookup table to image data.
+ * 
+ * @param layer layer to apply data
+ * @param lut lookup table to use
+ * @param zone image zone to use
+ * @param fast if lookup table size is 32 or 64 use non-interpolated fast lookup
+ */
+void lut_translate(layer_t layer, lut_t lut, rect_t zone, _Bool fast) 
 {
    color_t *image = layer.image;
    int width = layer.width;
@@ -33,12 +60,22 @@ void lut_translate(layer_t layer, lut_t lut, rect_t zone)
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
        color_t r, g, b;
-       r = image[idx];
-       g = image[idx+1];
-       b = image[idx+2];
+   
+       r = image[idx] ;
+       g = image[idx+1] ;
+       b = image[idx+2] ;
+       vec3 new;
        vec3 color = vec3_init(r/(float)COLOR_MAX, g/(float)COLOR_MAX, b/(float)COLOR_MAX);
-       vec3 new = trilinear_interpolation(lut, color);
-
+       if(fast) {
+        switch(lut.lut_size) {
+        case 32: new = fast_lookup32(lut, r, g, b); break;
+        case 64: new = fast_lookup64(lut, r, g, b); break;
+        default:
+          new = trilinear_interpolation(lut, color);
+          break;
+        }
+       } else new = trilinear_interpolation(lut, color);
+       
        int nr = COLOR_MAX*new.x;
        int ng = COLOR_MAX*new.y;
        int nb = COLOR_MAX*new.z;
@@ -166,6 +203,7 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    float yd = (color.y - C000.y)/dCy;
    float zd = (color.z - C000.z)/dCz;
 
+#ifdef DEBUG
    fprintf(stderr, "color:::\n");
    vec3_info(color);
    fprintf(stderr, "C000:::\n");
@@ -173,6 +211,7 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    fprintf(stderr, "C111:::\n");
    vec3_info(C111);
    fprintf(stderr, "delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
+#endif
    if(xd<0) xd=0;
    if(yd<0) yd=0;
    if(zd<0) zd=0;
@@ -190,8 +229,10 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    vec3 C1 = vec3_add(vec3_multiply(C01, 1-yd), vec3_multiply(C11, yd));
 
    vec3 C = vec3_add(vec3_multiply(C0, 1-zd), vec3_multiply(C1, zd));
+#ifdef DEBUG
    fprintf(stderr, "C_out:::\n");
    vec3_info(C);
+#endif
    return C;
 }
 
