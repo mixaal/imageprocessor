@@ -12,6 +12,7 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color);
 static void base_cube(lut_t lut, vec3 rgb, int *i, int *j, int *k);
 
 
+//#define IDX(lut, i, j, k) ((k)+lut.lut_size*(j)+lut.lut_size*lut.lut_size*(i))
 #define IDX(lut, i, j, k) ((i)+lut.lut_size*(j)+lut.lut_size*lut.lut_size*(k))
 
 
@@ -158,14 +159,20 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    float dCx = C111.x - C000.x;
    float dCy = C111.y - C000.y;
    float dCz = C111.z - C000.z;
+   if(dCx<0.0001f) dCx = 0.001f;
+   if(dCy<0.0001f) dCy = 0.001f;
+   if(dCz<0.0001f) dCz = 0.001f;
    float xd = (color.x - C000.x)/dCx;
    float yd = (color.y - C000.y)/dCy;
    float zd = (color.z - C000.z)/dCz;
-   if(dCx<0.0001f) xd = 1.0f;
-   if(dCy<0.0001f) yd = 1.0f;
-   if(dCz<0.0001f) zd = 1.0f;
 
-   //printf("delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
+   fprintf(stderr, "color:::\n");
+   vec3_info(color);
+   fprintf(stderr, "C000:::\n");
+   vec3_info(C000);
+   fprintf(stderr, "C111:::\n");
+   vec3_info(C111);
+   fprintf(stderr, "delta=[%f %f %f] C111.x=%f C000.x=%f\n", xd, yd, zd, C111.x, C000.x);
 
    vec3 C00 = vec3_add(vec3_multiply(C000, 1-xd), vec3_multiply(C100, xd));
    vec3 C01 = vec3_add(vec3_multiply(C001, 1-xd), vec3_multiply(C101, xd));
@@ -176,6 +183,8 @@ static vec3 trilinear_interpolation(lut_t lut, vec3 color)
    vec3 C1 = vec3_add(vec3_multiply(C01, 1-yd), vec3_multiply(C11, yd));
 
    vec3 C = vec3_add(vec3_multiply(C0, 1-zd), vec3_multiply(C1, zd));
+   fprintf(stderr, "C_out:::\n");
+   vec3_info(C);
    return C;
 }
 
