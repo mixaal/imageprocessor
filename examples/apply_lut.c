@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
   
   save_histogram("histogram-before-lut.jpg", source);
   if(fast && (lut.lut_size==64 || lut.lut_size==32)) fprintf(stderr, "Using fast lookup table\n"); else fprintf(stderr, "Using slow trilinear interpolation\n");
-  lut_translate(source, lut, source.zone, fast);
+  rect_t adjust_zone = { source.width >> 1, 0, source.width, source.height };
+  lut_translate(source, lut, adjust_zone, fast);
   write_JPEG_file("apply-lut-result.jpg", source, 90);
   save_histogram("histogram-after-lut.jpg", source);
 
