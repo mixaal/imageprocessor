@@ -178,18 +178,20 @@ static void put_scanline_someplace(color_t *image, JSAMPROW buffer, int row_stri
 
 image_t read_JPEG_file (const char * filename)
 {
-
+  
+  image_t r;
+  r.color_space = sRGB; // default option
   ExifData *ed = load_exif(filename);
   if(ed!=NULL) { 
     fprintf(stderr, "exif tags loaded\n");
-    get_color_space(ed);
+    r.color_space = get_color_space(ed);
   } else {
     fprintf(stderr, "can't load exif tags\n");
   }
+  fprintf(stderr, "color.space=%d\n", r.color_space);
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
    */
-  image_t r;
   struct jpeg_decompress_struct cinfo;
   /* We use our private extension JPEG error handler.
    * Note that this struct must live as long as the main JPEG parameter

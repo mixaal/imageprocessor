@@ -5,6 +5,6 @@
 
 
 ExifData *load_exif(const char *filename);
-void get_color_space(ExifData *ed);
+color_space_t get_color_space(ExifData *ed);
 
 #endif /* __IM_EXIF_H__ */

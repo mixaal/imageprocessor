@@ -2,6 +2,7 @@
 #include <string.h>
 #include <libexif/exif-data.h>
 #include <layer.h>
+#include <xmalloc.h>
 
 // See: https://github.com/libexif/libexif/blob/master/contrib/examples/photographer.c
 
@@ -17,12 +18,12 @@ static void trim_spaces(char *buf)
 }
 
 /* Show the tag name and contents if the tag exists */
-static void show_tag(ExifData *d, ExifIfd ifd, ExifTag tag)
+static char *show_tag(ExifData *d, ExifIfd ifd, ExifTag tag)
 {
     /* See if this tag exists */
     ExifEntry *entry = exif_content_get_entry(d->ifd[ifd],tag);
     if (entry) {
-        char buf[1024];
+        char *buf = xmalloc(1024);
 
         /* Get the contents of the tag in human-readable form */
         exif_entry_get_value(entry, buf, sizeof(buf));
@@ -32,12 +33,19 @@ static void show_tag(ExifData *d, ExifIfd ifd, ExifTag tag)
         if (*buf) {
             printf("%s: %s\n", exif_tag_get_name_in_ifd(tag,ifd), buf);
         }
+        return buf;
     }
+    return NULL;
 }
 
-void get_color_space(ExifData *ed)
+color_space_t get_color_space(ExifData *ed)
 {
-   show_tag(ed, EXIF_IFD_EXIF, EXIF_TAG_COLOR_SPACE);
+   char *color_space = show_tag(ed, EXIF_IFD_EXIF, EXIF_TAG_COLOR_SPACE);
+   if(!color_space) return sRGB;
+   if(!strcmp(color_space, "sRGB")) return sRGB;
+   if(!strcmp(color_space, "AdobeRGB")) return AdobeRGB;
+   free(color_space);
+   return sRGB; // default;
 }
 
 ExifData *load_exif(const char *filename)
