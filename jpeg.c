@@ -4,6 +4,160 @@
 #include <jpeglib.h>
 #include "jpeg.h"
 #include "xmalloc.h"
+#include "exif.h"
+
+
+
+// See : https://github.com/rawstudio/rawstudio/blob/master/plugins/load-gdk/exiv2-colorspace.cpp
+static void setup_read_icc_profile (j_decompress_ptr cinfo);
+static boolean read_icc_profile (j_decompress_ptr cinfo, JOCTET **icc_data_ptr, unsigned int *icc_data_len);
+
+#define ICC_MARKER  (JPEG_APP0 + 2)     /* JPEG marker code for ICC */
+#define ICC_OVERHEAD_LEN  14            /* size of non-profile data in APP2 */
+#define MAX_BYTES_IN_MARKER  65533      /* maximum data len of a JPEG marker */
+#define MAX_DATA_BYTES_IN_MARKER (MAX_BYTES_IN_MARKER - ICC_OVERHEAD_LEN)
+
+/*
+ * Prepare for reading an ICC profile
+ */
+
+static void
+setup_read_icc_profile (j_decompress_ptr cinfo)
+{
+  /* Tell the library to keep any APP2 data it may find */
+  jpeg_save_markers(cinfo, ICC_MARKER, 0xFFFF);
+}
+
+/*
+ * Handy subroutine to test whether a saved marker is an ICC profile marker.
+ */
+
+static boolean
+marker_is_icc (jpeg_saved_marker_ptr marker)
+{
+  return
+    marker->marker == ICC_MARKER &&
+    marker->data_length >= ICC_OVERHEAD_LEN &&
+    /* verify the identifying string */
+    GETJOCTET(marker->data[0]) == 0x49 &&
+    GETJOCTET(marker->data[1]) == 0x43 &&
+    GETJOCTET(marker->data[2]) == 0x43 &&
+    GETJOCTET(marker->data[3]) == 0x5F &&
+    GETJOCTET(marker->data[4]) == 0x50 &&
+    GETJOCTET(marker->data[5]) == 0x52 &&
+    GETJOCTET(marker->data[6]) == 0x4F &&
+    GETJOCTET(marker->data[7]) == 0x46 &&
+    GETJOCTET(marker->data[8]) == 0x49 &&
+    GETJOCTET(marker->data[9]) == 0x4C &&
+    GETJOCTET(marker->data[10]) == 0x45 &&
+    GETJOCTET(marker->data[11]) == 0x0;
+}
+
+
+/*
+ * See if there was an ICC profile in the JPEG file being read;
+ * if so, reassemble and return the profile data.
+ *
+ * TRUE is returned if an ICC profile was found, FALSE if not.
+ * If TRUE is returned, *icc_data_ptr is set to point to the
+ * returned data, and *icc_data_len is set to its length.
+ *
+ * IMPORTANT: the data at **icc_data_ptr has been allocated with malloc()
+ * and must be freed by the caller with free() when the caller no longer
+ * needs it.  (Alternatively, we could write this routine to use the
+ * IJG library's memory allocator, so that the data would be freed implicitly
+ * at jpeg_finish_decompress() time.  But it seems likely that many apps
+ * will prefer to have the data stick around after decompression finishes.)
+ *
+ * NOTE: if the file contains invalid ICC APP2 markers, we just silently
+ * return FALSE.  You might want to issue an error message instead.
+ */
+
+static boolean
+read_icc_profile (j_decompress_ptr cinfo,
+                  JOCTET **icc_data_ptr,
+                  unsigned int *icc_data_len)
+{
+  jpeg_saved_marker_ptr marker;
+  int num_markers = 0;
+  int seq_no;
+  JOCTET *icc_data;
+  unsigned int total_length;
+#define MAX_SEQ_NO  255         /* sufficient since marker numbers are bytes */
+  char marker_present[MAX_SEQ_NO+1];      /* 1 if marker found */
+  unsigned int data_length[MAX_SEQ_NO+1]; /* size of profile data in marker */
+  unsigned int data_offset[MAX_SEQ_NO+1]; /* offset for data in marker */
+
+  *icc_data_ptr = NULL;         /* avoid confusion if FALSE return */
+  *icc_data_len = 0;
+
+  /* This first pass over the saved markers discovers whether there are
+   * any ICC markers and verifies the consistency of the marker numbering.
+   */
+
+  for (seq_no = 1; seq_no <= MAX_SEQ_NO; seq_no++)
+    marker_present[seq_no] = 0;
+
+  for (marker = cinfo->marker_list; marker != NULL; marker = marker->next) {
+    if (marker_is_icc(marker)) {
+      if (num_markers == 0)
+        num_markers = GETJOCTET(marker->data[13]);
+      else if (num_markers != GETJOCTET(marker->data[13]))
+        return FALSE;           /* inconsistent num_markers fields */
+      seq_no = GETJOCTET(marker->data[12]);
+      if (seq_no <= 0 || seq_no > num_markers)
+        return FALSE;           /* bogus sequence number */
+      if (marker_present[seq_no])
+        return FALSE;           /* duplicate sequence numbers */
+      marker_present[seq_no] = 1;
+      data_length[seq_no] = marker->data_length - ICC_OVERHEAD_LEN;
+    }
+  }
+
+  if (num_markers == 0)
+    return FALSE;
+
+  /* Check for missing markers, count total space needed,
+   * compute offset of each marker's part of the data.
+   */
+
+  total_length = 0;
+  for (seq_no = 1; seq_no <= num_markers; seq_no++) {
+    if (marker_present[seq_no] == 0)
+      return FALSE;             /* missing sequence number */
+    data_offset[seq_no] = total_length;
+    total_length += data_length[seq_no];
+  }
+
+  if (total_length <= 0)
+    return FALSE;               /* found only empty markers? */
+
+  /* Allocate space for assembled data */
+  icc_data = (JOCTET *) malloc(total_length * sizeof(JOCTET));
+  if (icc_data == NULL)
+    return FALSE;               /* oops, out of memory */
+
+  /* and fill it in */
+  for (marker = cinfo->marker_list; marker != NULL; marker = marker->next) {
+    if (marker_is_icc(marker)) {
+      JOCTET FAR *src_ptr;
+      JOCTET *dst_ptr;
+      unsigned int length;
+      seq_no = GETJOCTET(marker->data[12]);
+      dst_ptr = icc_data + data_offset[seq_no];
+      src_ptr = marker->data + ICC_OVERHEAD_LEN;
+      length = data_length[seq_no];
+      while (length--) {
+        *dst_ptr++ = *src_ptr++;
+      }
+    }
+  }
+
+  *icc_data_ptr = icc_data;
+  *icc_data_len = total_length;
+
+  return TRUE;
+}
 
 struct jpeg_exception_handler {
   struct jpeg_error_mgr pub;
@@ -24,6 +178,14 @@ static void put_scanline_someplace(color_t *image, JSAMPROW buffer, int row_stri
 
 image_t read_JPEG_file (const char * filename)
 {
+
+  ExifData *ed = load_exif(filename);
+  if(ed!=NULL) { 
+    fprintf(stderr, "exif tags loaded\n");
+    get_color_space(ed);
+  } else {
+    fprintf(stderr, "can't load exif tags\n");
+  }
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
    */
@@ -72,6 +234,7 @@ image_t read_JPEG_file (const char * filename)
   /* Step 2: specify data source (eg, a file) */
 
   jpeg_stdio_src(&cinfo, infile);
+  setup_read_icc_profile(&cinfo);
 
   /* Step 3: read file parameters with jpeg_read_header() */
 
@@ -81,7 +244,18 @@ image_t read_JPEG_file (const char * filename)
      return r;
    }
 
-  /* Step 4: set parameters for decompression */
+   /* extract ICC profile */
+   JOCTET *iccBuf;
+   unsigned int iccLen;
+   if (read_icc_profile(&cinfo, &iccBuf, &iccLen)) 
+   {
+	   //RSIccProfile *icc = rs_icc_profile_new_from_memory((gchar*)iccBuf, iccLen, TRUE);
+	   //free(iccBuf);
+	   //profile = rs_color_space_icc_new_from_icc(icc);
+       fprintf(stderr, "was able to read icc profile\n");
+   }
+
+   /* Step 4: set parameters for decompression */
 
   /* In this example, we don't need to change any of the defaults set by
    * jpeg_read_header(), so we do nothing here.
@@ -101,6 +275,7 @@ image_t read_JPEG_file (const char * filename)
    * In this example, we need to make an output work buffer of the right size.
    */ 
   /* color_ts per row in output buffer */
+  fprintf(stderr, "cinfo=[jpeg_color_space=%d, out_color_space=%d]\n", cinfo.jpeg_color_space, cinfo.out_color_space);
   row_stride = cinfo.output_width * cinfo.output_components;
   /* Make a one-row-high sample array that will go away when done with image */
   buffer = (*cinfo.mem->alloc_sarray)
