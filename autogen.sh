@@ -13,5 +13,5 @@ OS=$(uname -s)
 
 [ "$OS" = "Darwin" ] && {
  brew install libjpeg 
-  
+ brew install libraw 
 }
