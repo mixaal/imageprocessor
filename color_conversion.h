@@ -30,6 +30,12 @@ vec3 pow10LMS(vec3 LMS);
 vec3 RGBtoLMS(vec3 RGB);
 vec3 RGBtoXYZ(vec3 RGB);
 
+vec3 XYZn_to_AdobeRGB(vec3 XYZn);
+vec3 AdobeRGB_to_XYZn(vec3 AdobeRGB);
+
+vec3 XYZn_to_sRGB(vec3 XYZn);
+vec3 sRGBtoXYZn(vec3 sRGB);
+
 float color_distance(vec3 src, vec3 dst);
 float delta_Lab(vec3 labA, vec3 labB);
 vec3 RGB2Lab(vec3 rgb);

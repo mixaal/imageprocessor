@@ -98,6 +98,96 @@ vec3 RGBtoHSL(vec3 RGB)
     return vec3_init(HCV.x, S, L);
 }
 
+
+// https://stackoverflow.com/questions/40017741/mathematical-conversion-srgb-and-adobergb
+
+static float linear_sRGB(float c)
+{
+    if (c <= 0.04045)
+        return c / 12.92f;
+    else
+        return powf((c + 0.055) / 1.055, 2.4);
+}
+
+
+//D65 whitepoint
+vec3 sRGBtoXYZn(vec3 sRGB)
+{
+    float Rlin = linear_sRGB(sRGB.x / 255.0f);
+    float Glin = linear_sRGB(sRGB.y / 255.0f);
+    float Blin = linear_sRGB(sRGB.z / 255.0f);
+    float Xn = Rlin * 0.4124f + Glin * 0.3576f + Blin * 0.1805f;
+    float Yn = Rlin * 0.2126f + Glin * 0.7152f + Blin * 0.0722f;
+    float Zn = Rlin * 0.0193f + Glin * 0.1192f + Blin * 0.9505f;
+    return vec3_init(Xn, Yn, Zn);
+}
+
+static float gamma_sRGB(float c)
+{
+    if (c <= 0.0031308)
+        return 12.92 * c;
+    else
+        return 1.055 * powf(c, 1/2.4) - 0.055;
+}
+
+//D65 whitepoint
+vec3 XYZn_to_sRGB(vec3 XYZn)
+{
+    float Xn = XYZn.x;
+    float Yn = XYZn.y;
+    float Zn = XYZn.z;
+    float Rlin = Xn * 3.2406255f + Yn *-1.5372080f + Zn *-0.4986286f;
+    float Glin = Xn *-0.9689307f + Yn * 1.8757561f + Zn * 0.0415175f;
+    float Blin = Xn * 0.0557101f + Yn *-0.2040211f + Zn * 1.0569959f;
+    float R = round(255 * gamma_sRGB(Rlin));
+    float G = round(255 * gamma_sRGB(Glin));
+    float B = round(255 * gamma_sRGB(Blin));
+    return vec3_init(R, G, B);
+}
+
+static float linear_AdobeRGB(float c)
+{
+    if (c <= 0.0) return 0.0;
+    return powf(c, 2.19921875);
+}
+
+vec3 AdobeRGB_to_XYZn(vec3 AdobeRGB)
+{
+    float R = AdobeRGB.x;
+    float G = AdobeRGB.y;
+    float B = AdobeRGB.z;
+    float Rlin = linear_AdobeRGB(R / 255.0);
+    float Glin = linear_AdobeRGB(G / 255.0);
+    float Blin = linear_AdobeRGB(B / 255.0);
+    float Xn = Rlin * 0.57667f + Glin * 0.18556f + Blin * 0.18823f;
+    float Yn = Rlin * 0.29734f + Glin * 0.62736f + Blin * 0.07529f;
+    float Zn = Rlin * 0.02703f + Glin * 0.07069f + Blin * 0.99134f;
+    return vec3_init(Xn, Yn, Zn);
+}
+
+static float gamma_AdobeRGB(float c)
+{
+    if (c <= 0.0) return 0.0;
+    return powf(c, 1/2.19921875);
+}
+
+vec3 XYZn_to_AdobeRGB(vec3 XYZn)
+{
+
+    float Xn = XYZn.x;
+    float Yn = XYZn.y;
+    float Zn = XYZn.z;
+    float Rlin = Xn * 2.04159f + Yn *-0.56501f + Zn *-0.34473f;
+    float Glin = Xn *-0.96924f + Yn * 1.87597f + Zn * 0.04156f;
+    float Blin = Xn * 0.01344f + Yn *-0.11836f + Zn * 1.01517f;
+    float R = round(255 * gamma_AdobeRGB(Rlin));
+    float G = round(255 * gamma_AdobeRGB(Glin));
+    float B = round(255 * gamma_AdobeRGB(Blin));
+    return vec3_init(R, G, B);
+}
+
+
+
 // Based on: Color Transfer between Images, Erik Reinhard, Michael Ashikhmin, Bruce Gooch, and Peter Shirley, 2001
 
 vec3 RGBtoXYZ(vec3 RGB)
