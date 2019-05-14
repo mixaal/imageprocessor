@@ -10,6 +10,10 @@ AC_PROG_INSTALL
 #   exit -1
 #])
 AC_CHECK_LIB(jpeg,  main, [], [AC_MSG_ERROR("jpeg lib not found")])
+AC_CHECK_LIB(exif,  main, [], [
+   echo "Error - you need exif lib!"
+   exit -1
+])
 AC_CHECK_LIB(m,  main, [], [
    echo "Error - you need math lib!"
    exit -1

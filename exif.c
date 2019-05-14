@@ -38,7 +38,7 @@ static char *show_tag(ExifData *d, ExifIfd ifd, ExifTag tag)
     return NULL;
 }
 
-color_space_t get_color_space(ExifData *ed)
+image_color_space_t get_color_space(ExifData *ed)
 {
    char *color_space = show_tag(ed, EXIF_IFD_EXIF, EXIF_TAG_COLOR_SPACE);
    if(!color_space) return sRGB;

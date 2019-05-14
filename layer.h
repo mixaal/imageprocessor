@@ -22,11 +22,11 @@ typedef enum { NORMAL, LINEAR_COLOR } blend_mode_t;
 
 typedef enum { IMAGE, MASK } draw_mode_t;
 
-typedef enum { sRGB, AdobeRGB } color_space_t ;
+typedef enum { sRGB, AdobeRGB } image_color_space_t ;
 
 typedef struct {
   int rc;
-  color_space_t color_space;
+  image_color_space_t color_space;
   color_t *image;
   color_t *mask;
   int width;

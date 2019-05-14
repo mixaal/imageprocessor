@@ -9,7 +9,7 @@ OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o 
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
         auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o llist.o kmeans.o\
-        dong2010.o permgen.o emd.o lut.o
+        dong2010.o permgen.o emd.o lut.o exif.o
 
 PROG=improc
 LUT_MAIN=examples/apply_lut

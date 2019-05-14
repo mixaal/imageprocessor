@@ -4401,6 +4401,50 @@ else
   as_fn_error $? "\"jpeg lib not found\"" "$LINENO" 5
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lexif" >&5
+$as_echo_n "checking for main in -lexif... " >&6; }
+if ${ac_cv_lib_exif_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lexif  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_exif_main=yes
+else
+  ac_cv_lib_exif_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_exif_main" >&5
+$as_echo "$ac_cv_lib_exif_main" >&6; }
+if test "x$ac_cv_lib_exif_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBEXIF 1
+_ACEOF
+
+  LIBS="-lexif $LIBS"
+
+else
+
+   echo "Error - you need exif lib!"
+   exit -1
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lm" >&5
 $as_echo_n "checking for main in -lm... " >&6; }
 if ${ac_cv_lib_m_main+:} false; then :
