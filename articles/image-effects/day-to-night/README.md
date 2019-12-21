@@ -5,6 +5,13 @@
 Inspired by this youtube PS tutorial:
     https://www.youtube.com/watch?v=HXZOKqDbgpY
 
+## Functions Used
+
+* exposure
+* colorize
+{: .gitlab-purple}
+
+
 ## Result
 ![Day to Night Result](../../../data/final_street.jpg)
 
