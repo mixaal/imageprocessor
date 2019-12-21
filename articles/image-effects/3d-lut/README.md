@@ -16,7 +16,7 @@
 
 Apply color grading using 3D Look-Up Tables. 
 
-```
+```c
   /**
    * Read the source image.
    */
