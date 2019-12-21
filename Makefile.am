@@ -2,8 +2,8 @@ CC=@CC@
 CXX=@CXX@
 #OPENCVFLAGS=`pkg-config --cflags opencv4`
 RM=rm -f
-CFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../
-CXXFLAGS=-Wall -Werror -O2 -ggdb -fopenmp -I. -I../ @OPENCV_CFLAGS@
+CFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ 
+CXXFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ -std=c++11 @OPENCV_CFLAGS@
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
@@ -29,7 +29,7 @@ COLOR_CONV_TEST=examples/color_conv_test
 
 SUFFIXES=.o .c .cc .cpp
 
-LIBS=@LIBS@ -fopenmp
+LIBS=@LIBS@ @OPENMP_CFLAGS@
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
 all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG)

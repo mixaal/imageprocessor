@@ -5,6 +5,9 @@ AC_CONFIG_SRCDIR([vibrance.c])
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
+AC_OPENMP
+AC_SUBST(AM_CXXFLAGS,"$OPENMP_CXXFLAGS")
+AC_SUBST(AM_CFLAGS,"$OPENMP_CFLAGS")
 #AC_CHECK_LIB(jpeg,  main, [], [
 #   echo "Error - you need jpeg lib!"
 #   exit -1

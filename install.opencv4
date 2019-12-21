@@ -1,0 +1,35 @@
+#!/bin/bash -xe
+
+cd 
+
+OS=$(uname -s)
+
+pip install numpy
+cd ~/opencv
+rm -rf build || echo "No build directory yet"
+mkdir build
+cd build
+
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+        -D OPENCV_GENERATE_PKGCONFIG=YES \
+	-D CMAKE_INSTALL_PREFIX=/usr/local \
+	-D INSTALL_PYTHON_EXAMPLES=ON \
+	-D INSTALL_C_EXAMPLES=OFF \
+	-D OPENCV_ENABLE_NONFREE=ON \
+	-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+	-D PYTHON_EXECUTABLE=~/.virtualenvs/cv/bin/python \
+	-D BUILD_EXAMPLES=ON ..
+
+[ "$OS" = "Darwin" ] && {
+	export CPATH="/usr/local/Cellar/tesseract/4.1.0/include"
+}
+make -j4
+
+sudo make install
+[ "$OS" = "Linux" ] && {
+   sudo ldconfig
+}
+[ "$OS" = "Darwin" ] && {
+   sudo update_dyld_shared_cache
+}  

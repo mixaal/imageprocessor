@@ -6,6 +6,10 @@
 #include <jpeglib.h>
 #include <stdbool.h>
 
+#ifdef __bool_true_false_are_defined
+#  define _Bool bool
+#endif /*__bool_true_false_are_defined */
+
 #include "common_types.h"
 #include "layer_modes.h"
 
@@ -39,7 +43,6 @@ typedef struct {
 } image_t;
 
 typedef image_t layer_t;
-
 
 layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _Bool white);
 void add_layer_mask(layer_t layer, layer_t mask);

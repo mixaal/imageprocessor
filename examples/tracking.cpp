@@ -161,13 +161,13 @@ static void detect_window()
     while(video.read(frame))
     {     
         // Start timer
-        double timer = (double)getTickCount();
+        //double timer = (double)getTickCount();
          
         // Update the tracking result
         bool ok = tracker->update(frame, bbox);
          
         // Calculate Frames per second (FPS)
-        float fps = getTickFrequency() / ((double)getTickCount() - timer);
+        //float fps = getTickFrequency() / ((double)getTickCount() - timer);
          
         if (ok)
         {
@@ -178,7 +178,7 @@ static void detect_window()
         else
         {
             // Tracking failure detected.
-            putText(frame, "Tracking failure detected", Point(100,80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(0,0,255),2);
+            //putText(frame, "Tracking failure detected", Point(100,80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(0,0,255),2);
             detected_frames[frame_no] = { -1, -1, -1, -1 };
         }
         frame_no++;
@@ -189,7 +189,7 @@ static void detect_window()
         putText(frame, trackerType + " Tracker", Point(100,20), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50),2);
          
         // Display FPS on frame
-        putText(frame, "FPS : " + SSTR(int(fps)), Point(100,50), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50), 2);
+        //putText(frame, "FPS : " + SSTR(int(fps)), Point(100,50), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50), 2);
  
         // Display frame.
         imshow("Tracking", frame);

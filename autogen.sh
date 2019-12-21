@@ -16,4 +16,10 @@ OS=$(uname -s)
  brew install libjpeg 
  brew install libraw 
  brew install libexif
+ brew install automake
+ brew install ffmpeg
+ brew install pkg-config
+ brew install wget
+ brew install cmake
+ brew install tesseract
 }

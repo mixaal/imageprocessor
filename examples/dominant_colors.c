@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jpeg.h>
 #include "kmeans.h"
@@ -68,6 +69,7 @@ int main(int argc, char *argv[]) {
 static color_info_t find_color_info(int category, color_info_t *color_info)
 {
   color_info_t d;
+  memset(&d, 0, sizeof(d));
   for(int i=0; i<dominant_colors; i++) {
      if(color_info[i].category == category) return color_info[i];
   }

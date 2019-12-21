@@ -8,8 +8,19 @@ Process images in a batch way. Implement various filter for multiple image and v
 ## Build
 
 ```
+# Download all dependencies
+./autogen.sh 
+# Download opencv4
+./get.opencv4
+# Install opencv4
+./install.opencv4
+# Switch to cv
+workon cv # On mac-os run bash to source the environment
+# Generate configure file
 ./auto-gen.sh
+# Check installed packages
 ./configure
+# Build the source
 make
 ```
 
