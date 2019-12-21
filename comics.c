@@ -1,7 +1,12 @@
 #include "comics.h"
-#include "color_conversion.h"
+#include <math.h>
 
-void comics(image_t layer, rect_t zone) {
+/**
+ * Credits:
+ * https://pastebin.com/pGL6jdkm
+ */
+
+void comics_filter(layer_t layer, rect_t zone) {
    color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;
@@ -12,47 +17,21 @@ void comics(image_t layer, rect_t zone) {
   if (zone.miny<0) zone.miny=0;
   if (zone.maxx>=width) zone.maxx=width;
   if (zone.maxy>=height) zone.maxy=height;
-  float min_Iv, max_Iv;
-  min_Iv = 1.0f;
-  max_Iv = 0;
-  for(int y=zone.miny; y<zone.maxy; y++)  {
-    for(int x=zone.minx; x<zone.maxx; x++) {
-       int idx = y*width*color_components + x*color_components;
-       float r, g, b;
-       r = image[idx];
-       g = image[idx+1];
-       b = image[idx+2];
-       float Iv = to_gray(vec3_init(r/COLOR_MAX, g/COLOR_MAX, b/COLOR_MAX));
-       if (Iv < min_Iv ) min_Iv = Iv;
-       if (Iv > max_Iv ) max_Iv = Iv;
-       if (min_Iv <= 0.00001f && max_Iv == COLOR_MAX) return;
-    }
-  }
- 
-  float center_Iv = (max_Iv + min_Iv) / 2.0f;
-
 #pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
-       float r, g, b, nr, ng, nb;
+       color_t r, g, b;
        r = image[idx];
        g = image[idx+1];
        b = image[idx+2];
-       float Iv = to_gray(vec3_init(r/COLOR_MAX, g/COLOR_MAX, b/COLOR_MAX));
-       if (Iv < center_Iv ) nr = ng = nb = 0.0f;
-       else nr = ng = nb = COLOR_MAX;
-
-       if (nr > COLOR_MAX) nr = COLOR_MAX;
-       if (ng > COLOR_MAX) ng = COLOR_MAX;
-       if (nb > COLOR_MAX) nb = COLOR_MAX;
-       if (nr < 0 ) nr = 0;
-       if (ng < 0 ) ng = 0;
-       if (nb < 0 ) nb = 0;
-
-       image[idx] = (color_t) nr;
-       image[idx+1] = (color_t) ng;
-       image[idx+2] = (color_t) nb;
+       float rr = (float)r/COLOR_MAX;
+       float bb = (float)g/COLOR_MAX;
+       float gg = (float)b/COLOR_MAX;
+       float Iv = (rr*rr+gg*gg+bb*bb) * (rr*2 + gg*1 + bb*2);
+       if(Iv<0.0f) Iv=0.0f;
+       if(Iv>1.0f) Iv=1.0f;
+       image[idx] = image[idx+1] = image[idx+2] = (color_t) floor(COLOR_MAX*Iv);
     }
   }
 }

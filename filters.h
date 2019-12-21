@@ -22,5 +22,6 @@
 #include "gradient_map.h"
 #include "auto_tone.h"
 #include "comics.h"
+#include "sincity.h"
 
 #endif /* __IM_FILTERS_H__ */

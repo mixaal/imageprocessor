@@ -9,7 +9,7 @@ OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o 
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
         auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o llist.o kmeans.o\
-        dong2010.o permgen.o emd.o lut.o exif.o
+        dong2010.o permgen.o emd.o lut.o exif.o sincity.o
 
 PROG=improc
 LUT_MAIN=examples/apply_lut
@@ -26,13 +26,17 @@ APPLY_COLOR=examples/apply_color
 APPLY_COLOR_REINHARD=examples/apply_color_reinhard2001
 APPLY_COLOR_DONG=examples/apply_color_dong2010
 COLOR_CONV_TEST=examples/color_conv_test
+SINCITY=examples/sincity
 
 SUFFIXES=.o .c .cc .cpp
 
 LIBS=@LIBS@ @OPENMP_CFLAGS@
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG)
+all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG) $(SINCITY)
+
+$(SINCITY): $(SINCITY).o $(OBJECTS)
+	$(CC) -o $(SINCITY)  $(SINCITY).o $(OBJECTS) $(LIBS)
 
 $(EYE_ENHANCER): $(EYE_ENHANCER).o $(OBJECTS)
 	$(CXX) -o $(EYE_ENHANCER)  $(EYE_ENHANCER).o $(OBJECTS)  @OPENCV_LIBS@ $(LIBS)

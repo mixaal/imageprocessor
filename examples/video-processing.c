@@ -10,7 +10,7 @@ static void filter_frame(layer_t layer, int frame_no, void *arg)
   //brightness(layer, -COLOR_MAX / 3, layer.zone);
  // exposure(layer, -1.9f, layer.zone);
  //auto_tone(layer, layer.zone);
- comics(layer, layer.zone);
+ comics_filter(layer, layer.zone);
 }
 
 int main(int argc, char *argv[]) {

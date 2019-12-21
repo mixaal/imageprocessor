@@ -1,5 +1,5 @@
-#ifndef __IM_COMICS_H__
-#define __IM_COMICS_H__ 1
+#ifndef __IM_SINCITY_H__
+#define __IM_SINCITY_H__ 1
 
 
 #include <stdio.h>
@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void comics_filter(layer_t layer, rect_t zone);
+void sincity_filter(layer_t layer, rect_t zone);
 
 
 #ifdef __cplusplus
@@ -20,4 +20,4 @@ void comics_filter(layer_t layer, rect_t zone);
 #endif
 
 
-#endif /* __IM_COMICS_H__ */
+#endif /* __IM_SINCITY_H__ */
