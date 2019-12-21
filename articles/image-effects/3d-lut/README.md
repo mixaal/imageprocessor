@@ -6,7 +6,7 @@
 
 ## Result
 
-![Using free color grading 3D LUTs from https://lutify.me/free-luts/](data/apply-lut-result.jpg)
+![Using free color grading 3D LUTs from https://lutify.me/free-luts/](../../../data/apply-lut-result.jpg)
 
 ## Implementation
 
