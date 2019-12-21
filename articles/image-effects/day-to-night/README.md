@@ -10,6 +10,9 @@ Inspired by this youtube PS tutorial:
 - [exposure()](../../../exposure.c)
 - [colorize()](../../../colorize.c)
 
+## Original 
+![Original Image](../../../data/street.jpg)
+
 ## Result
 ![Day to Night Result](../../../data/final_street.jpg)
 
