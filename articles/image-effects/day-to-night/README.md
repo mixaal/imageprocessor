@@ -7,8 +7,8 @@ Inspired by this youtube PS tutorial:
 
 ## Functions Used
 
-- {: .gitlab-orange} [exposure()](../../../exposure.c)
-- {: .gitlab-orange} [colorize()](../../../colorize.c)
+- [exposure()](../../../exposure.c)
+- [colorize()](../../../colorize.c)
 
 ## Result
 ![Day to Night Result](../../../data/final_street.jpg)
