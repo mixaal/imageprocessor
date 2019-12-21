@@ -1,9 +1,18 @@
 # Day to Night 
 
+## Credits
+
 Inspired by this youtube PS tutorial:
     https://www.youtube.com/watch?v=HXZOKqDbgpY
 
-Code:
+## Result
+![Day to Night Result](../../../data/final_street.jpg)
+
+## Implementation
+
+[examples/day-to-night.c](../../../examples/day-to-night.c)
+
+## Example
 ```c
   /**
    * Read the street daylight image.
@@ -62,4 +71,3 @@ Code:
 
 ```
 
-![Day to Night Result](../../../data/final_street.jpg)
