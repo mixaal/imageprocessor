@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void sincity_filter(layer_t layer, rect_t zone);
+void sincity_filter(layer_t layer, rect_t zone, _Bool colorized);
 
 
 #ifdef __cplusplus

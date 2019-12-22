@@ -10,7 +10,7 @@ static float __saturatef(float x);
  *   https://pastebin.com/zVxsZBVG
  */
 
-void sincity_filter(layer_t layer, rect_t zone) {
+void sincity_filter(layer_t layer, rect_t zone, _Bool colorized) {
    color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;
@@ -35,12 +35,33 @@ void sincity_filter(layer_t layer, rect_t zone) {
        float Iv = r*0.3f + g*0.3f + b*0.3f;
        float weight = smoothstep(.1f, 0.25f, r - Iv);
        Iv = powf(Iv * 1.1f, 2.0f);
-       Iv = lerp(Iv, r*1.1f +  b*0.5f + g*0.5f, weight);
-       Iv = powf(Iv, 2.2f);
-       if(Iv<0.0f) Iv=0.0f;
-       if(Iv>1.0f) Iv=1.0f;
-       image[idx] = image[idx+1] = image[idx+2] = (color_t) floor(COLOR_MAX*Iv);
-    }
+       if(colorized) {
+         r = lerp(Iv, r*1.1f, weight);
+	 g = lerp(Iv, g*0.5f, weight);
+	 b = lerp(Iv, b*0.5f, weight);
+         r = powf(r, 2.2f);
+         g = powf(g, 2.2f);
+         b = powf(b, 2.2f);
+         color_t or = COLOR_MAX * r;
+         color_t og = COLOR_MAX * g;
+         color_t ob = COLOR_MAX * b;
+         if(or<0) or=0;
+         if(og<0) og=0;
+         if(ob<0) ob=0;
+         if(or>COLOR_MAX) or=COLOR_MAX;
+         if(og>COLOR_MAX) og=COLOR_MAX;
+         if(ob>COLOR_MAX) ob=COLOR_MAX;
+         image[idx] = or;
+         image[idx+1] = og;
+         image[idx+2] = ob;
+       } else {
+         Iv = lerp(Iv, r*1.1f +  b*0.5f + g*0.5f, weight);
+         Iv = powf(Iv, 2.2f);
+         if(Iv<0.0f) Iv=0.0f;
+         if(Iv>1.0f) Iv=1.0f;
+         image[idx] = image[idx+1] = image[idx+2] = (color_t) floor(COLOR_MAX*Iv);
+       }
+     }
   }
 }
 
