@@ -11,7 +11,7 @@ Black&White and also colorized implementation
 - [sincity_filter()](../../../sincity.c)
 
 ## Original 
-![Original Image](original.jpg)
+![Original Image](ny.jpg)
 
 ## Result
 ![Comics Result](sincity-result.jpg)
