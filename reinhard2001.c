@@ -7,12 +7,6 @@
 #include "reinhard2001.h"
 #include <math.h>
 
-struct mean_and_variance {
-  float L_m, L_s, a_m, a_s, b_m, b_s;
-};
-
-static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef);
-static struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone);
 static void print_stat(const char *msg, struct mean_and_variance r);
 
 
@@ -40,7 +34,7 @@ static void print_stat(const char *msg, struct mean_and_variance r)
   printf("%s: Lm=[%f, %f, %f]  Ls=[%f, %f %f]\n", msg, r.L_m, r.a_m, r.b_m, r.L_s, r.a_s, r.b_s);
 }
 
-static struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone)
+struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone)
 {
     color_t *image = layer.image;
    int width = layer.width;
@@ -102,7 +96,7 @@ static struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t 
   return r;
 }
 
-static void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef) {
+void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef) {
    color_t *image = dest.image;
    int width = dest.width;
    int height = dest.height;

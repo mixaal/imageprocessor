@@ -176,10 +176,10 @@ static void put_scanline_someplace(color_t *image, JSAMPROW buffer, int row_stri
    }
 }
 
-image_t read_JPEG_file (const char * filename)
+layer_t read_JPEG_file (const char * filename)
 {
   
-  image_t r;
+  layer_t r;
   r.color_space = sRGB; // default option
   ExifData *ed = load_exif(filename);
   if(ed!=NULL) { 

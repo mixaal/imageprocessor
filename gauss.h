@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void gauss(image_t layer, int radius, double sigma, rect_t zone, _Bool mask);
+void gauss(layer_t layer, int radius, double sigma, rect_t zone, _Bool mask);
 void create_gauss(double **GKernel, int N, double sigma, _Bool normalize);
 
 

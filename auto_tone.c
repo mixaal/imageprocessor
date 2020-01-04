@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "color_conversion.h"
 
-void hdr(image_t layer, rect_t zone) {
+void hdr(layer_t layer, rect_t zone) {
    color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;
@@ -37,7 +37,7 @@ void hdr(image_t layer, rect_t zone) {
   }
 }
 
-void auto_tone(image_t layer, rect_t zone) {
+void auto_tone(layer_t layer, rect_t zone) {
    color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;

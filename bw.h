@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void bw(image_t layer, rect_t zone);
+void bw(layer_t layer, rect_t zone);
 
 
 #ifdef __cplusplus

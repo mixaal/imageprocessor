@@ -23,5 +23,6 @@
 #include "auto_tone.h"
 #include "comics.h"
 #include "sincity.h"
+#include "laplace.h"
 
 #endif /* __IM_FILTERS_H__ */

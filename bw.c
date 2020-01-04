@@ -1,7 +1,7 @@
 #include "bw.h"
 
 
-void bw(image_t layer, rect_t zone) {
+void bw(layer_t layer, rect_t zone) {
    color_t *image = layer.image;
    int width = layer.width;
    int height = layer.height;

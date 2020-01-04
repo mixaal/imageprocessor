@@ -9,8 +9,8 @@
 extern "C" {
 #endif
 
-void auto_tone(image_t layer, rect_t zone);
-void hdr(image_t layer, rect_t zone);
+void auto_tone(layer_t layer, rect_t zone);
+void hdr(layer_t layer, rect_t zone);
 
 #ifdef __cplusplus
 }

@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   }
   for (int i=2; i<argc; i++) {
      fprintf(stderr, "Processing %s\n", argv[i]); 
-     image_t layer = read_JPEG_file(argv[i]);
+     layer_t layer = read_JPEG_file(argv[i]);
      printf("w=%d h=%d stride=%d\n", layer.width, layer.height, layer.stride);
      if (!layer.rc) continue;
      //rect_t zone = {0, 0, layer.width/2, layer.height};

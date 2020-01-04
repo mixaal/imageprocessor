@@ -33,7 +33,7 @@ void create_gauss(double **GKernel, int N, double sigma, _Bool normalize)
             GKernel[i][j] /= sum;
 }
 
-void gauss(image_t layer, int radius, double sigma, rect_t zone, _Bool mask) 
+void gauss(layer_t layer, int radius, double sigma, rect_t zone, _Bool mask) 
 {
    color_t *image = (mask) ? layer.mask : layer.image;
    int width = layer.width;
@@ -49,7 +49,7 @@ void gauss(image_t layer, int radius, double sigma, rect_t zone, _Bool mask)
    /**
     * Create a copy of the source image.
     */
-   image_t layer_cp = layer_copy(layer);
+   layer_t layer_cp = layer_copy(layer);
    color_t *image_copy = (mask) ? layer_cp.mask : layer_cp.image;
 
    create_gauss(kernel, radius, sigma, True);

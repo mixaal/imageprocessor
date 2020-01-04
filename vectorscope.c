@@ -8,7 +8,7 @@
 #include <limits.h>
 
 
-void vectorscope(image_t layer, vectorscope_t out, int *max_bin_H, int *max_bin_S, rect_t zone) {
+void vectorscope(layer_t layer, vectorscope_t out, int *max_bin_H, int *max_bin_S, rect_t zone) {
 
 
    for(int i=0; i<HUE_BINS; i++) {

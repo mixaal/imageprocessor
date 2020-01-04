@@ -10,10 +10,10 @@ void layer_info(layer_t layer)
   fprintf(stderr, "layer.width=%d\nlayer.height=%d\nlayer.color_components=%d\nlayer.mask=%p\nlayer.image=%p\nlayer.opacity=%f\nlayer.blend_func=%p\nlayer.zone=[%d %d %d %d]\n", layer.width, layer.height, layer.color_components, layer.mask, layer.image, layer.opacity, layer.blend_func, layer.zone.minx, layer.zone.miny, layer.zone.maxx, layer.zone.maxy);
 }
 
-image_t layer_new(image_t source) {
+layer_t layer_new(layer_t source) {
    color_t *image_copy = xmalloc(source.width*source.height*source.color_components*sizeof(color_t));
    memset(image_copy, 0, source.width*source.height*source.color_components*sizeof(color_t));
-   image_t image = source;
+   layer_t image = source;
    image.image = image_copy;
    return image;
 }
@@ -71,7 +71,7 @@ layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _
    return layer;
 }
 
-void layer_multiply(image_t dest, image_t source, double amount) {
+void layer_multiply(layer_t dest, layer_t source, double amount) {
   int minx = min(dest.zone.minx, source.zone.minx);
   int miny = min(dest.zone.miny, source.zone.miny);
   int maxx = min(dest.zone.maxx, source.zone.maxx);
@@ -94,7 +94,7 @@ void layer_multiply(image_t dest, image_t source, double amount) {
    }
 }
 
-void layer_add(image_t dest, image_t from, image_t what) {
+void layer_add(layer_t dest, layer_t from, layer_t what) {
   int mix = min(dest.zone.minx, from.zone.minx);
   int miy = min(dest.zone.miny, from.zone.miny);
   int max = min(dest.zone.maxx, from.zone.maxx);
@@ -141,7 +141,7 @@ void layer_add(image_t dest, image_t from, image_t what) {
 
 }
 
-void layer_substract(image_t dest, image_t from, image_t what) {
+void layer_substract(layer_t dest, layer_t from, layer_t what) {
 
   int mix = min(dest.zone.minx, from.zone.minx);
   int miy = min(dest.zone.miny, from.zone.miny);
@@ -214,8 +214,8 @@ void add_layer_mask_color(layer_t layer, vec3 color)
   add_layer_mask(layer, layer_dup);
 }
 
-image_t layer_copy(image_t source) {
-   image_t image = source;
+layer_t layer_copy(layer_t source) {
+   layer_t image = source;
    size_t nbytes = source.width * source.height * source.color_components * sizeof(color_t);
    color_t *image_copy = xmalloc(nbytes);
    bcopy(source.image, image_copy, nbytes);
@@ -230,7 +230,7 @@ image_t layer_copy(image_t source) {
    return image;
 }
 
-void layer_free(image_t layer) {
+void layer_free(layer_t layer) {
   if (layer.image!=NULL) {
     free(layer.image);
   }

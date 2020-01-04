@@ -2,7 +2,7 @@
 #include "gauss.h"
 #include "layer.h"
 
-void unsharp(image_t layer, int radius, float amount, rect_t zone) {
+void unsharp(layer_t layer, int radius, float amount, rect_t zone) {
    if ((radius&1)==0) radius++; // make it odd number
  
    layer_t blur = layer_copy(layer);
