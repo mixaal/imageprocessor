@@ -2,12 +2,16 @@
 
 Shadows, mid-tones and highlights visualization.
 
+## Credits
+
+* Junktown
+
 ## Functions Used
 
 - [levels()](../../../levels.c)
 
 ## Original 
-![Original Image](../IMG_1612.JPG)
+![Original Image](../laplace/IMG_1612.JPG)
 
 ## Result
 ![Comics Result](levels-result.jpg)

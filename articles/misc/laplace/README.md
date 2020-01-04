@@ -1,5 +1,9 @@
 # Laplace Filter
 
+## Credits
+
+* Junktown
+
 ## Functions Used
 
 - [laplace()](../../../laplace.c)
@@ -23,6 +27,7 @@
   layer_info(source);
 
   rect_t adjust_zone = { 0, 0, source.width, source.height };
+  gauss(source, 3, 1.5f, adjust_zone, False);
   laplace(source, adjust_zone, false);
   write_JPEG_file("laplace-result.jpg", source, 90);
 ```
