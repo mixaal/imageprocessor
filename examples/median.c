@@ -16,6 +16,6 @@ int main(int argc, char *argv[]) {
   layer_info(source);
 
   rect_t adjust_zone = { 0, 0, source.width, source.height };
-  median_filter(source, adjust_zone);
+  median_filter(source, 5, adjust_zone);
   write_JPEG_file("median-result.jpg", source, 90);
 }

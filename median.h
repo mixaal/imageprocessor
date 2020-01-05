@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void median_filter(layer_t layer, rect_t zone);
+void median_filter(layer_t layer, int N, rect_t zone);
 
 
 #ifdef __cplusplus
