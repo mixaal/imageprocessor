@@ -11,7 +11,7 @@ OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o 
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
         auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o llist.o kmeans.o\
-        dong2010.o permgen.o emd.o lut.o exif.o sincity.o levels.o laplace.o
+        dong2010.o permgen.o emd.o lut.o exif.o sincity.o levels.o laplace.o median.o
 
 PROG=improc
 LUT_MAIN=examples/apply_lut
@@ -31,6 +31,7 @@ COLOR_CONV_TEST=examples/color_conv_test
 SINCITY=examples/sincity
 LEVELS=examples/levels
 LAPLACE=examples/laplace
+MEDIAN=examples/median
 LIBIMAGEPROCESSOR=libimageprocessor.a
 LIB_SHARED_IMAGE_PROCESSOR=libimageprocessor.so
 
@@ -39,13 +40,16 @@ SUFFIXES=.o .c .cc .cpp
 LIBS=@LIBS@ @OPENMP_CFLAGS@
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG) $(SINCITY) $(LEVELS) $(LAPLACE) $(LIBIMAGEPROCESSOR) $(LIB_SHARED_IMAGE_PROCESSOR)
+all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG) $(SINCITY) $(LEVELS) $(LAPLACE) $(LIBIMAGEPROCESSOR) $(LIB_SHARED_IMAGE_PROCESSOR) $(MEDIAN)
 
 $(LIB_SHARED_IMAGE_PROCESSOR): $(OBJECTS)
 	$(CC) -shared -o $(LIB_SHARED_IMAGE_PROCESSOR) $(OBJECTS) $(LIBS)
 
 $(LIBIMAGEPROCESSOR): $(OBJECTS)
 	$(AR) rcs $(LIBIMAGEPROCESSOR) $(OBJECTS)
+
+$(MEDIAN): $(MEDIAN).o $(OBJECTS)
+	$(CC) -o $(MEDIAN)  $(MEDIAN).o $(OBJECTS) $(LIBS)
 
 $(LAPLACE): $(LAPLACE).o $(OBJECTS)
 	$(CC) -o $(LAPLACE)  $(LAPLACE).o $(OBJECTS) $(LIBS)
@@ -106,7 +110,7 @@ video.o: video.c
 	$(CC) -Wall -O2 -ggdb -c $< -o $@
 
 clean:
-	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o $(EYE_ENHANCER) $(EYE_ENHANCER).o $(DOMINANT_COLORS) $(DOMINANT_COLORS).o $(APPLY_COLOR_DONG).o $(APPLY_COLOR_DONG) $(APPLY_COLOR_REINHARD).o $(APPLY_COLOR_REINHARD) $(APPLY_COLOR).o $(APPLY_COLOR) $(COLOR_CONV_TEST).o $(COLOR_CONV_TEST) $(LUT_MAIN) $(LUT_MAIN).o $(LIBIMAGEPROCESSOR) $(LIB_SHARED_IMAGE_PROCESSOR) $(LEVELS) $(LAPLACE) $(SINCITY) $(COMICS) $(LEVELS).o $(LAPLACE).o
+	$(RM) $(PROG) $(COMICS) $(VIDEO_PROC) $(TRUE_BLOOD) $(DAYNIGHT) $(FANTASY) main.o $(COMICS).o $(VIDEO_PROC).o $(PROG).o $(TRUE_BLOOD).o $(DAYNIGHT).o $(FANTASY).o $(OBJECTS) $(REDCAR) $(REDCAR).o $(TRACKING) $(TRACKING).o $(EYE_ENHANCER) $(EYE_ENHANCER).o $(DOMINANT_COLORS) $(DOMINANT_COLORS).o $(APPLY_COLOR_DONG).o $(APPLY_COLOR_DONG) $(APPLY_COLOR_REINHARD).o $(APPLY_COLOR_REINHARD) $(APPLY_COLOR).o $(APPLY_COLOR) $(COLOR_CONV_TEST).o $(COLOR_CONV_TEST) $(LUT_MAIN) $(LUT_MAIN).o $(LIBIMAGEPROCESSOR) $(LIB_SHARED_IMAGE_PROCESSOR) $(LEVELS) $(LAPLACE) $(SINCITY) $(COMICS) $(LEVELS).o $(LAPLACE).o $(MEDIAN) $(MEDIAN).o
 
 test:
 	echo "passed"

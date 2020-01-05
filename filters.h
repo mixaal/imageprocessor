@@ -24,5 +24,6 @@
 #include "comics.h"
 #include "sincity.h"
 #include "laplace.h"
+#include "median.h"
 
 #endif /* __IM_FILTERS_H__ */
