@@ -4,9 +4,17 @@ cd
 
 OS=$(uname -s)
 
+[ -f /etc/os-release ] && {
+  source /etc/os-release
+}
+
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 
 [ "$OS" = "Darwin" ] && {
+  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+}
+
+[ "$ID" = "raspbian" ] && {
   export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
 }
 
@@ -35,6 +43,7 @@ grep -q WORKON_HOME ~/.bashrc || {
   echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
 }
 
+source /usr/local/bin/virtualenvwrapper.sh
 source ~/.bashrc
 
 mkvirtualenv cv -p "$VIRTUALENVWRAPPER_PYTHON"
