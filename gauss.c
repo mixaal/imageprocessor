@@ -9,7 +9,7 @@ void create_gauss(double **GKernel, int N, double sigma, _Bool normalize)
     int N2 = N/2;
     // intialising standard deviation to 1.0
     if (sigma < 0.00001) 
-      sigma = (double)N2;
+      sigma = (double)N/5.0;
     double r, s = 2.0 * sigma * sigma;
  
     // sum is for normalization
