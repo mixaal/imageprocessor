@@ -6,7 +6,7 @@
 #include "histogram.h"
 #include "jpeg.h"
 
-#define LIVEVIEW_FILE "lifeview.jpg"
+#define LIVEVIEW_FILE "liveview.jpg"
 #define RGB_HISTOGRAM_FILE "rgbhistogram.jpg"
 #define LEVELS_FILE "levels.jpg"
 

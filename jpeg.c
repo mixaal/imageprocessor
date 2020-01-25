@@ -210,6 +210,7 @@ layer_t read_JPEG_file (const char * filename)
    */
 
   if ((infile = fopen(filename, "rb")) == NULL) {
+    perror("fopen()");
     fprintf(stderr, "can't open %s\n", filename);
     r.rc = 0;
     return r;
@@ -383,6 +384,7 @@ void write_JPEG_mask(const char * filename, layer_t layer, int quality)
    * requires it in order to write binary files.
    */
   if ((outfile = fopen(filename, "wb")) == NULL) {
+    perror("fopen()");
     fprintf(stderr, "can't open %s\n", filename);
     exit(1);
   }
@@ -493,6 +495,7 @@ void write_JPEG_file (const char * filename, layer_t layer, int quality)
    * requires it in order to write binary files.
    */
   if ((outfile = fopen(filename, "wb")) == NULL) {
+    perror("fopen()");
     fprintf(stderr, "can't open %s\n", filename);
     exit(1);
   }
