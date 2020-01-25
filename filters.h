@@ -25,5 +25,6 @@
 #include "sincity.h"
 #include "laplace.h"
 #include "median.h"
+#include "levels.h"
 
 #endif /* __IM_FILTERS_H__ */
