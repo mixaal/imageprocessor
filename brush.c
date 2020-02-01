@@ -63,8 +63,8 @@ void brush_touch(layer_t layer, draw_mode_t canvas_select, int radius, float opa
 
        int idx = layer.color_components * (tx + ty * layer.width);
        vec3 source_pixel = vec3_init(image[idx]/(float)COLOR_MAX, image[idx+1]/(float)COLOR_MAX, image[idx+2]/(float)COLOR_MAX);
-       vec3 brush_pixel  = vec3_multiply(color, g); 
-       vec3 blend = blend_func(brush_pixel, source_pixel, g*opacity);
+       //vec3 brush_pixel  = vec3_multiply(color, g); 
+       vec3 blend = blend_func(color, source_pixel, g*opacity);
        image[idx] = COLOR_MAX * blend.x;
        image[idx+1] = COLOR_MAX * blend.y;
        image[idx+2] = COLOR_MAX * blend.z;
