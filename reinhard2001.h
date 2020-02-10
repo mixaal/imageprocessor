@@ -11,8 +11,12 @@ struct mean_and_variance {
   float L_m, L_s, a_m, a_s, b_m, b_s;
 };
 
-void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef);
-void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef);
+typedef enum {
+ NONE, DARKEN_ONLY, LIGHTEN_ONLY
+} filter_t; 
+
+void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef, filter_t filter);
+void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef, filter_t filter);
 struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone);
 
 

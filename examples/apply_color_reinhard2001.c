@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <jpeg.h>
 #include <color_balance.h>
@@ -40,7 +41,16 @@ int main(int argc, char *argv[]) {
   /**
    * Apply tonality from source to dest.
    */
-  apply_color_reinhard2001(source, dest, source.zone, dest.zone, 1.0f /*variance*/, 1.0f /*mean*/);
+  if(argc>3) {
+    if(!strcmp(argv[3], "darken")) {
+      apply_color_reinhard2001(source, dest, source.zone, dest.zone, 1.0f /*variance*/, 1.0f /*mean*/, DARKEN_ONLY);
+    }
+    if(!strcmp(argv[3], "lighten")) {
+      apply_color_reinhard2001(source, dest, source.zone, dest.zone, 1.0f /*variance*/, 1.0f /*mean*/, LIGHTEN_ONLY);
+    }
+  } else {
+    apply_color_reinhard2001(source, dest, source.zone, dest.zone, 1.0f /*variance*/, 1.0f /*mean*/, NONE);
+  }
   write_JPEG_file("apply-color-reinhard.jpg", dest, 90);
 
   /**

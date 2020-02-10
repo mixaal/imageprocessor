@@ -19,12 +19,12 @@ static void print_stat(const char *msg, struct mean_and_variance r);
  * @param dest_zone - zone in destination image to influence
  *
  */ 
-void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef) {
+void apply_color_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, float variance_coef, float mean_coef, filter_t filter) {
    struct mean_and_variance src_stat = compute_mean_and_variance(source, source_zone);
    print_stat("source     :", src_stat);
    struct mean_and_variance dst_stat = compute_mean_and_variance(dest, dest_zone);
    print_stat("destination:", dst_stat);
-   apply_reinhard2001(source, dest, source_zone, dest_zone, src_stat, dst_stat, variance_coef, mean_coef);
+   apply_reinhard2001(source, dest, source_zone, dest_zone, src_stat, dst_stat, variance_coef, mean_coef, filter);
    struct mean_and_variance result_stat = compute_mean_and_variance(dest, dest_zone);
    print_stat("result     :", result_stat);
 }
@@ -96,7 +96,7 @@ struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone)
   return r;
 }
 
-void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef) {
+void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t dest_zone, struct mean_and_variance src_stat, struct mean_and_variance dst_stat, float variance_coef, float mean_coef, filter_t filter) {
    color_t *image = dest.image;
    int width = dest.width;
    int height = dest.height;
@@ -154,9 +154,23 @@ void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t
        vec3 backToLMS = LabtoLMS(vec3_init((float)L, (float)a, (float)b));
        vec3 backToRGB = LMStoRGB(backToLMS); 
 
-       image[idx] = COLOR_MAX * backToRGB.x;
-       image[idx+1] = COLOR_MAX * backToRGB.y;
-       image[idx+2] = COLOR_MAX * backToRGB.z;
+       switch(filter) {
+          case DARKEN_ONLY:
+              image[idx] = min(image[idx], COLOR_MAX * backToRGB.x);
+              image[idx+1] = min(image[idx+1], COLOR_MAX * backToRGB.y);
+              image[idx+2] = min(image[idx+2], COLOR_MAX * backToRGB.z);
+              break;
+          case LIGHTEN_ONLY:
+              image[idx] = max(image[idx], COLOR_MAX * backToRGB.x);
+              image[idx+1] = max(image[idx+1], COLOR_MAX * backToRGB.y);
+              image[idx+2] = max(image[idx+2], COLOR_MAX * backToRGB.z);
+              break;
+          case NONE:
+          default:
+              image[idx] = COLOR_MAX * backToRGB.x;
+              image[idx+1] = COLOR_MAX * backToRGB.y;
+              image[idx+2] = COLOR_MAX * backToRGB.z;
+       }
 
        if (backToRGB.x > 1.0f) image[idx] = COLOR_MAX;
        if (backToRGB.y > 1.0f) image[idx+1] = COLOR_MAX;
