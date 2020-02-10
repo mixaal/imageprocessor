@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
   /**
    * Compute dominant colors using k-means.
    */
-  int *segmentation = kmeans_clusters(source, source.zone, dominant_colors, color_info);
+  //int *segmentation = kmeans_clusters(source, source.zone, dominant_colors, color_info);
+  int *segmentation = kmeans(source, source.zone, dominant_colors, color_info);
   
   save_segmentation("image-segmentation.jpg", source.width, source.height, color_info, segmentation);
 
