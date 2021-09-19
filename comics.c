@@ -69,7 +69,7 @@ void comics_sketch(layer_t layer, rect_t zone, _Bool emphasize) {
     }
   }
   printf("Gauss start....\n");
-  gauss(subtract, 21, 0.0, zone, False);
+  gauss(subtract, 5, 0.0, zone, False);
   printf("Gauss finshed (so slow)....\n");
 
 #pragma omp parallel for
