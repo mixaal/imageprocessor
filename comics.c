@@ -38,7 +38,7 @@ void comics_filter(layer_t layer, rect_t zone) {
   }
 }
 
-void comics_sketch(layer_t layer, rect_t zone) {
+void comics_sketch(layer_t layer, rect_t zone, _Bool emphasize) {
   color_t *image = layer.image;
   int width = layer.width;
   int height = layer.height;
@@ -68,7 +68,11 @@ void comics_sketch(layer_t layer, rect_t zone) {
        subimage[idx] = subimage[idx+1] = subimage[idx+2] = (color_t) floor(COLOR_MAX*(1.0-Iv));
     }
   }
+  printf("Gauss start....\n");
   gauss(subtract, 21, 0.0, zone, False);
+  printf("Gauss finshed (so slow)....\n");
+
+#pragma omp parallel for
   for(int y=zone.miny; y<zone.maxy; y++)  {
     for(int x=zone.minx; x<zone.maxx; x++) {
        int idx = y*width*color_components + x*color_components;
@@ -91,6 +95,10 @@ void comics_sketch(layer_t layer, rect_t zone) {
        vec3 a = vec3_init(sr, sg, sb);
        vec3 b = vec3_init(tr, tg, tb);
        vec3 r = blend_color_dodge(a, b, 1.0f);
+       if(emphasize) {
+          r.x *= r.x;
+          r.x *= r.x;
+       }
        image[idx] = image[idx+1] = image[idx+2] = (color_t) floor(COLOR_MAX*r.x);
     }
   }

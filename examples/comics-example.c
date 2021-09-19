@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   rect_t adjust_zone = { 0, 0, source.width, source.height };
 // rect_t invert_zone = { 0, 0, source.width*0.31f, source.height*0.87f };
 //  comics_filter(source, adjust_zone);
-  comics_sketch(source, adjust_zone);
+  comics_sketch(source, adjust_zone, True);
 //  invert(source, invert_zone);
-  write_JPEG_file("comics-result.jpg", source, 90);
+  write_JPEG_file("comics-result.jpg", source, 100);
 }
