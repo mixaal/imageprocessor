@@ -20,13 +20,13 @@ void apply_reinhard2001(layer_t source, layer_t dest, rect_t source_zone, rect_t
 struct mean_and_variance compute_mean_and_variance(layer_t layer, rect_t zone);
 
 
-static struct mean_and_variance Sunny_Forest_Low_Contrast = {
-	0.774823, 0.314333, 0.237214, 0.069790, 0.012967, 0.004463
-};
+//static struct mean_and_variance Sunny_Forest_Low_Contrast = {
+//	0.774823, 0.314333, 0.237214, 0.069790, 0.012967, 0.004463
+//};
 
-static struct mean_and_variance Dark_Forest_Low_Contrast = {
-	0.227128, 0.170400, 0.001011, 0.025360, -0.001308, 0.002711
-};
+//static struct mean_and_variance Dark_Forest_Low_Contrast = {
+//	0.227128, 0.170400, 0.001011, 0.025360, -0.001308, 0.002711
+//};
 
 #ifdef __cplusplus
 }

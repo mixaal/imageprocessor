@@ -4,14 +4,14 @@ AR=ar
 RANLIB=@RANLIB@
 #OPENCVFLAGS=`pkg-config --cflags opencv4`
 RM=rm -f
-CFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ -fPIC
-CXXFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ -std=c++11 @OPENCV_CFLAGS@
+CFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ -fPIC @OPENMP_CFLAGS@
+CXXFLAGS=-Wall -Werror -O2 -ggdb -I. -I../ -std=c++11 @OPENCV_CFLAGS@ @OPENMP_CFLAGS@
 
 OBJECTS=jpeg.o xmalloc.o bw.o gauss.o layer.o unsharp.o contrast.o brightness.o gamma.o invert.o \
         temperature.o tint.o exposure.o color_conversion.o common.o kelvin_temp.o color_balance.o \
         saturation.o vibrance.o colorize.o brush.o flip.o crop.o gradient_map.o layer_modes.o video.o\
         auto_tone.o comics.o shapes.o vectorscope.o histogram.o apply_color.o reinhard2001.o llist.o kmeans.o\
-        dong2010.o permgen.o emd.o lut.o exif.o sincity.o levels.o laplace.o median.o libmain.o
+        dong2010.o permgen.o emd.o lut.o exif.o sincity.o levels.o laplace.o median.o libmain.o ctmf.o
 
 PROG=improc
 LUT_MAIN=examples/apply_lut
@@ -40,10 +40,10 @@ SUFFIXES=.o .c .cc .cpp
 LIBS=@LIBS@ @OPENMP_CFLAGS@
 #OPENCVLIBS=`pkg-config --libs opencv4`
 
-all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG) $(SINCITY) $(LEVELS) $(LAPLACE) $(LIBIMAGEPROCESSOR) $(LIB_SHARED_IMAGE_PROCESSOR) $(MEDIAN)
+all: $(LUT_MAIN) $(FANTASY) $(DAYNIGHT) $(TRUE_BLOOD) $(VIDEO_PROC) $(COMICS) $(PROG) $(REDCAR)  $(TRACKING) $(APPLY_COLOR) $(COLOR_CONV_TEST) $(APPLY_COLOR_REINHARD) $(DOMINANT_COLORS) $(APPLY_COLOR_DONG) $(SINCITY) $(LEVELS) $(LAPLACE) $(MEDIAN) $(LIBIMAGEPROCESSOR) #$(LIB_SHARED_IMAGE_PROCESSOR)
 
-$(LIB_SHARED_IMAGE_PROCESSOR): $(OBJECTS)
-	$(CC) -shared -o $(LIB_SHARED_IMAGE_PROCESSOR) $(OBJECTS) $(LIBS)
+#$(LIB_SHARED_IMAGE_PROCESSOR): $(OBJECTS)
+#	$(CC) -shared -o $(LIB_SHARED_IMAGE_PROCESSOR) $(OBJECTS) $(LIBS)
 
 $(LIBIMAGEPROCESSOR): $(OBJECTS)
 	$(AR) rcs $(LIBIMAGEPROCESSOR) $(OBJECTS)
