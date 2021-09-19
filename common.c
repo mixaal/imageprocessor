@@ -108,6 +108,15 @@ vec5 vec5_init(float x, float y, vec3 color)
   return v;
 }
 
+vec3 vec3_div(vec3 a, vec3 b)
+{
+   if(b.x < 0.001f) b.x = 0.001f;
+   if(b.y < 0.001f) b.y = 0.001f;
+   if(b.z < 0.001f) b.z = 0.001f;
+   vec3 o = { a.x / b.x, a.y / b.y, a.z / b.z };
+   return o;
+}
+
 vec3 vec3_multiply(vec3 v, float k)
 {
   vec3 o = { v.x*k, v.y*k, v.z*k };

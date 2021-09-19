@@ -135,3 +135,16 @@ vec3 blend_normal(vec3 a, vec3 b, float opacity)
   b = vec3_clamp(b, 0.0f, 1.0f);
   return blend2( b, a, opacity );
 }
+
+vec3 blend_color_dodge(vec3 a, vec3 b, float opacity)
+{
+  opacity = saturatef(opacity);
+  a = vec3_clamp(a, 0.0f, 1.0f);
+  b = vec3_clamp(b, 0.0f, 1.0f);
+
+  // Target / (1-Blend)    
+  vec3 one = vec3_init(1.0f, 1.0f, 1.0f);
+  vec3 one_minus_blend = vec3_sub(one, vec3_multiply(b, opacity));
+  vec3 result = vec3_div(a, one_minus_blend);
+  return vec3_clamp(result, 0.0f, 1.0f);
+}

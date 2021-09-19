@@ -18,6 +18,7 @@ void vec3_info(vec3 v);
 vec3 vec3_clamp(vec3 v, float minr, float maxr);
 vec3 vec3_add3(vec3 u, vec3 v, vec3 w);
 vec3 vec3_dot(vec3 a, vec3 b);
+vec3 vec3_div(vec3 a, vec3 b);
 vec3 vec3_add(vec3 v, vec3 c);
 vec3 vec3_multiply(vec3 v, float k);
 vec3 vec3_sub(vec3 v, vec3 c);

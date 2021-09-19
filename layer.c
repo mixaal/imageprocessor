@@ -71,6 +71,32 @@ layer_t layer_new_dim(int width, int height, int color_components, _Bool mask, _
    return layer;
 }
 
+// https://www.deepskycolors.com/archivo/2010/04/21/formulas-for-Photoshop-blending-modes.html
+// Blend mode 	Commutativity 	Formula 	Addtl .info
+//  Darken 	commutative 	min(Target,Blend)          	
+// Multiply 	commutative 	Target * Blend          	
+// Color Burn 	non-commutative 	1 - (1-Target) / Blend          	
+// Linear Burn 	commutative 	Target + Blend - 1          	
+// Lighten 	commutative 	max(Target,Blend)          	
+// Screen 	commutative 	1 - (1-Target) * (1-Blend)          	
+// Color Dodge 	non-commutative 	Target / (1-Blend)          	
+// Linear Dodge 	commutative 	Target + Blend          	
+// Overlay 	non-commutative 	(Target > 0.5) * (1 - (1-2*(Target-0.5)) * (1-Blend)) +
+// (Target <= 0.5) * ((2*Target) * Blend) 	A combination of multiply and screen.Also the same as Hard Light commuted
+// Soft Light 	non-commutative 	(Blend > 0.5) * (1 - (1-Target) * (1-(Blend-0.5))) +
+// (Blend <= 0.5) * (Target * (Blend+0.5)) 	A combination of multiply and screen(The formula is only approximate)
+// Hard Light 	non-commutative 	(Blend > 0.5) * (1 - (1-Target) * (1-2*(Blend-0.5))) +
+// (Blend <= 0.5) * (Target * (2*Blend)) 	A combination of multiply and screen. Also the same as Overlay commuted
+// Vivid Light 	non-commutative 	(Blend > 0.5) * (Target / (1-2*(Blend-0.5))) +
+// (Blend <= 0.5) * (1 - (1-Target) / (2*Blend)) ) 	A combination of color burn and color dodge
+// Linear Light 	non-commutative 	(Blend > 0.5) * (Target + 2*(Blend-0.5)) +
+// (Blend <= 0.5) * (Target + 2*Blend - 1) 	A combination of linear burn and linear dodge
+// Pin Light 	non-commutative 	(Blend > 0.5) * (max(Target,2*(Blend-0.5))) +
+// (Blend <= 0.5) * (min(Target,2*Blend))) 	A combination of darken and lighten
+// Difference 	commutative 	| Target - Blend |          	
+// Exclusion 	commutative 	0.5 - 2*(Target-0.5)*(Blend-0.5) 	
+//
+
 void layer_multiply(layer_t dest, layer_t source, double amount) {
   int minx = min(dest.zone.minx, source.zone.minx);
   int miny = min(dest.zone.miny, source.zone.miny);

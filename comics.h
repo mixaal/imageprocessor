@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 void comics_filter(layer_t layer, rect_t zone);
+void comics_sketch(layer_t layer, rect_t zone);
 
 
 #ifdef __cplusplus

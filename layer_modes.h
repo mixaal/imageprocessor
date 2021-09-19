@@ -19,6 +19,7 @@ vec3 blend_overlay(vec3 a, vec3 b, float opacity);
 vec3 blend_normal(vec3 a, vec3 b, float opacity);
 vec3 blend_multiply(vec3 a, vec3 b, float opacity) ;
 vec3 blend_screen(vec3 a, vec3 b, float opacity) ;
+vec3 blend_color_dodge(vec3 a, vec3 b, float opacity);
 
 
 #ifdef __cplusplus
